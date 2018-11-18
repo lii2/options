@@ -11,4 +11,7 @@ import java.util.List;
 @Repository
 public interface StockDataRepository extends CrudRepository<StockData, Date> {
 
+    @Query(value = "SELECT * FROM stock_data ORDER BY day DESC LIMIT 1", nativeQuery = true)
+    StockData getLatestRecord();
+
 }

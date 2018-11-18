@@ -1,5 +1,6 @@
 package com.options.entities;
 
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.text.ParseException;
@@ -9,10 +10,8 @@ import java.util.Date;
 @Entity
 public class StockData {
 
-    @Id
-    private Date day;
-
-    private String ticker;
+    @EmbeddedId
+    private StockDataKey stockDataKey;
 
     private double open;
 
@@ -23,24 +22,23 @@ public class StockData {
     private double close;
 
     private double volume;
-    
+
     private transient static SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
-    
-    public StockData(){}
+
+    public StockData() {
+    }
 
     public StockData(String ticker, String[] data) throws ParseException {
-        this.ticker = ticker;
-        this.day = smf.parse(data[0]);
+        this.stockDataKey = new StockDataKey(smf.parse(data[0]), ticker);
         this.open = Double.valueOf(data[1]);
         this.high = Double.valueOf(data[2]);
         this.low = Double.valueOf(data[3]);
         this.close = Double.valueOf(data[4]);
         this.volume = Double.valueOf(data[5]);
     }
-    
-    public StockData(Date day, String ticker, double open, double high, double low, double close, double volume) {
-        this.day = day;
-        this.ticker = ticker;
+
+    public StockData(StockDataKey stockDataKey, double open, double high, double low, double close, double volume) {
+        this.stockDataKey = stockDataKey;
         this.open = open;
         this.high = high;
         this.low = low;
@@ -48,20 +46,12 @@ public class StockData {
         this.volume = volume;
     }
 
-    public Date getDay() {
-        return day;
+    public StockDataKey getStockDataKey() {
+        return stockDataKey;
     }
 
-    public void setDay(Date day) {
-        this.day = day;
-    }
-
-    public String getTicker() {
-        return ticker;
-    }
-
-    public void setTicker(String ticker) {
-        this.ticker = ticker;
+    public void setStockDataKey(StockDataKey stockDataKey) {
+        this.stockDataKey = stockDataKey;
     }
 
     public double getOpen() {
@@ -107,8 +97,7 @@ public class StockData {
     @Override
     public String toString() {
         return "StockData{" +
-                "day=" + day +
-                ", ticker='" + ticker + '\'' +
+                "stockDataKey=" + stockDataKey +
                 ", open=" + open +
                 ", high=" + high +
                 ", low=" + low +
