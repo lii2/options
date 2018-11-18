@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: blu3B4R
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ['env','beans']

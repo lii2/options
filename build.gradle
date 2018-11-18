@@ -1,0 +1,46 @@
+def swaggerVersion = "2.9.2"
+def googleServicesVersion = "1.23.0"
+def javaxVersion = "1.6.2"
+def postgresqlVersion = "42.2.2"
+def springBootVersion = "2.1.0.RELEASE"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE")
+    }
+}
+
+apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "org.springframework.boot"
+apply plugin: "io.spring.dependency-management"
+
+group "com.jeffrey"
+version "1.0-SNAPSHOT"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile ("io.springfox:springfox-swagger2:$swaggerVersion")
+    compile ("io.springfox:springfox-swagger-ui:$swaggerVersion")
+    compile ("com.google.api-client:google-api-client:$googleServicesVersion")
+    compile ("com.google.oauth-client:google-oauth-client-jetty:$googleServicesVersion")
+    compile ("com.google.apis:google-api-services-gmail:v1-rev83-$googleServicesVersion")
+    compile ("com.sun.mail:javax.mail:$javaxVersion")
+    compile group: "org.postgresql", name: "postgresql", version: "$postgresqlVersion"
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile group: "org.springframework.boot", name: "spring-boot-starter-actuator", version: "$springBootVersion"
+
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile (group: "junit", name: "junit", version: "4.12")
+}
