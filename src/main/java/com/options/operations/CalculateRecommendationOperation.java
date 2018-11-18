@@ -1,7 +1,9 @@
 package com.options.operations;
 
 import com.options.domain.alphavantage.AlphaVantageClient;
+import com.options.entities.EmaData;
 import com.options.entities.StockData;
+import com.options.repositories.EmaDataRepository;
 import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,9 @@ public class CalculateRecommendationOperation {
 
     @Autowired
     StockDataRepository stockDataRepository;
+
+    @Autowired
+    EmaDataRepository emaDataRepository;
 
     AlphaVantageClient alphaVantageClient;
 
@@ -38,9 +43,20 @@ public class CalculateRecommendationOperation {
     }
 
     private void smartPersist() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
-        List<StockData> stockDataList = alphaVantageClient.getLast100DaysStockData("SPY");
+        StockData lastStockData = stockDataRepository.getLatestRecord();
+        List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData("SPY");
         for (StockData stockData : stockDataList) {
-            stockDataRepository.save(stockData);
+            if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())){
+                stockDataRepository.save(stockData);
+            }
+        }
+
+        EmaData lastEmaData = emaDataRepository.getLatestRecord();
+        List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
+        for(EmaData emaData : emaDataList){
+            if(lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())){
+                emaDataRepository.save(emaData);
+            }
         }
 
     }
