@@ -70,14 +70,21 @@ public class CalculateRecommendationOperation {
         calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
         below the support. If the price drops below the EMA, sell a one week call 100 points above a resistance
         */
+        //TODO: Need to fix this logic
         for (int i = 28; i >= 0; i--) {
             closedBelowEma = (last30DaysEmaData[i].getEma() > last30DaysStockData[i].getClose());
             if (closedBelowEma != previousDayClosedBelowEma) {
                 System.out.println("found crossing: " + last30DaysEmaData[i] + " and " + last30DaysStockData[i]);
                 if (closedBelowEma)
-                    System.out.println("price dropped below ema sell calls.");
+                    System.out.println("price rose above ema, price was: " + last30DaysStockData[i + 1].getClose() +
+                            " and ema was " + last30DaysEmaData[i + 1].getEma() +
+                            " price is now " + last30DaysStockData[i].getClose() +
+                            " ema is now " + last30DaysEmaData[1].getEma() + " sell puts.");
                 else
-                    System.out.println("price rose above ema sell puts.");
+                    System.out.println("price dropped below ema, price was: " + last30DaysStockData[i + 1].getClose() +
+                            " and ema was " + last30DaysEmaData[i + 1].getEma() +
+                            " price is now " + last30DaysStockData[i].getClose() +
+                            " ema is now " + last30DaysEmaData[1].getEma() + " sell calls.");
             }
             previousDayClosedBelowEma = closedBelowEma;
         }
