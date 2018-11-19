@@ -36,6 +36,7 @@ public class CalculateRecommendationOperation {
 
     private void getData() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
         smartPersist();
+        discoverCrossovers();
     }
 
     private String recommend() {
@@ -46,22 +47,39 @@ public class CalculateRecommendationOperation {
         StockData lastStockData = stockDataRepository.getLatestRecord();
         List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData("SPY");
         for (StockData stockData : stockDataList) {
-            if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())){
+            if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
                 stockDataRepository.save(stockData);
             }
         }
 
         EmaData lastEmaData = emaDataRepository.getLatestRecord();
         List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
-        for(EmaData emaData : emaDataList){
-            if(lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())){
+        for (EmaData emaData : emaDataList) {
+            if (lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
                 emaDataRepository.save(emaData);
             }
         }
-
     }
 
-    private boolean missingData() {
-        return false;
+    private void discoverCrossovers() {
+        EmaData[] last30DaysEmaData = emaDataRepository.getLastThirtyDays().stream().toArray(EmaData[]::new);
+        StockData[] last30DaysStockData = stockDataRepository.getLastThirtyDays().stream().toArray(StockData[]::new);
+        boolean previousDayClosedBelowEma = (last30DaysEmaData[29].getEma() > last30DaysStockData[29].getClose());
+        boolean closedBelowEma = false;
+        /*
+        calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
+        below the support. If the price drops below the EMA, sell a one week call 100 points above a resistance
+        */
+        for (int i = 28; i >= 0; i--) {
+            closedBelowEma = (last30DaysEmaData[i].getEma() > last30DaysStockData[i].getClose());
+            if (closedBelowEma != previousDayClosedBelowEma) {
+                System.out.println("found crossing: " + last30DaysEmaData[i] + " and " + last30DaysStockData[i]);
+                if (closedBelowEma)
+                    System.out.println("price dropped below ema sell calls.");
+                else
+                    System.out.println("price rose above ema sell puts.");
+            }
+            previousDayClosedBelowEma = closedBelowEma;
+        }
     }
 }
