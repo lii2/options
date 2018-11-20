@@ -39,6 +39,7 @@ public class AlphaVantageConnector implements AlphaVantageConstants {
 
     public String getTimeSeriesDaily(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         String query = String.format(Query.TIME_SERIES_DAILY.getUrl(), ticker, TRADE_APP_API_KEY) + "&datatype=csv";
+        System.out.println(query);
         RestTemplate restTemplate = getRestTemplate();
         String response = restTemplate.getForObject(query, String.class);
         return response;
@@ -53,6 +54,7 @@ public class AlphaVantageConnector implements AlphaVantageConstants {
 
     public String getEmaDaily(String ticker, String interval) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         String query = String.format(Query.EMA_DAILY.getUrl(), ticker, interval, TRADE_APP_API_KEY) + "&datatype=csv";
+        System.out.println(query);
         RestTemplate restTemplate = getRestTemplate();
         String response = restTemplate.getForObject(query, String.class);
         return response;

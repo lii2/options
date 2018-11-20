@@ -47,17 +47,31 @@ public class CalculateRecommendationOperation {
     private void smartPersist() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
         StockData lastStockData = stockDataRepository.getLatestRecord();
         List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData("SPY");
-        for (StockData stockData : stockDataList) {
-            if (lastStockData == null || lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
+        if (lastStockData == null) {
+            for (StockData stockData : stockDataList) {
                 stockDataRepository.save(stockData);
+            }
+        } else {
+            for (StockData stockData : stockDataList) {
+                if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
+                    stockDataRepository.save(stockData);
+                }
             }
         }
 
         EmaData lastEmaData = emaDataRepository.getLatestRecord();
-        List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
-        for (EmaData emaData : emaDataList) {
-            if (lastEmaData == null || lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
+        // TODO: Check if data from today is already in database, if so, skip persistance
+        if (lastEmaData == null) {
+            List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
+            for (EmaData emaData : emaDataList) {
                 emaDataRepository.save(emaData);
+            }
+        } else {
+            List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
+            for (EmaData emaData : emaDataList) {
+                if (lastEmaData == null || lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
+                    emaDataRepository.save(emaData);
+                }
             }
         }
     }
@@ -88,7 +102,6 @@ public class CalculateRecommendationOperation {
             }
             previousDayClosedBelowEma = closedBelowEma;
         }
-
         return stringBuilder.toString();
     }
 
