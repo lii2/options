@@ -25,6 +25,12 @@ public class CalculateRecommendationOperation {
 
     AlphaVantageClient alphaVantageClient;
 
+    private static final int DAYS_OF_DATA = 30;
+
+    private EmaData[] last30DaysEmaData;
+
+    private StockData[] last30DaysStockData;
+
     public CalculateRecommendationOperation() {
         alphaVantageClient = new AlphaVantageClient();
     }
@@ -42,7 +48,7 @@ public class CalculateRecommendationOperation {
         StockData lastStockData = stockDataRepository.getLatestRecord();
         List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData("SPY");
         for (StockData stockData : stockDataList) {
-            if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
+            if (lastStockData == null || lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
                 stockDataRepository.save(stockData);
             }
         }
@@ -50,41 +56,60 @@ public class CalculateRecommendationOperation {
         EmaData lastEmaData = emaDataRepository.getLatestRecord();
         List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
         for (EmaData emaData : emaDataList) {
-            if (lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
+            if (lastEmaData == null || lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
                 emaDataRepository.save(emaData);
             }
         }
     }
 
     private String discoverCrossovers() {
-        EmaData[] last30DaysEmaData = emaDataRepository.getLastThirtyDays().stream().toArray(EmaData[]::new);
-        StockData[] last30DaysStockData = stockDataRepository.getLastThirtyDays().stream().toArray(StockData[]::new);
-        boolean previousDayClosedBelowEma = (last30DaysEmaData[29].getEma() > last30DaysStockData[29].getClose());
-        boolean closedBelowEma = false;
-        StringBuilder stringbuilder = new StringBuilder();
+        setDataFromDatabase();
+
+        boolean previousDayClosedBelowEma =
+                (last30DaysEmaData[DAYS_OF_DATA - 1].getEma() > last30DaysStockData[DAYS_OF_DATA - 1].getClose());
+        boolean closedBelowEma;
+
+        StringBuilder stringBuilder = new StringBuilder();
         /*
         calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
         below the support. If the price drops below the EMA, sell a one week call 100 points above a resistance
         */
         //TODO: Need to fix this logic
-        for (int i = 28; i >= 0; i--) {
+        for (int i = DAYS_OF_DATA - 2; i >= 0; i--) {
             closedBelowEma = (last30DaysEmaData[i].getEma() > last30DaysStockData[i].getClose());
             if (closedBelowEma != previousDayClosedBelowEma) {
-                stringbuilder.append("found crossing on:" + last30DaysStockData[i].getStockDataKey().getDay() + " \n");
+                stringBuilder.append("found crossing on: " + last30DaysStockData[i].getStockDataKey().getDay() + " \n");
                 if (closedBelowEma)
-                    stringbuilder.append("price rose above ema, price was: " + last30DaysStockData[i + 1].getClose() +
-                            " and ema was " + last30DaysEmaData[i + 1].getEma() +
-                            " price is now " + last30DaysStockData[i].getClose() +
-                            " ema is now " + last30DaysEmaData[1].getEma() + " sell puts.\n");
+                    appendRiseMessage(stringBuilder, last30DaysStockData[i + 1].getClose(), last30DaysEmaData[i + 1].getEma(),
+                            last30DaysStockData[i].getClose(), last30DaysEmaData[i].getEma());
                 else
-                    stringbuilder.append("price dropped below ema, price was: " + last30DaysStockData[i + 1].getClose() +
-                            " and ema was " + last30DaysEmaData[i + 1].getEma() +
-                            " price is now " + last30DaysStockData[i].getClose() +
-                            " ema is now " + last30DaysEmaData[1].getEma() + " sell calls.\n");
+                    appendDropMessage(stringBuilder, last30DaysStockData[i + 1].getClose(), last30DaysEmaData[i + 1].getEma(),
+                            last30DaysStockData[i].getClose(), last30DaysEmaData[i].getEma());
             }
             previousDayClosedBelowEma = closedBelowEma;
         }
 
-        return stringbuilder.toString();
+        return stringBuilder.toString();
+    }
+
+    private void setDataFromDatabase() {
+        last30DaysEmaData = emaDataRepository.getLastThirtyDays().stream().toArray(EmaData[]::new);
+        last30DaysStockData = stockDataRepository.getLastThirtyDays().stream().toArray(StockData[]::new);
+    }
+
+    private void appendRiseMessage(StringBuilder stringBuilder, double yesterdaysStockPrice, double yesterdaysEma,
+                                   double todaysStockPrice, double todaysEma) {
+        stringBuilder.append("price rose above the ema, price was: " + yesterdaysStockPrice +
+                " and ema was " + yesterdaysEma +
+                "\n price is now " + todaysStockPrice +
+                " ema is now " + todaysEma + " sell puts.\n");
+    }
+
+    private void appendDropMessage(StringBuilder stringBuilder, double yesterdaysStockPrice, double yesterdaysEma,
+                                   double todaysStockPrice, double todaysEma) {
+        stringBuilder.append("price dropped below the ema, price was: " + yesterdaysStockPrice +
+                " and ema was " + yesterdaysEma +
+                "\n price is now " + todaysStockPrice +
+                " ema is now " + todaysEma + " sell puts.\n");
     }
 }
