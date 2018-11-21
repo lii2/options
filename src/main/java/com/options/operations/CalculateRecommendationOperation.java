@@ -99,10 +99,10 @@ public class CalculateRecommendationOperation {
             if (closedBelowEma != previousDayClosedBelowEma) {
                 stringBuilder.append("found crossing on: " + last30DaysStockData[i].getStockDataKey().getDay() + " \n");
                 if (closedBelowEma)
-                    appendRiseMessage(stringBuilder, last30DaysStockData[i + 1].getClose(), last30DaysEmaData[i + 1].getEma(),
+                    appendDropMessage(stringBuilder, last30DaysStockData[i + 1].getClose(), last30DaysEmaData[i + 1].getEma(),
                             last30DaysStockData[i].getClose(), last30DaysEmaData[i].getEma());
                 else
-                    appendDropMessage(stringBuilder, last30DaysStockData[i + 1].getClose(), last30DaysEmaData[i + 1].getEma(),
+                    appendRiseMessage(stringBuilder, last30DaysStockData[i + 1].getClose(), last30DaysEmaData[i + 1].getEma(),
                             last30DaysStockData[i].getClose(), last30DaysEmaData[i].getEma());
             }
             previousDayClosedBelowEma = closedBelowEma;
