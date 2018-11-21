@@ -8,6 +8,7 @@ import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -78,11 +79,15 @@ public class CalculateRecommendationOperation {
 
     private String discoverCrossovers() {
         setDataFromDatabase();
-
+        BigDecimal bigDecimal = (last30DaysEmaData[DAYS_OF_DATA - 1].getEma());
+        // TODO: FIX PRECISION PROBLEMS
         boolean previousDayClosedBelowEma =
-                (last30DaysEmaData[DAYS_OF_DATA - 1].getEma() > last30DaysStockData[DAYS_OF_DATA - 1].getClose());
+                (last30DaysEmaData[DAYS_OF_DATA - 1].getEma().compareTo(last30DaysStockData[DAYS_OF_DATA - 1].getClose()) == 1);
         boolean closedBelowEma;
 
+        // Need to understand trend, difference between long term and short term trend and decide based on trend
+        // need algorithmn to determine trend
+        // if the five crosses the twenty moving average
         StringBuilder stringBuilder = new StringBuilder();
         /*
         calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
@@ -90,7 +95,7 @@ public class CalculateRecommendationOperation {
         */
         //TODO: Need to fix this logic
         for (int i = DAYS_OF_DATA - 2; i >= 0; i--) {
-            closedBelowEma = (last30DaysEmaData[i].getEma() > last30DaysStockData[i].getClose());
+            closedBelowEma = (last30DaysEmaData[i].getEma().compareTo(last30DaysStockData[i].getClose()) == 1);
             if (closedBelowEma != previousDayClosedBelowEma) {
                 stringBuilder.append("found crossing on: " + last30DaysStockData[i].getStockDataKey().getDay() + " \n");
                 if (closedBelowEma)
@@ -110,16 +115,16 @@ public class CalculateRecommendationOperation {
         last30DaysStockData = stockDataRepository.getLastThirtyDays().stream().toArray(StockData[]::new);
     }
 
-    private void appendRiseMessage(StringBuilder stringBuilder, double yesterdaysStockPrice, double yesterdaysEma,
-                                   double todaysStockPrice, double todaysEma) {
+    private void appendRiseMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice, BigDecimal yesterdaysEma,
+                                   BigDecimal todaysStockPrice, BigDecimal todaysEma) {
         stringBuilder.append("price rose above the ema, price was: " + yesterdaysStockPrice +
                 " and ema was " + yesterdaysEma +
                 "\n price is now " + todaysStockPrice +
                 " ema is now " + todaysEma + " sell puts.\n");
     }
 
-    private void appendDropMessage(StringBuilder stringBuilder, double yesterdaysStockPrice, double yesterdaysEma,
-                                   double todaysStockPrice, double todaysEma) {
+    private void appendDropMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice, BigDecimal yesterdaysEma,
+                                   BigDecimal todaysStockPrice, BigDecimal todaysEma) {
         stringBuilder.append("price dropped below the ema, price was: " + yesterdaysStockPrice +
                 " and ema was " + yesterdaysEma +
                 "\n price is now " + todaysStockPrice +

@@ -24,12 +24,26 @@ public class OptionsController implements ApplicationContextAware {
 
     @GetMapping("/recommendation")
     public String getRecommendation() throws Exception {
+
+        // Determine what to do
+
+        // Determine the goals
+
+        // Determine the time line
+
+        // Determine the risk management strategy
         return calculateRecommendationOperation.execute();
     }
 
     @GetMapping("/shutdownContext")
     public void shutdownContext() {
         ((ConfigurableApplicationContext) context).close();
+    }
+
+    @GetMapping("/analysis")
+    public String analysis(){
+
+        return "Not yet implemented";
     }
 
     @Override

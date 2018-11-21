@@ -3,6 +3,8 @@ package com.options.entities;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,15 +15,15 @@ public class StockData {
     @EmbeddedId
     private StockDataKey stockDataKey;
 
-    private double open;
+    private BigDecimal open;
 
-    private double high;
+    private BigDecimal high;
 
-    private double low;
+    private BigDecimal low;
 
-    private double close;
+    private BigDecimal close;
 
-    private double volume;
+    private BigInteger volume;
 
     private transient static SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -30,14 +32,14 @@ public class StockData {
 
     public StockData(String ticker, String[] data) throws ParseException {
         this.stockDataKey = new StockDataKey(smf.parse(data[0]), ticker);
-        this.open = Double.valueOf(data[1]);
-        this.high = Double.valueOf(data[2]);
-        this.low = Double.valueOf(data[3]);
-        this.close = Double.valueOf(data[4]);
-        this.volume = Double.valueOf(data[5]);
+        this.open = new BigDecimal(data[1]);
+        this.high = new BigDecimal(data[2]);
+        this.low = new BigDecimal(data[3]);
+        this.close = new BigDecimal(data[4]);
+        this.volume = new BigInteger(data[5].replace("\r",""));
     }
 
-    public StockData(StockDataKey stockDataKey, double open, double high, double low, double close, double volume) {
+    public StockData(StockDataKey stockDataKey, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigInteger volume) {
         this.stockDataKey = stockDataKey;
         this.open = open;
         this.high = high;
@@ -54,43 +56,43 @@ public class StockData {
         this.stockDataKey = stockDataKey;
     }
 
-    public double getOpen() {
+    public BigDecimal getOpen() {
         return open;
     }
 
-    public void setOpen(double open) {
+    public void setOpen(BigDecimal open) {
         this.open = open;
     }
 
-    public double getHigh() {
+    public BigDecimal getHigh() {
         return high;
     }
 
-    public void setHigh(double high) {
+    public void setHigh(BigDecimal high) {
         this.high = high;
     }
 
-    public double getLow() {
+    public BigDecimal getLow() {
         return low;
     }
 
-    public void setLow(double low) {
+    public void setLow(BigDecimal low) {
         this.low = low;
     }
 
-    public double getClose() {
+    public BigDecimal getClose() {
         return close;
     }
 
-    public void setClose(double close) {
+    public void setClose(BigDecimal close) {
         this.close = close;
     }
 
-    public double getVolume() {
+    public BigInteger getVolume() {
         return volume;
     }
 
-    public void setVolume(double volume) {
+    public void setVolume(BigInteger volume) {
         this.volume = volume;
     }
 
