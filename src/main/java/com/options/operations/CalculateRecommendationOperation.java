@@ -28,6 +28,8 @@ public class CalculateRecommendationOperation {
 
     private static final int DAYS_OF_DATA = 30;
 
+    private static final BigDecimal TWO = new BigDecimal(2);
+
     private EmaData[] last30DaysEmaData;
 
     private StockData[] last30DaysStockData;
@@ -88,14 +90,17 @@ public class CalculateRecommendationOperation {
         // Need to understand trend, difference between long term and short term trend and decide based on trend
         // need algorithmn to determine trend
         // if the five crosses the twenty moving average
+        // look at time intervals of trends to know likely intervals of upcoming trends.
         StringBuilder stringBuilder = new StringBuilder();
         /*
         calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
         below the support. If the price drops below the EMA, sell a one week call 100 points above a resistance
         */
+
         //TODO: Need to fix this logic
         for (int i = DAYS_OF_DATA - 2; i >= 0; i--) {
-            closedBelowEma = (last30DaysEmaData[i].getEma().compareTo(last30DaysStockData[i].getClose()) == 1);
+            closedBelowEma = (last30DaysEmaData[i].getEma().compareTo(
+                    last30DaysStockData[i].getClose().add(last30DaysStockData[i].getOpen()).divide(TWO)) == 1);
             if (closedBelowEma != previousDayClosedBelowEma) {
                 stringBuilder.append("found crossing on: " + last30DaysStockData[i].getStockDataKey().getDay() + " \n");
                 if (closedBelowEma)
