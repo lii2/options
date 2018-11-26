@@ -25,8 +25,6 @@ public class CalculateRecommendationOperation {
     @Autowired
     private EmaDataRepository emaDataRepository;
 
-    private AlphaVantageClient alphaVantageClient;
-
     private static final int DAYS_OF_DATA = 30;
 
     private static final BigDecimal TWO = new BigDecimal(2);
@@ -36,48 +34,10 @@ public class CalculateRecommendationOperation {
     private StockData[] last30DaysStockData;
 
     public CalculateRecommendationOperation() {
-        alphaVantageClient = new AlphaVantageClient();
     }
 
-    public String execute() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
-        getData();
+    public String execute() {
         return discoverCrossovers();
-    }
-
-    private void getData() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
-        smartPersist();
-    }
-
-    private void smartPersist() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
-        StockData lastStockData = stockDataRepository.getLatestRecord();
-        List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData("SPY");
-        if (lastStockData == null) {
-            for (StockData stockData : stockDataList) {
-                stockDataRepository.save(stockData);
-            }
-        } else {
-            for (StockData stockData : stockDataList) {
-                if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
-                    stockDataRepository.save(stockData);
-                }
-            }
-        }
-
-        EmaData lastEmaData = emaDataRepository.getLatestRecord();
-        // TODO: Check if data from today is already in database, if so, skip persistance
-        if (lastEmaData == null) {
-            List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
-            for (EmaData emaData : emaDataList) {
-                emaDataRepository.save(emaData);
-            }
-        } else {
-            List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData("SPY", "10");
-            for (EmaData emaData : emaDataList) {
-                if (lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
-                    emaDataRepository.save(emaData);
-                }
-            }
-        }
     }
 
     private String discoverCrossovers() {
