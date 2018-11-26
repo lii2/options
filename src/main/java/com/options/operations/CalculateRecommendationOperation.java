@@ -125,15 +125,17 @@ public class CalculateRecommendationOperation {
 
     private void appendRiseMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
                                    BigDecimal todaysStockPrice, BigDecimal todaysEma) {
-        stringBuilder.append("\nprice rose above the ema,\n    price was: ").append(yesterdaysStockPrice)
+        stringBuilder.append("price rose above the ema,\n    price was: ").append(yesterdaysStockPrice)
+                .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n ema is now ").append(todaysEma).append(" sell puts below current price or buy calls. \n");
+                .append("\n Recommendation: sell puts below current price or buy calls. \n");
     }
 
     private void appendDropMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
                                    BigDecimal todaysStockPrice, BigDecimal todaysEma) {
-        stringBuilder.append("\nprice dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
+        stringBuilder.append("price dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
+                .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n ema is now ").append(todaysEma).append(" sell calls below current price or buy puts. \n");
+                .append("\n Recommendation: sell calls below current price or buy puts. \n");
     }
 }
