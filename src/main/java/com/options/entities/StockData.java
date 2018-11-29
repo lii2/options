@@ -5,9 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @Entity
 public class StockData {
@@ -36,7 +38,7 @@ public class StockData {
         this.high = new BigDecimal(data[2]);
         this.low = new BigDecimal(data[3]);
         this.close = new BigDecimal(data[4]);
-        this.volume = new BigInteger(data[5].replace("\r",""));
+        this.volume = new BigInteger(data[5].replace("\r", ""));
     }
 
     public StockData(StockDataKey stockDataKey, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigInteger volume) {
@@ -94,6 +96,10 @@ public class StockData {
 
     public void setVolume(BigInteger volume) {
         this.volume = volume;
+    }
+
+    public String getFormattedVolume() {
+        return NumberFormat.getNumberInstance(Locale.US).format(volume);
     }
 
     @Override

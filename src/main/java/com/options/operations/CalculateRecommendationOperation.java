@@ -59,17 +59,18 @@ public class CalculateRecommendationOperation {
             closedBelowEma = (last30DaysEmaData[i].getEma().compareTo(openCloseAverage) > 0);
             if (closedBelowEma != previousDayClosedBelowEma) {
                 stringBuilder.append("\nFound crossing on: ").append(last30DaysStockData[i].getStockDataKey().getDay()).append(" \n");
-                if (closedBelowEma)
+                if (closedBelowEma) {
                     appendDropMessage(stringBuilder, previousOpenCloseAverage,
                             openCloseAverage, last30DaysEmaData[i].getEma());
-                else
+                } else {
                     appendRiseMessage(stringBuilder, previousOpenCloseAverage,
                             openCloseAverage, last30DaysEmaData[i].getEma());
+                }
+                stringBuilder.append("\nVolume is: ").append(last30DaysStockData[i].getFormattedVolume()).append("\n");
             }
             previousDayClosedBelowEma = closedBelowEma;
             previousOpenCloseAverage = openCloseAverage;
         }
-
         stringBuilder.append("\nCurrent EMA is: ").append(last30DaysEmaData[0].getEma());
         return stringBuilder.toString();
     }
@@ -84,7 +85,7 @@ public class CalculateRecommendationOperation {
         stringBuilder.append("price rose above the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n Recommendation: buy calls to sell or sell puts below current price.\n");
+                .append("\n Recommendation: buy calls to sell or sell puts below current price.");
     }
 
     private void appendDropMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
@@ -92,7 +93,7 @@ public class CalculateRecommendationOperation {
         stringBuilder.append("price dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n Recommendation: buy puts to sell or sell calls below current price.\n");
+                .append("\n Recommendation: buy puts to sell or sell calls below current price.");
     }
 
     public int getDaysOfData() {
