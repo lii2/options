@@ -15,6 +15,6 @@ public interface EmaDataRepository extends CrudRepository<EmaData, EmaDataKey> {
     @Query(value = "SELECT * FROM ema_data ORDER BY day DESC LIMIT 1", nativeQuery = true)
     EmaData getLatestRecord();
 
-    @Query(value = "SELECT * FROM ema_data  ORDER BY day DESC LIMIT 30", nativeQuery = true)
-    List<EmaData> getLastThirtyDays();
+    @Query(value = "SELECT * FROM ema_data  ORDER BY day DESC LIMIT ?1", nativeQuery = true)
+    List<EmaData> getLastXDays(int x);
 }

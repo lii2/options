@@ -37,13 +37,14 @@ public class OptionsController implements ApplicationContextAware {
         // Determine the goals
 
         // Determine the time line
-
+        calculateRecommendationOperation.setDaysOfData(30);
         // Determine the risk management strategy
         return calculateRecommendationOperation.execute();
     }
 
     @GetMapping("/analysis")
     public String analysis() {
+        calculateRecommendationOperation.setDaysOfData(100);
         return calculateRecommendationOperation.execute();
     }
 

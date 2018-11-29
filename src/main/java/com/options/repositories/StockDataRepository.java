@@ -14,6 +14,6 @@ public interface StockDataRepository extends CrudRepository<StockData, StockData
     @Query(value = "SELECT * FROM stock_data ORDER BY day DESC LIMIT 1", nativeQuery = true)
     StockData getLatestRecord();
 
-    @Query(value = "SELECT * FROM stock_data ORDER BY day DESC LIMIT 30", nativeQuery = true)
-    List<StockData> getLastThirtyDays();
+    @Query(value = "SELECT * FROM stock_data ORDER BY day DESC LIMIT ?1", nativeQuery = true)
+    List<StockData> getLastXDays(int x);
 }

@@ -1,6 +1,5 @@
 package com.options.operations;
 
-import com.options.domain.alphavantage.AlphaVantageClient;
 import com.options.entities.EmaData;
 import com.options.entities.StockData;
 import com.options.repositories.EmaDataRepository;
@@ -10,11 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
-import java.util.List;
 
 @Component
 public class CalculateRecommendationOperation {
@@ -25,7 +19,7 @@ public class CalculateRecommendationOperation {
     @Autowired
     private EmaDataRepository emaDataRepository;
 
-    private static final int DAYS_OF_DATA = 30;
+    private int daysOfData;
 
     private static final BigDecimal TWO = new BigDecimal(2);
 
@@ -34,6 +28,7 @@ public class CalculateRecommendationOperation {
     private StockData[] last30DaysStockData;
 
     public CalculateRecommendationOperation() {
+        this.daysOfData = 30;
     }
 
     public String execute() {
@@ -42,12 +37,12 @@ public class CalculateRecommendationOperation {
 
     private String discoverCrossovers() {
         setDataFromDatabase();
-        BigDecimal previousOpenCloseAverage = last30DaysStockData[DAYS_OF_DATA - 1].getClose()
-                .add(last30DaysStockData[DAYS_OF_DATA - 1].getOpen()).divide(TWO, RoundingMode.FLOOR);
+        BigDecimal previousOpenCloseAverage = last30DaysStockData[daysOfData - 1].getClose()
+                .add(last30DaysStockData[daysOfData - 1].getOpen()).divide(TWO, RoundingMode.FLOOR);
         BigDecimal openCloseAverage;
         // If EMA is above open close average will be 1.
         boolean previousDayClosedBelowEma =
-                (last30DaysEmaData[DAYS_OF_DATA - 1].getEma().compareTo(previousOpenCloseAverage) > 0);
+                (last30DaysEmaData[daysOfData - 1].getEma().compareTo(previousOpenCloseAverage) > 0);
         boolean closedBelowEma;
 
         // Need to understand trend, difference between long term and short term trend and decide based on trend
@@ -59,8 +54,7 @@ public class CalculateRecommendationOperation {
         calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
         below the support. If the price drops below the EMA, sell a one week call 100 points above a resistance
         */
-
-        for (int i = DAYS_OF_DATA - 2; i >= 0; i--) {
+        for (int i = daysOfData - 2; i >= 0; i--) {
             openCloseAverage = last30DaysStockData[i].getClose().add(last30DaysStockData[i].getOpen()).divide(TWO, RoundingMode.FLOOR);
             closedBelowEma = (last30DaysEmaData[i].getEma().compareTo(openCloseAverage) > 0);
             if (closedBelowEma != previousDayClosedBelowEma) {
@@ -75,12 +69,14 @@ public class CalculateRecommendationOperation {
             previousDayClosedBelowEma = closedBelowEma;
             previousOpenCloseAverage = openCloseAverage;
         }
+
+        stringBuilder.append("\nCurrent EMA is: ").append(last30DaysEmaData[0].getEma());
         return stringBuilder.toString();
     }
 
     private void setDataFromDatabase() {
-        last30DaysEmaData = emaDataRepository.getLastThirtyDays().stream().toArray(EmaData[]::new);
-        last30DaysStockData = stockDataRepository.getLastThirtyDays().stream().toArray(StockData[]::new);
+        last30DaysEmaData = emaDataRepository.getLastXDays(daysOfData).stream().toArray(EmaData[]::new);
+        last30DaysStockData = stockDataRepository.getLastXDays(daysOfData).stream().toArray(StockData[]::new);
     }
 
     private void appendRiseMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
@@ -88,7 +84,7 @@ public class CalculateRecommendationOperation {
         stringBuilder.append("price rose above the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n Recommendation: sell puts below current price or buy calls. \n");
+                .append("\n Recommendation: buy calls to sell or sell puts below current price.\n");
     }
 
     private void appendDropMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
@@ -96,6 +92,14 @@ public class CalculateRecommendationOperation {
         stringBuilder.append("price dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n Recommendation: sell calls below current price or buy puts. \n");
+                .append("\n Recommendation: buy puts to sell or sell calls below current price.\n");
+    }
+
+    public int getDaysOfData() {
+        return daysOfData;
+    }
+
+    public void setDaysOfData(int daysOfData) {
+        this.daysOfData = daysOfData;
     }
 }
