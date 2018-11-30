@@ -57,14 +57,17 @@ public class CalculateRecommendationOperation {
         for (int i = daysOfData - 2; i >= 0; i--) {
             openCloseAverage = last30DaysStockData[i].getClose().add(last30DaysStockData[i].getOpen()).divide(TWO, RoundingMode.FLOOR);
             closedBelowEma = (last30DaysEmaData[i].getEma().compareTo(openCloseAverage) > 0);
+            // filter out every crossing where difference is not greater than 1 dollar.
             if (closedBelowEma != previousDayClosedBelowEma) {
                 stringBuilder.append("\nFound crossing on: ").append(last30DaysStockData[i].getStockDataKey().getDay()).append(" \n");
                 if (closedBelowEma) {
                     appendDropMessage(stringBuilder, previousOpenCloseAverage,
-                            openCloseAverage, last30DaysEmaData[i].getEma());
+                            openCloseAverage, last30DaysEmaData[i + 1].getEma(),
+                            last30DaysEmaData[i].getEma());
                 } else {
                     appendRiseMessage(stringBuilder, previousOpenCloseAverage,
-                            openCloseAverage, last30DaysEmaData[i].getEma());
+                            openCloseAverage, last30DaysEmaData[i + 1].getEma(),
+                            last30DaysEmaData[i].getEma());
                 }
                 stringBuilder.append("\nVolume is: ").append(last30DaysStockData[i].getFormattedVolume()).append("\n");
             }
@@ -81,26 +84,39 @@ public class CalculateRecommendationOperation {
     }
 
     private void appendRiseMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
-                                   BigDecimal todaysStockPrice, BigDecimal todaysEma) {
+                                   BigDecimal todaysStockPrice, BigDecimal yesterdaysEma, BigDecimal todaysEma) {
         stringBuilder.append("price rose above the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
+                .append("\n Crossing Angle is: ").append(getAngle(yesterdaysStockPrice, todaysStockPrice, yesterdaysEma, todaysEma))
                 .append("\n Recommendation: buy calls to sell or sell puts below current price.");
     }
 
     private void appendDropMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
-                                   BigDecimal todaysStockPrice, BigDecimal todaysEma) {
+                                   BigDecimal todaysStockPrice, BigDecimal yesterdaysEma, BigDecimal todaysEma) {
         stringBuilder.append("price dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
+                .append("\n Crossing Angle is: ").append(getAngle(yesterdaysStockPrice, todaysStockPrice, yesterdaysEma, todaysEma))
                 .append("\n Recommendation: buy puts to sell or sell calls below current price.");
-    }
-
-    public int getDaysOfData() {
-        return daysOfData;
     }
 
     public void setDaysOfData(int daysOfData) {
         this.daysOfData = daysOfData;
+    }
+
+    private BigDecimal getSlope(BigDecimal y1, BigDecimal y2) {
+        return y1.subtract(y2);
+    }
+
+    private double getAngle(BigDecimal previousAverage, BigDecimal currentAverage,
+                            BigDecimal previousEma, BigDecimal currentEma) {
+        BigDecimal slope1 = getSlope(previousAverage, currentAverage);
+        BigDecimal slope2 = getSlope(previousEma, currentEma);
+
+        double parameter = slope1.subtract(slope2).divide(BigDecimal.ONE.subtract(slope1.multiply(slope2)), RoundingMode.FLOOR).abs().doubleValue();
+        double radians = Math.toRadians(parameter);
+
+        return Math.toDegrees(Math.atan(Math.sin(radians)));
     }
 }
