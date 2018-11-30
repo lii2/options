@@ -49,6 +49,7 @@ public class CalculateRecommendationOperation {
         // need algorithmn to determine trend
         // if the five crosses the twenty moving average
         // look at time intervals of trends to know likely intervals of upcoming trends.
+        // Use 5 day and 20 day sma as points to buy and sell options
         StringBuilder stringBuilder = new StringBuilder();
         /*
         calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
@@ -88,7 +89,7 @@ public class CalculateRecommendationOperation {
         stringBuilder.append("price rose above the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n Crossing Angle is: ").append(getAngle(yesterdaysStockPrice, todaysStockPrice, yesterdaysEma, todaysEma))
+                .append("\n Crossing Ratio is: ").append(getRatio(yesterdaysStockPrice, todaysStockPrice, yesterdaysEma, todaysEma))
                 .append("\n Recommendation: buy calls to sell or sell puts below current price.");
     }
 
@@ -97,7 +98,7 @@ public class CalculateRecommendationOperation {
         stringBuilder.append("price dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
                 .append("\n       ema is: ").append(todaysEma)
                 .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n Crossing Angle is: ").append(getAngle(yesterdaysStockPrice, todaysStockPrice, yesterdaysEma, todaysEma))
+                .append("\n Crossing Ratio is: ").append(getRatio(yesterdaysStockPrice, todaysStockPrice, yesterdaysEma, todaysEma))
                 .append("\n Recommendation: buy puts to sell or sell calls below current price.");
     }
 
@@ -109,14 +110,19 @@ public class CalculateRecommendationOperation {
         return y1.subtract(y2);
     }
 
-    private double getAngle(BigDecimal previousAverage, BigDecimal currentAverage,
+    private double getRatio(BigDecimal previousAverage, BigDecimal currentAverage,
                             BigDecimal previousEma, BigDecimal currentEma) {
         BigDecimal slope1 = getSlope(previousAverage, currentAverage);
         BigDecimal slope2 = getSlope(previousEma, currentEma);
+        return slope1.abs().divide(slope2.abs(), RoundingMode.FLOOR).doubleValue();
+    }
 
-        double parameter = slope1.subtract(slope2).divide(BigDecimal.ONE.subtract(slope1.multiply(slope2)), RoundingMode.FLOOR).abs().doubleValue();
-        double radians = Math.toRadians(parameter);
-
-        return Math.toDegrees(Math.atan(Math.sin(radians)));
+    public static void main(String[] args) {
+        CalculateRecommendationOperation calculateRecommendationOperation = new CalculateRecommendationOperation();
+        BigDecimal previousAverage = new BigDecimal(2);
+        BigDecimal currentAverage = new BigDecimal(1);
+        BigDecimal previousEma = new BigDecimal(0);
+        BigDecimal currentEma = new BigDecimal(1);
+        System.out.println(calculateRecommendationOperation.getRatio(previousAverage, currentAverage, previousEma, currentEma));
     }
 }
