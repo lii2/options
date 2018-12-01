@@ -38,7 +38,7 @@ public class CalculateRecommendationOperation {
 
     private String discoverCrossovers() {
         BigDecimal previousEmaVar = new BigDecimal(0);
-        BigDecimal currentEmaVar;
+        BigDecimal currentEmaVar = null;
         BigDecimal previousOpenCloseAverage = last30DaysStockData[daysOfData - 1].getClose()
                 .add(last30DaysStockData[daysOfData - 1].getOpen()).divide(TWO, RoundingMode.DOWN);
         BigDecimal openCloseAverage;
@@ -73,14 +73,15 @@ public class CalculateRecommendationOperation {
                             openCloseAverage, last30DaysEmaData[i + 1].getEma(),
                             last30DaysEmaData[i].getEma());
                 }
-                stringBuilder.append("Current variance is: ").append(currentEmaVar);
+                stringBuilder.append("Current variance is: ").append(currentEmaVar).append("\n");
                 previousEmaVar = currentEmaVar;
-                previousEmaVar = previousEmaVar.setScale(2,  RoundingMode.DOWN);
+                previousEmaVar = previousEmaVar.setScale(2, RoundingMode.DOWN);
             }
             previousDayClosedBelowEma = closedBelowEma;
             previousOpenCloseAverage = openCloseAverage;
         }
         stringBuilder.append("\nCurrent EMA is: ").append(last30DaysEmaData[0].getEma());
+        stringBuilder.append("\nCurrent Variance is: ").append(currentEmaVar);
         return stringBuilder.toString();
     }
 
