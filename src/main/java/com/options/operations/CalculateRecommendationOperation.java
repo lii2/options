@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 
 @Component
@@ -42,6 +43,9 @@ public class CalculateRecommendationOperation {
         BigDecimal previousOpenCloseAverage = last30DaysStockData[daysOfData - 1].getClose()
                 .add(last30DaysStockData[daysOfData - 1].getOpen()).divide(TWO, RoundingMode.DOWN);
         BigDecimal openCloseAverage;
+
+        BigInteger previousVolume = last30DaysStockData[daysOfData - 1].getVolume();
+        BigInteger currentVolume;
         // If EMA is above open close average will be 1.
         boolean previousDayClosedBelowEma =
                 (last30DaysEmaData[daysOfData - 1].getEma().compareTo(previousOpenCloseAverage) > 0);
@@ -73,9 +77,16 @@ public class CalculateRecommendationOperation {
                             openCloseAverage, last30DaysEmaData[i + 1].getEma(),
                             last30DaysEmaData[i].getEma());
                 }
-                stringBuilder.append("Current variance is: ").append(currentEmaVar).append("\n");
+                stringBuilder.append("Current variance is: ").append(currentEmaVar);
                 previousEmaVar = currentEmaVar;
                 previousEmaVar = previousEmaVar.setScale(2, RoundingMode.DOWN);
+            }
+
+            currentVolume = last30DaysStockData[i].getVolume();
+            if(currentVolume.compareTo(previousVolume) >0){
+                stringBuilder.append("\nVolume is increasing").append("\n");
+            }else{
+                stringBuilder.append("\nVolume is           decreasing").append("\n");
             }
             previousDayClosedBelowEma = closedBelowEma;
             previousOpenCloseAverage = openCloseAverage;
@@ -100,10 +111,10 @@ public class CalculateRecommendationOperation {
 
     private void appendDropMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
                                    BigDecimal todaysStockPrice, BigDecimal yesterdaysEma, BigDecimal todaysEma) {
-        stringBuilder.append("price dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
-                .append("\n       ema is: ").append(todaysEma)
-                .append("\n price is now: ").append(todaysStockPrice)
-                .append("\n Recommendation: buy puts to sell or sell calls below current price.");
+        stringBuilder.append("           price dropped below the ema,\n    price was: ").append(yesterdaysStockPrice)
+                .append("\n                  ema is: ").append(todaysEma)
+                .append("\n            price is now: ").append(todaysStockPrice)
+                .append("\n            Recommendation: buy puts to sell or sell calls below current price.");
     }
 
     public void setDaysOfData(int daysOfData) {
