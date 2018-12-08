@@ -43,8 +43,6 @@ public class CalculateRecommendationOperation {
         BigDecimal previousEmaVar = new BigDecimal(0);
         BigDecimal currentEmaVar = null;
 
-        BigInteger previousVolume = dailyDataList.get(lastDayIndex).getVolume();
-        BigInteger currentVolume;
         // If EMA is above average, the comparison will return 1.
 
         // Need to understand trend, difference between long term and short term trend and decide based on trend
@@ -75,11 +73,13 @@ public class CalculateRecommendationOperation {
                 previousEmaVar = previousEmaVar.setScale(2, RoundingMode.DOWN);
             }
 
-            currentVolume = dailyDataList.get(i).getVolume();
-            if (currentVolume.compareTo(previousVolume) > 0) {
-                stringBuilder.append("\nVolume is increasing").append("\n");
+            // Use volume and variance to determine strategy (Iron Condor, Strangle, Butterfly, etc)
+            if (dailyDataList.get(i).getVolume().compareTo(dailyDataList.get(i + 1).getVolume()) > 0) {
+                stringBuilder.append("\nVolume is increasing, the trend is strengthening").append("\n");
             } else {
-                stringBuilder.append("\nVolume is           decreasing").append("\n");
+                if (currentEmaVar.abs().compareTo(BigDecimal.ONE) < 0) {
+                    stringBuilder.append("\nSomething is happening ").append(dailyDataList.get(i).getDay()).append("\n");
+                }
             }
         }
         stringBuilder.append("\nCurrent EMA is: ").append(dailyDataList.get(daysOfData - 1).getEma());
