@@ -28,13 +28,19 @@ public class DailyData {
 
     private BigDecimal ema;
 
+    private BigDecimal openCloseMean;
+
+    private DailyData previousDaysData;
+
+    private DailyData nextDaysData;
+
     public DailyData() {
     }
 
     public DailyData(StockData stockData, EmaData emaData) {
         if (!emaData.getEmaDataKey().getDay().equals(stockData.getStockDataKey().getDay())
                 || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(stockData.getStockDataKey().getTicker())) {
-            throw new UnsyncedDataException("Trying to created DailyData object with unsynced data");
+            throw new UnsyncedDataException("Trying to created a DailyData object with unsynced data");
         }
         this.day = emaData.getEmaDataKey().getDay();
         this.ticker = emaData.getEmaDataKey().getTicker();
@@ -123,7 +129,10 @@ public class DailyData {
     }
 
     public BigDecimal openCloseMean() {
-        return open.add(close).divide(BigDecimal.valueOf(2.0), RoundingMode.DOWN);
+        if (openCloseMean == null) {
+            openCloseMean = open.add(close).divide(BigDecimal.valueOf(2.0), RoundingMode.DOWN);
+        }
+        return openCloseMean;
     }
 
     public boolean averagedBelowEma() {
@@ -136,7 +145,45 @@ public class DailyData {
             DailyData dailyData = new DailyData(stockData[i], emaData[i]);
             dailyDataList.add(dailyData);
         }
+
+        //  index Zero is the most recent data. By going from 0 to infinite we are going backwards.
+        for (int i = 0; i < stockData.length - 1; i++) {
+            dailyDataList.get(i).setPreviousDaysData(dailyDataList.get(i + 1));
+        }
+
+        for (int i = 1; i < stockData.length; i++) {
+            dailyDataList.get(i).setNextDaysData(dailyDataList.get(i - 1));
+        }
+
         return dailyDataList;
+    }
+
+    public DailyData getPreviousDaysData() {
+        if (previousDaysData == null) {
+            throw new UnsyncedDataException("Previous days data is null");
+        }
+        return previousDaysData;
+    }
+
+    public void setPreviousDaysData(DailyData previousDaysData) {
+        if (previousDaysData.getDay().after(day)) {
+            throw new UnsyncedDataException("Incorrectly setting previousDaysData in DailyData.java");
+        }
+        this.previousDaysData = previousDaysData;
+    }
+
+    public DailyData getNextDaysData() {
+        if (nextDaysData == null) {
+            throw new UnsyncedDataException("Next days data is null");
+        }
+        return nextDaysData;
+    }
+
+    public void setNextDaysData(DailyData nextDaysData) {
+        if (day.after(nextDaysData.getDay())) {
+            throw new UnsyncedDataException("Incorrectly setting nextDaysData in DailyData.java");
+        }
+        this.nextDaysData = nextDaysData;
     }
 
     @Override
@@ -152,4 +199,5 @@ public class DailyData {
                 ", ema=" + ema +
                 '}';
     }
+
 }
