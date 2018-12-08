@@ -5,6 +5,7 @@ import com.options.entities.StockData;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -119,6 +120,14 @@ public class DailyData {
 
     public void setEma(BigDecimal ema) {
         this.ema = ema;
+    }
+
+    public BigDecimal openCloseMean() {
+        return open.add(close).divide(BigDecimal.valueOf(2.0), RoundingMode.DOWN);
+    }
+
+    public boolean averagedBelowEma() {
+        return (ema.compareTo(openCloseMean()) > 0);
     }
 
     public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData) {

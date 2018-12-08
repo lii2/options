@@ -1,5 +1,6 @@
 package com.options.operations;
 
+import com.options.domain.data.DailyData;
 import com.options.entities.EmaData;
 import com.options.entities.StockData;
 import com.options.repositories.EmaDataRepository;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.util.List;
 
 @Component
 public class CalculateRecommendationOperation {
@@ -24,9 +26,7 @@ public class CalculateRecommendationOperation {
 
     private static final BigDecimal TWO = new BigDecimal(2);
 
-    private EmaData[] last30DaysEmaData;
-
-    private StockData[] last30DaysStockData;
+    private List<DailyData> dailyDataList;
 
     public CalculateRecommendationOperation() {
         this.daysOfData = 30;
@@ -38,67 +38,60 @@ public class CalculateRecommendationOperation {
     }
 
     private String discoverCrossovers() {
+        int lastDayIndex = dailyDataList.size() - 1;
+        StringBuilder stringBuilder = new StringBuilder();
         BigDecimal previousEmaVar = new BigDecimal(0);
         BigDecimal currentEmaVar = null;
-        BigDecimal previousOpenCloseAverage = last30DaysStockData[daysOfData - 1].getClose()
-                .add(last30DaysStockData[daysOfData - 1].getOpen()).divide(TWO, RoundingMode.DOWN);
-        BigDecimal openCloseAverage;
 
-        BigInteger previousVolume = last30DaysStockData[daysOfData - 1].getVolume();
+        BigInteger previousVolume = dailyDataList.get(lastDayIndex).getVolume();
         BigInteger currentVolume;
-        // If EMA is above open close average will be 1.
-        boolean previousDayClosedBelowEma =
-                (last30DaysEmaData[daysOfData - 1].getEma().compareTo(previousOpenCloseAverage) > 0);
-        boolean closedBelowEma;
+        // If EMA is above average, the comparison will return 1.
 
         // Need to understand trend, difference between long term and short term trend and decide based on trend
         // need algorithmn to determine trend
         // if the five crosses the twenty moving average
         // look at time intervals of trends to know likely intervals of upcoming trends.
         // Use 5 day and 20 day sma as points to buy and sell options
-        StringBuilder stringBuilder = new StringBuilder();
-        /*
+
+         /*
         calculate a 10 day interval of exponential moving average, and if the price rises above the EMA sell a one week put 100 points
         below the support. If the price drops below the EMA, sell a one week call 100 points above a resistance
         */
-        for (int i = daysOfData - 2; i >= 0; i--) {
-            openCloseAverage = last30DaysStockData[i].getClose().add(last30DaysStockData[i].getOpen()).divide(TWO, RoundingMode.DOWN);
-            closedBelowEma = (last30DaysEmaData[i].getEma().compareTo(openCloseAverage) > 0);
-            currentEmaVar = calculateEmaVar(previousEmaVar, openCloseAverage,
-                    last30DaysEmaData[i + 1].getEma(), last30DaysEmaData[i].getEma());
-            if (closedBelowEma != previousDayClosedBelowEma) {
-                stringBuilder.append("\nFound crossing on: ").append(last30DaysStockData[i].getStockDataKey().getDay()).append(" \n");
-                if (closedBelowEma) {
-                    appendDropMessage(stringBuilder, previousOpenCloseAverage,
-                            openCloseAverage, last30DaysEmaData[i + 1].getEma(),
-                            last30DaysEmaData[i].getEma());
+        for (int i = lastDayIndex - 1; i >= 0; i--) {
+            currentEmaVar = calculateEmaVar(dailyDataList.get(i + 1), dailyDataList.get(i), previousEmaVar);
+            if (dailyDataList.get(i).averagedBelowEma() != dailyDataList.get(i + 1).averagedBelowEma()) {
+                stringBuilder.append("\nFound crossing on: ").append(dailyDataList.get(i).getDay()).append(" \n");
+                if (dailyDataList.get(i).averagedBelowEma()) {
+                    appendDropMessage(stringBuilder, dailyDataList.get(i + 1).openCloseMean(),
+                            dailyDataList.get(i).openCloseMean(), dailyDataList.get(i + 1).getEma(),
+                            dailyDataList.get(i).getEma());
                 } else {
-                    appendRiseMessage(stringBuilder, previousOpenCloseAverage,
-                            openCloseAverage, last30DaysEmaData[i + 1].getEma(),
-                            last30DaysEmaData[i].getEma());
+                    appendRiseMessage(stringBuilder, dailyDataList.get(i + 1).openCloseMean(),
+                            dailyDataList.get(i).openCloseMean(), dailyDataList.get(i + 1).getEma(),
+                            dailyDataList.get(i).getEma());
                 }
                 stringBuilder.append("Current variance is: ").append(currentEmaVar);
                 previousEmaVar = currentEmaVar;
                 previousEmaVar = previousEmaVar.setScale(2, RoundingMode.DOWN);
             }
 
-            currentVolume = last30DaysStockData[i].getVolume();
-            if(currentVolume.compareTo(previousVolume) >0){
+            currentVolume = dailyDataList.get(i).getVolume();
+            if (currentVolume.compareTo(previousVolume) > 0) {
                 stringBuilder.append("\nVolume is increasing").append("\n");
-            }else{
+            } else {
                 stringBuilder.append("\nVolume is           decreasing").append("\n");
             }
-            previousDayClosedBelowEma = closedBelowEma;
-            previousOpenCloseAverage = openCloseAverage;
         }
-        stringBuilder.append("\nCurrent EMA is: ").append(last30DaysEmaData[0].getEma());
+        stringBuilder.append("\nCurrent EMA is: ").append(dailyDataList.get(daysOfData - 1).getEma());
         stringBuilder.append("\nCurrent Variance is: ").append(currentEmaVar);
+
         return stringBuilder.toString();
     }
 
     private void setDataFromDatabase() {
-        last30DaysEmaData = emaDataRepository.getLastXDays(daysOfData).stream().toArray(EmaData[]::new);
-        last30DaysStockData = stockDataRepository.getLastXDays(daysOfData).stream().toArray(StockData[]::new);
+        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(daysOfData).stream().toArray(EmaData[]::new);
+        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(daysOfData).stream().toArray(StockData[]::new);
+        dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
     }
 
     private void appendRiseMessage(StringBuilder stringBuilder, BigDecimal yesterdaysStockPrice,
@@ -121,19 +114,10 @@ public class CalculateRecommendationOperation {
         this.daysOfData = daysOfData;
     }
 
-    private BigDecimal calculateEmaVar(BigDecimal previousEmaVar, BigDecimal currentPrice,
-                                       BigDecimal previousEma, BigDecimal currentEma) {
-        BigDecimal delta = currentPrice.subtract(previousEma);
-        BigDecimal alpha = currentEma.subtract(previousEma).divide(delta, RoundingMode.DOWN);
+    private BigDecimal calculateEmaVar(DailyData previousDay,
+                                       DailyData currentDay, BigDecimal previousEmaVar) {
+        BigDecimal delta = currentDay.openCloseMean().subtract(previousDay.getEma());
+        BigDecimal alpha = currentDay.getEma().subtract(previousDay.getEma()).divide(delta, RoundingMode.DOWN);
         return (BigDecimal.ONE.subtract(alpha).multiply(previousEmaVar.add(alpha.multiply(delta.multiply(delta)))));
-    }
-
-    public static void main(String[] args) {
-        CalculateRecommendationOperation calculateRecommendationOperation = new CalculateRecommendationOperation();
-        BigDecimal previousAverage = new BigDecimal(2);
-        BigDecimal currentAverage = new BigDecimal(1);
-        BigDecimal previousEma = new BigDecimal(0);
-        BigDecimal currentEma = new BigDecimal(1);
-        //  System.out.println(calculateRecommendationOperation.getRatio(previousAverage, currentAverage, previousEma, currentEma));
     }
 }
