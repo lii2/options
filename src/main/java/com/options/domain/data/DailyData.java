@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static com.options.domain.DomainConstants.BIG_DECIMAL_TWO;
+
 public class DailyData {
 
     private Date day;
@@ -130,7 +132,7 @@ public class DailyData {
 
     public BigDecimal openCloseMean() {
         if (openCloseMean == null) {
-            openCloseMean = open.add(close).divide(BigDecimal.valueOf(2.0), RoundingMode.DOWN);
+            openCloseMean = open.add(close).divide(BIG_DECIMAL_TWO, RoundingMode.DOWN);
         }
         return openCloseMean;
     }

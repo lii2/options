@@ -1,10 +1,7 @@
 package com.options.controller;
 
-import com.options.domain.alphavantage.AlphaVantageClient;
-import com.options.entities.StockData;
-import com.options.operations.CalculateRecommendationOperation;
+import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.SmartPersistOperation;
-import com.options.repositories.StockDataRepository;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -13,13 +10,11 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 public class OptionsController implements ApplicationContextAware {
 
     @Autowired
-    private CalculateRecommendationOperation calculateRecommendationOperation;
+    private AnalyzeDataOperation analyzeDataOperation;
 
     @Autowired
     private SmartPersistOperation smartPersistOperation;
@@ -37,15 +32,15 @@ public class OptionsController implements ApplicationContextAware {
         // Determine the goals
 
         // Determine the time line
-        calculateRecommendationOperation.setDaysOfData(30);
+        analyzeDataOperation.setDaysOfData(30);
         // Determine the risk management strategy
-        return calculateRecommendationOperation.execute();
+        return analyzeDataOperation.execute();
     }
 
     @GetMapping("/analysis")
     public String analysis() {
-        calculateRecommendationOperation.setDaysOfData(100);
-        return calculateRecommendationOperation.execute();
+        analyzeDataOperation.setDaysOfData(100);
+        return analyzeDataOperation.execute();
     }
 
     @GetMapping("/shutdownContext")
