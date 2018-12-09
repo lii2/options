@@ -49,6 +49,13 @@ public class OptionsController implements ApplicationContextAware {
         return Arrays.toString(analyzeDataOperation.execute().toArray());
     }
 
+    @GetMapping("/backtest")
+    public String backtest() {
+        analyzeDataOperation.setDaysOfData(100);
+        backtestOperation.setRecommendationList(analyzeDataOperation.execute());
+        return backtestOperation.execute();
+    }
+
     @GetMapping("/shutdownContext")
     public void shutdownContext() {
         ((ConfigurableApplicationContext) context).close();
