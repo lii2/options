@@ -1,6 +1,7 @@
 package com.options.controller;
 
 import com.options.operations.AnalyzeDataOperation;
+import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+
 @RestController
 public class OptionsController implements ApplicationContextAware {
 
@@ -18,6 +21,9 @@ public class OptionsController implements ApplicationContextAware {
 
     @Autowired
     private SmartPersistOperation smartPersistOperation;
+
+    @Autowired
+    private BacktestOperation backtestOperation;
 
     private ApplicationContext context;
 
@@ -34,13 +40,13 @@ public class OptionsController implements ApplicationContextAware {
         // Determine the time line
         analyzeDataOperation.setDaysOfData(30);
         // Determine the risk management strategy
-        return analyzeDataOperation.execute();
+        return Arrays.toString(analyzeDataOperation.execute().toArray());
     }
 
     @GetMapping("/analysis")
     public String analysis() {
         analyzeDataOperation.setDaysOfData(100);
-        return analyzeDataOperation.execute();
+        return Arrays.toString(analyzeDataOperation.execute().toArray());
     }
 
     @GetMapping("/shutdownContext")

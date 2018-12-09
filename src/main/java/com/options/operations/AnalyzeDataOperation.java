@@ -1,6 +1,8 @@
 package com.options.operations;
 
+import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
+import com.options.domain.trend.Trend;
 import com.options.domain.trend.Volatility;
 import com.options.entities.EmaData;
 import com.options.entities.StockData;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -30,14 +33,14 @@ public class AnalyzeDataOperation {
         this.daysOfData = 30;
     }
 
-    public String execute() {
+    public List<Recommendation> execute() {
         setDataFromDatabase();
         return doAnalysis();
     }
 
-    private String doAnalysis() {
+    private List<Recommendation> doAnalysis() {
+        List<Recommendation> recommendations = new ArrayList<>();
         int lastDayIndex = dailyDataList.size() - 1;
-        StringBuilder stringBuilder = new StringBuilder();
         BigDecimal previousEmaVar = new BigDecimal(0);
         BigDecimal currentEmaVar = null;
 
@@ -60,31 +63,31 @@ public class AnalyzeDataOperation {
             // Needs a little volatility so filtering out all the cases where it isn't volatile.
             if (priceCrossedOverEma(dailyDataList.get(i))
                     && !Volatility.determineVolatility(currentEmaVar).equals(Volatility.NOT_VOLATILE)) {
-                stringBuilder.append("\nFound crossing on: ").append(dailyDataList.get(i).getDay()).append(" \n");
                 if (dailyDataList.get(i).averagedBelowEma()) {
-                    appendDropMessage(stringBuilder, dailyDataList.get(i));
+                    Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
+                            dailyDataList.get(i));
+                    recommendations.add(recommendation);
                 } else {
-                    appendRiseMessage(stringBuilder, dailyDataList.get(i));
+                    Recommendation recommendation = new Recommendation(Trend.BULLISH, generateRiseMessage(dailyDataList.get(i)),
+                            dailyDataList.get(i));
+                    recommendations.add(recommendation);
                 }
-                stringBuilder.append("Current variance is: ").append(currentEmaVar);
                 previousEmaVar = currentEmaVar;
                 previousEmaVar = previousEmaVar.setScale(2, RoundingMode.DOWN);
             }
 
             // Use volume and variance to determine strategy (Iron Condor, Strangle, Butterfly, etc)
             // Determine volatility and if volatility is extreme don't do iron condor or butterfly do strangles
-            if (dailyDataList.get(i).getVolume().compareTo(dailyDataList.get(i + 1).getVolume()) > 0) {
-                //  stringBuilder.append("\nVolume is increasing, the trend is strengthening").append("\n");
-            } else {
-                if (currentEmaVar.abs().compareTo(BigDecimal.ONE) < 0) {
-                    //     stringBuilder.append("\nSomething is happening ").append(dailyDataList.get(i).getDay()).append("\n");
-                }
-            }
+//            if (dailyDataList.get(i).getVolume().compareTo(dailyDataList.get(i + 1).getVolume()) > 0) {
+//                  stringBuilder.append("\nVolume is increasing, the trend is strengthening").append("\n");
+//            } else {
+//                if (currentEmaVar.abs().compareTo(BigDecimal.ONE) < 0) {
+//                         stringBuilder.append("\nSomething is happening ").append(dailyDataList.get(i).getDay()).append("\n");
+//                }
+//            }
         }
-        stringBuilder.append("\nCurrent EMA is: ").append(dailyDataList.get(daysOfData - 1).getEma());
-        stringBuilder.append("\nCurrent Variance is: ").append(currentEmaVar);
 
-        return stringBuilder.toString();
+        return recommendations;
     }
 
     private void setDataFromDatabase() {
@@ -93,18 +96,22 @@ public class AnalyzeDataOperation {
         dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
     }
 
-    private void appendRiseMessage(StringBuilder stringBuilder, DailyData dailyData) {
-        stringBuilder.append("price rose above the ema,\n    price was: ").append(dailyData.getPreviousDaysData().openCloseMean())
-                .append("\n       ema is: ").append(dailyData.getEma())
-                .append("\n price is now: ").append(dailyData.openCloseMean())
-                .append("\n Recommendation: buy calls to sell.\n");
+    private String generateRiseMessage(DailyData dailyData) {
+        StringBuilder string = new StringBuilder();
+        string.append("\nprice rose above the ema, price was: ").append(dailyData.getPreviousDaysData().openCloseMean())
+                .append("\nema is: ").append(dailyData.getEma())
+                .append("\nprice is now: ").append(dailyData.openCloseMean())
+                .append("\nMessage: buy calls to sell.");
+        return string.toString();
     }
 
-    private void appendDropMessage(StringBuilder stringBuilder, DailyData dailyData) {
-        stringBuilder.append("           price dropped below the ema,\n    price was: ").append(dailyData.getPreviousDaysData().openCloseMean())
-                .append("\n                  ema is: ").append(dailyData.getEma())
-                .append("\n            price is now: ").append(dailyData.openCloseMean())
-                .append("\n            Recommendation: buy puts to sell.\n");
+    private String generateDropMessage(DailyData dailyData) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\nprice dropped below the ema, price was: ").append(dailyData.getPreviousDaysData().openCloseMean())
+                .append("\nema is: ").append(dailyData.getEma())
+                .append("\nprice is now: ").append(dailyData.openCloseMean())
+                .append("\nMessage: buy puts to sell.");
+        return stringBuilder.toString();
     }
 
     public void setDaysOfData(int daysOfData) {
