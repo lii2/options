@@ -1,0 +1,43 @@
+-- Table: public.ema_data
+
+-- DROP TABLE public.ema_data;
+
+CREATE TABLE public.ema_data
+(
+    day date NOT NULL,
+    ticker character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    ema numeric,
+    CONSTRAINT "EmaData_pkey" PRIMARY KEY (ticker, day)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.ema_data
+    OWNER to postgres;
+
+------------------------
+
+-- Table: public.stock_data
+
+-- DROP TABLE public.stock_data;
+
+CREATE TABLE public.stock_data
+(
+    day date NOT NULL,
+    ticker character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    open numeric,
+    close numeric,
+    high numeric,
+    low numeric,
+    volume numeric,
+    CONSTRAINT stock_data_pkey PRIMARY KEY (day, ticker)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.stock_data
+    OWNER to postgres;
