@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class BacktestOperation {
@@ -34,16 +33,36 @@ public class BacktestOperation {
     }
 
     public String execute() {
-        String result = "";
-        List<Date> dates = dailyDataList.stream().map(e -> e.getDay()).collect(Collectors.toList());
-        for (DailyData dailyData : dailyDataList) {
-            if (dates.contains(dailyData.getDay())){
-                // TODO fix this
-            }
-
+        setDataFromDatabase();
+        StringBuilder result = new StringBuilder();
+        int lastDayIndex = dailyDataList.size() - 1;
+        List<Date> datesOfRecommendations = new ArrayList<>();
+        for (Recommendation recommendation : recommendationList) {
+            datesOfRecommendations.add(recommendation.getDataOfRecommendation().getDay());
         }
 
-        return result;
+        for (int i = lastDayIndex; i >= 3; i--) {
+            if (datesOfRecommendations.contains(dailyDataList.get(i).getDay())) {
+                switch (getRecommendationByDate(dailyDataList.get(i).getDay()).getTrend()) {
+                    case BEARISH:
+                        if (dailyDataList.get(i - 2).openCloseMean().compareTo(dailyDataList.get(i).openCloseMean()) < 0) {
+                            result.append(dailyDataList.get(i).getDay()).append(": success\n");
+                        } else {
+                            result.append(dailyDataList.get(i).getDay()).append(": failure\n");
+                        }
+                        break;
+                    case BULLISH:
+                        if (dailyDataList.get(i - 2).openCloseMean().compareTo(dailyDataList.get(i).openCloseMean()) > 0) {
+                            result.append(dailyDataList.get(i).getDay()).append(": success\n");
+                        } else {
+                            result.append(dailyDataList.get(i).getDay()).append(": failure\n");
+                        }
+                        break;
+                }
+            }
+        }
+
+        return result.toString();
     }
 
     public void setRecommendationList(List<Recommendation> recommendationList) {
@@ -56,4 +75,11 @@ public class BacktestOperation {
         dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
     }
 
+    private Recommendation getRecommendationByDate(Date date) {
+        for (Recommendation recommendation : recommendationList) {
+            if (recommendation.getDataOfRecommendation().getDay().equals(date))
+                return recommendation;
+        }
+        return null;
+    }
 }

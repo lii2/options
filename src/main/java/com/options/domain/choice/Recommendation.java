@@ -9,12 +9,12 @@ public class Recommendation {
 
     private String message;
 
-    private DailyData dayOfRecommendation;
+    private DailyData dataOfRecommendation;
 
     public Recommendation(Trend trend, String message, DailyData dailyData) {
         this.trend = trend;
         this.message = message;
-        this.dayOfRecommendation = dailyData;
+        this.dataOfRecommendation = dailyData;
     }
 
     public Trend getTrend() {
@@ -33,12 +33,12 @@ public class Recommendation {
         this.message = message;
     }
 
-    public DailyData getDayOfRecommendation() {
-        return dayOfRecommendation;
+    public DailyData getDataOfRecommendation() {
+        return dataOfRecommendation;
     }
 
-    public void setDayOfRecommendation(DailyData dayOfRecommendation) {
-        this.dayOfRecommendation = dayOfRecommendation;
+    public void setDataOfRecommendation(DailyData dataOfRecommendation) {
+        this.dataOfRecommendation = dataOfRecommendation;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class Recommendation {
         return "\n \nRecommendation{" +
                 "trend=" + trend +
                 ", message='" + message + '\'' +
-                ", dayOfRecommendation=" + dayOfRecommendation +
+                ", dataOfRecommendation=" + dataOfRecommendation +
                 '}';
     }
 }
