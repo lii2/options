@@ -36,6 +36,7 @@ public class BacktestOperation {
         setDataFromDatabase();
         StringBuilder result = new StringBuilder();
         int lastDayIndex = dailyDataList.size() - 1;
+        int successes = 0;
         List<Date> datesOfRecommendations = new ArrayList<>();
         for (Recommendation recommendation : recommendationList) {
             datesOfRecommendations.add(recommendation.getDataOfRecommendation().getDay());
@@ -46,22 +47,33 @@ public class BacktestOperation {
                 switch (getRecommendationByDate(dailyDataList.get(i).getDay()).getTrend()) {
                     case BEARISH:
                         if (dailyDataList.get(i - 2).openCloseMean().compareTo(dailyDataList.get(i).openCloseMean()) < 0) {
-                            result.append(dailyDataList.get(i).getDay()).append(": success\n");
+                            result.append(dailyDataList.get(i).getDay()).append(": Bullish SUCCESS ")
+                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append("$\n");
+                            successes++;
                         } else {
-                            result.append(dailyDataList.get(i).getDay()).append(": failure\n");
+                            result.append(dailyDataList.get(i).getDay()).append(": Bearish FAILURE ")
+                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append("$\n");
                         }
                         break;
                     case BULLISH:
                         if (dailyDataList.get(i - 2).openCloseMean().compareTo(dailyDataList.get(i).openCloseMean()) > 0) {
-                            result.append(dailyDataList.get(i).getDay()).append(": success\n");
+                            result.append(dailyDataList.get(i).getDay()).append(": Bullish SUCCESS ")
+                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append("$\n");
+                            successes++;
                         } else {
-                            result.append(dailyDataList.get(i).getDay()).append(": failure\n");
+                            result.append(dailyDataList.get(i).getDay()).append(": Bearish FAILURE ")
+                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append("$\n");
                         }
                         break;
                 }
             }
         }
-
+        result.append("Succeeded ").append(successes).append("/").append(recommendationList.size()).append(" times: ")
+                .append(successes * 100f / recommendationList.size()).append("%\n");
         return result.toString();
     }
 
