@@ -3,18 +3,22 @@ package com.options.controller;
 import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;
+import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
 
 @RestController
 public class OptionsController implements ApplicationContextAware {
+
+    private static final String defaultTicker = "SPY";
 
     @Autowired
     private AnalyzeDataOperation analyzeDataOperation;
@@ -27,11 +31,13 @@ public class OptionsController implements ApplicationContextAware {
 
     private ApplicationContext context;
 
-    @GetMapping("/data")
-    public String getData() throws Exception {
+    @GetMapping("/data/{ticker}")
+    public String getData(@PathVariable String ticker) throws Exception {
 
+        if (ticker == null || StringUtils.isBlank(ticker))
+            ticker = defaultTicker;
         // Get Data
-        String result = smartPersistOperation.execute();
+        String result = smartPersistOperation.execute(ticker);
 
         // Determine what to do
 
@@ -43,17 +49,21 @@ public class OptionsController implements ApplicationContextAware {
         return result.isEmpty() ? "No new data added" : result;
     }
 
-    @GetMapping("/analysis")
-    public String analysis() {
+    @GetMapping("/analysis/{ticker}")
+    public String analysis(
+            @PathVariable String ticker) {
+        if (ticker == null || StringUtils.isBlank(ticker))
+            ticker = defaultTicker;
         analyzeDataOperation.setDaysOfData(100);
-        return Arrays.toString(analyzeDataOperation.execute().toArray());
+        return Arrays.toString(analyzeDataOperation.execute(ticker).toArray());
     }
 
-    @GetMapping("/backtest")
-    public String backtest() {
+    @GetMapping("/backtest/{ticker}")
+    public String backtest(
+            @PathVariable String ticker) {
         analyzeDataOperation.setDaysOfData(100);
-        backtestOperation.setRecommendationList(analyzeDataOperation.execute());
-        return backtestOperation.execute();
+        backtestOperation.setRecommendationList(analyzeDataOperation.execute(ticker));
+        return backtestOperation.execute(ticker);
     }
 
     @GetMapping("/shutdownContext")

@@ -33,8 +33,8 @@ public class AnalyzeDataOperation {
         this.daysOfData = 30;
     }
 
-    public List<Recommendation> execute() {
-        setDataFromDatabase();
+    public List<Recommendation> execute(String ticker) {
+        setDataFromDatabase(ticker);
         return doAnalysis();
     }
 
@@ -90,9 +90,9 @@ public class AnalyzeDataOperation {
         return recommendations;
     }
 
-    private void setDataFromDatabase() {
-        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(daysOfData).stream().toArray(EmaData[]::new);
-        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(daysOfData).stream().toArray(StockData[]::new);
+    private void setDataFromDatabase(String ticker) {
+        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
+        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
         dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
     }
 

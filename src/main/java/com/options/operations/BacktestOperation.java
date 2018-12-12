@@ -32,8 +32,8 @@ public class BacktestOperation {
         this.daysOfData = 100;
     }
 
-    public String execute() {
-        setDataFromDatabase();
+    public String execute(String ticker) {
+        setDataFromDatabase(ticker);
         StringBuilder result = new StringBuilder();
         int lastDayIndex = dailyDataList.size() - 1;
         int successes = 0;
@@ -81,9 +81,9 @@ public class BacktestOperation {
         this.recommendationList = recommendationList;
     }
 
-    private void setDataFromDatabase() {
-        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(daysOfData).stream().toArray(EmaData[]::new);
-        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(daysOfData).stream().toArray(StockData[]::new);
+    private void setDataFromDatabase(String ticker) {
+        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
+        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
         dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
     }
 
