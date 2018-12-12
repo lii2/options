@@ -29,25 +29,28 @@ public class SmartPersistOperation {
         alphaVantageClient = new AlphaVantageClient();
     }
 
-    public void execute() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
-        getData();
+    public String execute() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+        return getData();
     }
 
-    private void getData() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
-        smartPersist();
+    private String getData() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+        return smartPersist();
     }
 
-    private void smartPersist() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+    private String smartPersist() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+        StringBuilder result = new StringBuilder();
         StockData lastStockData = stockDataRepository.getLatestRecord();
         List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData("SPY");
         if (lastStockData == null) {
             for (StockData stockData : stockDataList) {
                 stockDataRepository.save(stockData);
+                result.append(stockData.getStockDataKey().getDay()).append(" data saved.\n");
             }
         } else {
             for (StockData stockData : stockDataList) {
                 if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
                     stockDataRepository.save(stockData);
+                    result.append(stockData.getStockDataKey().getDay()).append(" data saved.\n");
                 }
             }
         }
@@ -67,5 +70,7 @@ public class SmartPersistOperation {
                 }
             }
         }
+
+        return result.toString();
     }
 }

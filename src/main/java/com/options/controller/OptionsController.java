@@ -27,20 +27,20 @@ public class OptionsController implements ApplicationContextAware {
 
     private ApplicationContext context;
 
-    @GetMapping("/recommendation")
-    public String getRecommendation() throws Exception {
+    @GetMapping("/data")
+    public String getData() throws Exception {
 
         // Get Data
-        smartPersistOperation.execute();
+        String result = smartPersistOperation.execute();
 
         // Determine what to do
 
         // Determine the goals
 
         // Determine the time line
-        analyzeDataOperation.setDaysOfData(30);
+
         // Determine the risk management strategy
-        return Arrays.toString(analyzeDataOperation.execute().toArray());
+        return result.isEmpty() ? "No new data added" : result;
     }
 
     @GetMapping("/analysis")
