@@ -3,7 +3,7 @@ package com.options.operations;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
 import com.options.domain.trend.Trend;
-import com.options.domain.trend.Volatility;
+import com.options.domain.trend.Swing;
 import com.options.entities.EmaData;
 import com.options.entities.StockData;
 import com.options.repositories.EmaDataRepository;
@@ -47,7 +47,9 @@ public class AnalyzeDataOperation {
         // If EMA is above average, the comparison will return 1.
 
         // Need to understand trend, difference between long term and short term trend and decide based on trend
-        // need algorithmn to determine trend
+        // Develop Algorithm to determine trend
+        // Calculate bullish and bearish interest based on technical, fundemental, social, and short
+
         // if the five crosses the twenty moving average
         // look at time intervals of trends to know likely intervals of upcoming trends.
         // Use 5 day and 20 day sma as points to buy and sell options
@@ -60,9 +62,9 @@ public class AnalyzeDataOperation {
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         for (int i = lastDayIndex - 1; i >= 0; i--) {
             currentEmaVar = calculateEmaVar(dailyDataList.get(i), previousEmaVar);
-            // Needs a little volatility so filtering out all the cases where it isn't volatile.
+            // Needs a little swing so filtering out all the cases where it isn't swinging.
             if (priceCrossedOverEma(dailyDataList.get(i))
-                    && !Volatility.determineVolatility(currentEmaVar).equals(Volatility.NOT_VOLATILE)) {
+                    && !Swing.determineSwing(currentEmaVar).equals(Swing.NOT_SWINGING)) {
                 if (dailyDataList.get(i).averagedBelowEma()) {
                     Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
                             dailyDataList.get(i));
@@ -77,7 +79,7 @@ public class AnalyzeDataOperation {
             }
 
             // Use volume and variance to determine strategy (Iron Condor, Strangle, Butterfly, etc)
-            // Determine volatility and if volatility is extreme don't do iron condor or butterfly do strangles
+            // Determine swing and if swing is high don't do iron condor or butterfly do strangles
 //            if (dailyDataList.get(i).getVolume().compareTo(dailyDataList.get(i + 1).getVolume()) > 0) {
 //                  stringBuilder.append("\nVolume is increasing, the trend is strengthening").append("\n");
 //            } else {
