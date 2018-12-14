@@ -2,17 +2,8 @@ server:
   port: 8081
 
 spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: Meezee99!
-  jpa:
-    properties:
-      hibernate:
-        jdbc:
-          lob:
-            non_contextual_creation: true
+  profiles:
+    active: Jeffrey
 
 logging:
   level:
@@ -29,3 +20,33 @@ management:
     web:
       exposure:
         include: ['env','beans']
+
+---
+spring:
+    profiles: Jeffrey
+    datasource:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://localhost:5432/postgres
+      username: postgres
+      password: postgres
+    jpa:
+      properties:
+        hibernate:
+          jdbc:
+            lob:
+              non_contextual_creation: true
+
+---
+spring:
+  profiles: Paul
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: Meezee99!
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
