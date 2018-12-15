@@ -130,7 +130,7 @@ public class DailyData {
         this.ema = ema;
     }
 
-    public BigDecimal openCloseMean() {
+    public BigDecimal getOpenCloseMean() {
         if (openCloseMean == null) {
             openCloseMean = open.add(close).divide(BIG_DECIMAL_TWO, RoundingMode.DOWN);
         }
@@ -138,7 +138,7 @@ public class DailyData {
     }
 
     public boolean averagedBelowEma() {
-        return (ema.compareTo(openCloseMean()) > 0);
+        return (ema.compareTo(getOpenCloseMean()) > 0);
     }
 
     public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData) {
