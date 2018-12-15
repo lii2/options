@@ -1,6 +1,7 @@
 package com.options.domain.alphavantage;
 
 import com.options.entities.EmaData;
+import com.options.entities.MacdData;
 import com.options.entities.StockData;
 
 import java.security.KeyManagementException;
@@ -20,12 +21,10 @@ public class AlphaVantageClient {
 
     public List<StockData> getLast100DaysTimeSeriesData(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
         List<StockData> spyStockDataList = new ArrayList<>();
-        AlphaVantageConnector alphaVantageConnector = new AlphaVantageConnector();
-        String[] spyTimeSeriesArray = alphaVantageConnector.getTimeSeriesDaily(ticker).split("\n");
+        String[] spyTimeSeriesArray = connector.getTimeSeriesDaily(ticker).split("\n");
         // First row is header so need to start at 1.
         for (int i = 1; i < spyTimeSeriesArray.length; i++) {
-            StockData StockData = new StockData(ticker, spyTimeSeriesArray[i].split(","));
-            spyStockDataList.add(StockData);
+            spyStockDataList.add(new StockData(ticker, spyTimeSeriesArray[i].split(",")));
         }
         return spyStockDataList;
     }
@@ -37,6 +36,15 @@ public class AlphaVantageClient {
             emaDataList.add(new EmaData(ticker, emaArray[i].split(",")));
         }
         return emaDataList;
+    }
+
+    public List<MacdData> getMacdData(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+        List<MacdData> macdDataList = new ArrayList<>();
+        String[] macdDataArray = connector.getMacd(ticker).split("\n");
+        for (int i = 1; i < macdDataArray.length; i++) {
+            macdDataList.add(new MacdData(ticker, macdDataArray[i].split(",")));
+        }
+        return macdDataList;
     }
 
 }

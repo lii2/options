@@ -60,6 +60,14 @@ public class AlphaVantageConnector implements AlphaVantageConstants {
         return response;
     }
 
+    public String getMacd(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+        String query = String.format(Query.MACD_DAILY.getUrl(), ticker, TRADE_APP_API_KEY) + "&datatype=csv";
+        System.out.println(query);
+        RestTemplate restTemplate = getRestTemplate();
+        String response = restTemplate.getForObject(query, String.class);
+        return response;
+    }
+
     private RestTemplate getRestTemplate() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         TrustStrategy acceptingTrustStrategy = new TrustStrategy() {
             @Override
