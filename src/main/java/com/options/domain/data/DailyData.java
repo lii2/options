@@ -1,6 +1,7 @@
 package com.options.domain.data;
 
 import com.options.entities.EmaData;
+import com.options.entities.MacdData;
 import com.options.entities.StockData;
 
 import java.math.BigDecimal;
@@ -32,6 +33,8 @@ public class DailyData {
 
     private BigDecimal openCloseMean;
 
+    private BigDecimal macd;
+
     private DailyData previousDaysData;
 
     private DailyData nextDaysData;
@@ -39,7 +42,7 @@ public class DailyData {
     public DailyData() {
     }
 
-    public DailyData(StockData stockData, EmaData emaData) {
+    public DailyData(StockData stockData, EmaData emaData, MacdData macdData) {
         if (!emaData.getEmaDataKey().getDay().equals(stockData.getStockDataKey().getDay())
                 || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(stockData.getStockDataKey().getTicker())) {
             throw new UnsyncedDataException("Trying to created a DailyData object with unsynced data");
@@ -52,6 +55,7 @@ public class DailyData {
         this.close = stockData.getClose();
         this.volume = stockData.getVolume();
         this.ema = emaData.getEma();
+        this.macd = macdData.getMacd();
     }
 
     public DailyData(Date day, String ticker, BigDecimal open, BigDecimal high,
@@ -141,10 +145,10 @@ public class DailyData {
         return (ema.compareTo(getOpenCloseMean()) > 0);
     }
 
-    public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData) {
+    public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData, MacdData[] macdData) {
         List<DailyData> dailyDataList = new ArrayList<>();
         for (int i = 0; i < stockData.length; i++) {
-            DailyData dailyData = new DailyData(stockData[i], emaData[i]);
+            DailyData dailyData = new DailyData(stockData[i], emaData[i], macdData[i]);
             dailyDataList.add(dailyData);
         }
 
@@ -188,18 +192,21 @@ public class DailyData {
         this.nextDaysData = nextDaysData;
     }
 
+
+    public BigDecimal getMacd() {
+        return macd;
+    }
+
+    public void setMacd(BigDecimal macd) {
+        this.macd = macd;
+    }
+
     @Override
     public String toString() {
         return "DailyData{" +
                 "day=" + day +
                 ", ticker='" + ticker + '\'' +
-                ", open=" + open +
-                ", high=" + high +
-                ", low=" + low +
-                ", close=" + close +
-                ", volume=" + volume +
-                ", ema=" + ema +
+                ", openCloseMean=" + openCloseMean +
                 '}';
     }
-
 }

@@ -5,8 +5,10 @@ import com.options.domain.data.DailyData;
 import com.options.domain.trend.Trend;
 import com.options.domain.trend.Swing;
 import com.options.entities.EmaData;
+import com.options.entities.MacdData;
 import com.options.entities.StockData;
 import com.options.repositories.EmaDataRepository;
+import com.options.repositories.MacdDataRepository;
 import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +27,9 @@ public class AnalyzeDataOperation {
     @Autowired
     private EmaDataRepository emaDataRepository;
 
+    @Autowired
+    private MacdDataRepository macdDataRepository;
+
     private int daysOfData;
 
     private List<DailyData> dailyDataList;
@@ -42,28 +47,31 @@ public class AnalyzeDataOperation {
         List<Recommendation> recommendations = new ArrayList<>();
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         int lastDayIndex = dailyDataList.size() - 1;
+
         // Main Loop
         for (int i = lastDayIndex - 1; i >= 0; i--) {
-                 if (priceCrossedOverEma(dailyDataList.get(i))) {
-                    if (dailyDataList.get(i).averagedBelowEma()) {
-                        Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
-                                dailyDataList.get(i));
-                        recommendations.add(recommendation);
-                    } else {
-                        Recommendation recommendation = new Recommendation(Trend.BULLISH, generateRiseMessage(dailyDataList.get(i)),
-                                dailyDataList.get(i));
-                        recommendations.add(recommendation);
-                    }
-
+            if (priceCrossedOverEma(dailyDataList.get(i))) {
+                System.out.println(dailyDataList.get(i).getMacd().abs());
+                if (dailyDataList.get(i).averagedBelowEma()) {
+                    Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
+                            dailyDataList.get(i));
+                    recommendations.add(recommendation);
+                } else {
+                    Recommendation recommendation = new Recommendation(Trend.BULLISH, generateRiseMessage(dailyDataList.get(i)),
+                            dailyDataList.get(i));
+                    recommendations.add(recommendation);
                 }
+
+            }
         }
         return recommendations;
     }
 
     private void setDataFromDatabase(String ticker) {
-        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
-        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
-        dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
+        EmaData[] lastXDaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
+        StockData[] lastXDaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
+        MacdData[] lastXDaysMacdData = macdDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(MacdData[]::new);
+        dailyDataList = DailyData.generateDailyData(lastXDaysStockData, lastXDaysEmaData, lastXDaysMacdData);
     }
 
     private String generateRiseMessage(DailyData dailyData) {
