@@ -29,10 +29,6 @@ public class AnalyzeDataOperation {
 
     private List<DailyData> dailyDataList;
 
-    BigDecimal previousEmaVar = new BigDecimal(0);
-
-    BigDecimal currentEmaVar = null;
-
     public AnalyzeDataOperation() {
         this.daysOfData = 30;
     }
@@ -44,12 +40,11 @@ public class AnalyzeDataOperation {
 
     private List<Recommendation> doAnalysis() {
         List<Recommendation> recommendations = new ArrayList<>();
+        // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         int lastDayIndex = dailyDataList.size() - 1;
         // Main Loop
         for (int i = lastDayIndex - 1; i >= 0; i--) {
-            currentEmaVar = calculateEmaVar(dailyDataList.get(i), previousEmaVar);
-            if (!Swing.determineSwing(currentEmaVar).equals(Swing.NOT_SWINGING)) {
-                if (priceCrossedOverEma(dailyDataList.get(i))) {
+                 if (priceCrossedOverEma(dailyDataList.get(i))) {
                     if (dailyDataList.get(i).averagedBelowEma()) {
                         Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
                                 dailyDataList.get(i));
@@ -59,13 +54,9 @@ public class AnalyzeDataOperation {
                                 dailyDataList.get(i));
                         recommendations.add(recommendation);
                     }
-                }
-            } else {
-                // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
-            }
-            previousEmaVar = currentEmaVar.setScale(2, RoundingMode.DOWN);
-        }
 
+                }
+        }
         return recommendations;
     }
 
