@@ -3,7 +3,6 @@ package com.options.operations;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
 import com.options.domain.trend.Trend;
-import com.options.domain.trend.Swing;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
@@ -47,11 +46,15 @@ public class AnalyzeDataOperation {
         List<Recommendation> recommendations = new ArrayList<>();
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         int lastDayIndex = dailyDataList.size() - 1;
+        // TODO: Find a good way to determine this limit, empirically
+        // 0.1 is best value so far w/ 90% accuracy, 0.2 only gives 95% and 0.05 gives 78%
+        BigDecimal macdHistLimit = new BigDecimal(0.1);
 
         // Main Loop
         for (int i = lastDayIndex - 1; i >= 0; i--) {
-            if (priceCrossedOverEma(dailyDataList.get(i))) {
-                System.out.println(dailyDataList.get(i).getMacd().abs());
+            if (priceCrossedOverEma(dailyDataList.get(i))
+                    && dailyDataList.get(i).getMacdHist().abs().compareTo(macdHistLimit) > 0) {
+                System.out.println(dailyDataList.get(i).getMacdHist().abs());
                 if (dailyDataList.get(i).averagedBelowEma()) {
                     Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
                             dailyDataList.get(i));

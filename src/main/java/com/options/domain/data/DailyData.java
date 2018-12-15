@@ -33,7 +33,7 @@ public class DailyData {
 
     private BigDecimal openCloseMean;
 
-    private BigDecimal macd;
+    private BigDecimal macdHist;
 
     private DailyData previousDaysData;
 
@@ -55,7 +55,7 @@ public class DailyData {
         this.close = stockData.getClose();
         this.volume = stockData.getVolume();
         this.ema = emaData.getEma();
-        this.macd = macdData.getMacd();
+        this.macdHist = macdData.getMacdHist();
     }
 
     public DailyData(Date day, String ticker, BigDecimal open, BigDecimal high,
@@ -193,12 +193,12 @@ public class DailyData {
     }
 
 
-    public BigDecimal getMacd() {
-        return macd;
+    public BigDecimal getMacdHist() {
+        return macdHist;
     }
 
-    public void setMacd(BigDecimal macd) {
-        this.macd = macd;
+    public void setMacdHist(BigDecimal macdHist) {
+        this.macdHist = macdHist;
     }
 
     @Override
