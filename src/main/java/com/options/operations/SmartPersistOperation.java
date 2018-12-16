@@ -2,8 +2,10 @@ package com.options.operations;
 
 import com.options.domain.alphavantage.AlphaVantageClient;
 import com.options.entities.EmaData;
+import com.options.entities.MacdData;
 import com.options.entities.StockData;
 import com.options.repositories.EmaDataRepository;
+import com.options.repositories.MacdDataRepository;
 import com.options.repositories.StockDataRepository;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class SmartPersistOperation {
     @Autowired
     private EmaDataRepository emaDataRepository;
 
+    @Autowired
+    private MacdDataRepository macdDataRepository;
+
     private AlphaVantageClient alphaVantageClient;
 
     public SmartPersistOperation() {
@@ -40,7 +45,8 @@ public class SmartPersistOperation {
 
     private String smartPersist(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
         StringBuilder result = new StringBuilder();
-        if (ticker != null && StringUtils.isNotBlank(ticker)) {
+        // TODO: Check if data from today is already in database, if so, skip persistance
+        if (StringUtils.isNotBlank(ticker)) {
             ticker = ticker.toUpperCase();
             StockData lastStockData = stockDataRepository.getLatestRecord(ticker);
             List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData(ticker);
@@ -59,17 +65,31 @@ public class SmartPersistOperation {
             }
 
             EmaData lastEmaData = emaDataRepository.getLatestRecord(ticker);
-            // TODO: Check if data from today is already in database, if so, skip persistance
+            List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData(ticker, "10");
             if (lastEmaData == null) {
-                List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData(ticker, "10");
+
                 for (EmaData emaData : emaDataList) {
                     emaDataRepository.save(emaData);
                 }
             } else {
-                List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData(ticker, "10");
                 for (EmaData emaData : emaDataList) {
                     if (lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
                         emaDataRepository.save(emaData);
+                    }
+                }
+            }
+
+            MacdData lastMacdData = macdDataRepository.getLatestRecord(ticker);
+            List<MacdData> macdDataList = alphaVantageClient.getMacdData(ticker);
+            if (lastMacdData == null) {
+
+                for (MacdData macdData : macdDataList) {
+                    macdDataRepository.save(macdData);
+                }
+            } else {
+                for (MacdData macdData : macdDataList) {
+                    if (lastMacdData.getMacdDataKey().getDay().before(lastMacdData.getMacdDataKey().getDay())) {
+                        macdDataRepository.save(macdData);
                     }
                 }
             }
