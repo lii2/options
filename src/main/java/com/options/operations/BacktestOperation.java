@@ -1,5 +1,8 @@
 package com.options.operations;
 
+import com.options.domain.backtest.BacktestResponse;
+import com.options.domain.backtest.Outcome;
+import com.options.domain.backtest.RecommendationResult;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
 import com.options.entities.EmaData;
@@ -11,7 +14,7 @@ import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.Mac;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +26,9 @@ public class BacktestOperation {
 
     private List<DailyData> dailyDataList;
 
-    private int daysOfData;
+    private int daysToTest;
+
+    private final static int DAYS_HELD = 2;
 
     @Autowired
     private StockDataRepository stockDataRepository;
@@ -35,52 +40,57 @@ public class BacktestOperation {
     private MacdDataRepository macdDataRepository;
 
     public BacktestOperation() {
-        this.daysOfData = 100;
+        this.daysToTest = 100;
     }
 
-    public String execute(String ticker) {
+    public BacktestResponse execute(String ticker) {
         setDataFromDatabase(ticker);
-        StringBuilder result = new StringBuilder();
         int lastDayIndex = dailyDataList.size() - 1;
-        int successes = 0;
         List<Date> datesOfRecommendations = new ArrayList<>();
         for (Recommendation recommendation : recommendationList) {
             datesOfRecommendations.add(recommendation.getDataOfRecommendation().getDay());
         }
+        List<RecommendationResult> results = new ArrayList<>();
 
-        for (int i = lastDayIndex; i >= 3; i--) {
+        for (int i = lastDayIndex; i >= DAYS_HELD + 1; i--) {
             if (datesOfRecommendations.contains(dailyDataList.get(i).getDay())) {
-                switch (getRecommendationByDate(dailyDataList.get(i).getDay()).getTrend()) {
-                    case BEARISH:
-                        if (dailyDataList.get(i - 2).getOpenCloseMean().compareTo(dailyDataList.get(i).getOpenCloseMean()) < 0) {
-                            result.append(dailyDataList.get(i).getDay()).append(": Bullish SUCCESS ")
-                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
-                                    .append("$\n");
-                            successes++;
-                        } else {
-                            result.append(dailyDataList.get(i).getDay()).append(": Bearish FAILURE ")
-                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
-                                    .append("$\n");
-                        }
-                        break;
-                    case BULLISH:
-                        if (dailyDataList.get(i - 2).getOpenCloseMean().compareTo(dailyDataList.get(i).getOpenCloseMean()) > 0) {
-                            result.append(dailyDataList.get(i).getDay()).append(": Bullish SUCCESS ")
-                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
-                                    .append("$\n");
-                            successes++;
-                        } else {
-                            result.append(dailyDataList.get(i).getDay()).append(": Bearish FAILURE ")
-                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
-                                    .append("$\n");
-                        }
-                        break;
-                }
+                Recommendation recommendation = getRecommendationByDate(dailyDataList.get(i).getDay());
+                RecommendationResult recommendationResult = new RecommendationResult(DAYS_HELD, recommendation.getTrend(),
+                        dailyDataList.get(i).getOpenCloseMean().subtract(dailyDataList.get(i - DAYS_HELD).getOpenCloseMean()));
+                results.add(recommendationResult);
             }
         }
-        result.append("Succeeded ").append(successes).append("/").append(recommendationList.size()).append(" times: ")
-                .append(successes * 100f / recommendationList.size()).append("%\n");
-        return result.toString();
+
+        int successes = 0, failures = 0, fizzles = 0;
+        BigDecimal totalGain = new BigDecimal(0);
+        BigDecimal totalLoss = new BigDecimal(0);
+        BigDecimal biggestDrawDown = new BigDecimal(0);
+
+        for (RecommendationResult result : results) {
+            switch (result.getOutcome()) {
+                case SUCCESS:
+                    successes++;
+                    totalGain = totalGain.add(result.getPriceChange().abs());
+                    break;
+                case FAILURE:
+                    failures++;
+                    totalLoss = totalLoss.add(result.getPriceChange().abs());
+                    if (result.getPriceChange().abs().compareTo(biggestDrawDown) > 0) {
+                        biggestDrawDown = result.getPriceChange().abs();
+                    }
+                    break;
+                case INDIFFERENT:
+                    fizzles++;
+                    break;
+            }
+
+        }
+
+        float percentSuccess = successes * 100f / recommendationList.size();
+        float percentNotFailed = (successes + fizzles) * 100f / recommendationList.size();
+
+        return new BacktestResponse(results, totalGain, totalLoss, biggestDrawDown, DAYS_HELD, DAYS_HELD,
+                successes, failures, fizzles, recommendationList.size(), percentSuccess, percentNotFailed);
     }
 
     public void setRecommendationList(List<Recommendation> recommendationList) {
@@ -88,9 +98,9 @@ public class BacktestOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        EmaData[] emaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
-        StockData[] stockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
-        MacdData[] macdData = macdDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(MacdData[]::new);
+        EmaData[] emaData = emaDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(EmaData[]::new);
+        StockData[] stockData = stockDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(StockData[]::new);
+        MacdData[] macdData = macdDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(MacdData[]::new);
         dailyDataList = DailyData.generateDailyData(stockData, emaData, macdData);
     }
 

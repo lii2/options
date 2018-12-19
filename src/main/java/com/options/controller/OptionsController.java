@@ -1,5 +1,6 @@
 package com.options.controller;
 
+import com.options.domain.backtest.BacktestResponse;
 import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;
@@ -50,8 +51,7 @@ public class OptionsController implements ApplicationContextAware {
     }
 
     @GetMapping("/analysis/{ticker}")
-    public String analysis(
-            @PathVariable String ticker) {
+    public String analysis(@PathVariable String ticker) {
         if (ticker == null || StringUtils.isBlank(ticker))
             ticker = defaultTicker;
         analyzeDataOperation.setDaysOfData(100);
@@ -59,8 +59,7 @@ public class OptionsController implements ApplicationContextAware {
     }
 
     @GetMapping("/backtest/{ticker}")
-    public String backtest(
-            @PathVariable String ticker) {
+    public BacktestResponse backtest(@PathVariable String ticker) {
         analyzeDataOperation.setDaysOfData(100);
         backtestOperation.setRecommendationList(analyzeDataOperation.execute(ticker));
         return backtestOperation.execute(ticker);

@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @Entity
-public class StockData extends Data{
+public class StockData extends EntityData{
 
     @EmbeddedId
     private StockDataKey stockDataKey;
