@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 @Entity
-public class MacdData extends Data{
+public class MacdData extends EntityData{
 
     @EmbeddedId
     private MacdDataKey macdDataKey;

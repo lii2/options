@@ -50,8 +50,7 @@ public class OptionsController implements ApplicationContextAware {
     }
 
     @GetMapping("/analysis/{ticker}")
-    public String analysis(
-            @PathVariable String ticker) {
+    public String analysis(@PathVariable String ticker) {
         if (ticker == null || StringUtils.isBlank(ticker))
             ticker = defaultTicker;
         analyzeDataOperation.setDaysOfData(100);
@@ -59,8 +58,7 @@ public class OptionsController implements ApplicationContextAware {
     }
 
     @GetMapping("/backtest/{ticker}")
-    public String backtest(
-            @PathVariable String ticker) {
+    public String backtest(@PathVariable String ticker) {
         analyzeDataOperation.setDaysOfData(100);
         backtestOperation.setRecommendationList(analyzeDataOperation.execute(ticker));
         return backtestOperation.execute(ticker);

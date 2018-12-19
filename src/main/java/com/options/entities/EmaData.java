@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 @Entity
-public class EmaData extends Data{
+public class EmaData extends EntityData{
 
     @EmbeddedId
     private EmaDataKey emaDataKey;
