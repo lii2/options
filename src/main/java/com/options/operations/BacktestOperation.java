@@ -87,9 +87,10 @@ public class BacktestOperation {
         }
 
         float percentSuccess = successes * 100f / recommendationList.size();
+        float percentNotFailed = (successes + fizzles) * 100f / recommendationList.size();
 
         return new BacktestResponse(results, totalGain, totalLoss, biggestDrawDown, DAYS_HELD, DAYS_HELD,
-                successes, failures, fizzles, recommendationList.size(), percentSuccess);
+                successes, failures, fizzles, recommendationList.size(), percentSuccess, percentNotFailed);
     }
 
     public void setRecommendationList(List<Recommendation> recommendationList) {

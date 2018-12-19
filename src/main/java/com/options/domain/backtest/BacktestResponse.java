@@ -29,10 +29,13 @@ public class BacktestResponse {
 
     private float percentSuccess;
 
+    private float percentNotFailed;
+
     public BacktestResponse(List<RecommendationResult> results, BigDecimal totalGain,
                             BigDecimal totalLoss, BigDecimal biggestDrawDown,
                             int averageDaysHeldSuccess, int averageDaysHeldFailure,
-                            int successes, int failures, int fizzles, int total, float percentSuccess) {
+                            int successes, int failures, int fizzles, int total, float percentSuccess,
+                            float percentNotFailed) {
         this.results = results;
         this.totalGain = totalGain;
         this.totalLoss = totalLoss;
@@ -44,6 +47,7 @@ public class BacktestResponse {
         this.fizzles = fizzles;
         this.total = total;
         this.percentSuccess = percentSuccess;
+        this.percentNotFailed = percentNotFailed;
     }
 
     public List<RecommendationResult> getResults() {
@@ -125,13 +129,21 @@ public class BacktestResponse {
     public void setPercentSuccess(float percentSuccess) {
         this.percentSuccess = percentSuccess;
     }
-    
+
     public int getFizzles() {
         return fizzles;
     }
 
     public void setFizzles(int fizzles) {
         this.fizzles = fizzles;
+    }
+
+    public float getPercentNotFailed() {
+        return percentNotFailed;
+    }
+
+    public void setPercentNotFailed(float percentNotFailed) {
+        this.percentNotFailed = percentNotFailed;
     }
 
     @Override
@@ -147,6 +159,7 @@ public class BacktestResponse {
                 ", fizzles=" + fizzles +
                 ", total=" + total +
                 ", percentSuccess=" + percentSuccess +
+                ", percentNotFailed=" + percentNotFailed +
                 "\nresults=" + Arrays.toString(results.toArray()) +
 
                 '}';
