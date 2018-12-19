@@ -54,7 +54,6 @@ public class AnalyzeDataOperation {
         for (int i = lastDayIndex - 1; i >= 0; i--) {
             if (priceCrossedOverEma(dailyDataList.get(i))
                     && dailyDataList.get(i).getMacdHist().abs().compareTo(macdHistLimit) > 0) {
-                System.out.println(dailyDataList.get(i).getMacdHist().abs());
                 if (dailyDataList.get(i).averagedBelowEma()) {
                     Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
                             dailyDataList.get(i));
