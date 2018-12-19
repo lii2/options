@@ -3,10 +3,11 @@ package com.options.operations;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
 import com.options.domain.trend.Trend;
-import com.options.domain.trend.Swing;
 import com.options.entities.EmaData;
+import com.options.entities.MacdData;
 import com.options.entities.StockData;
 import com.options.repositories.EmaDataRepository;
+import com.options.repositories.MacdDataRepository;
 import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,9 @@ public class AnalyzeDataOperation {
     @Autowired
     private EmaDataRepository emaDataRepository;
 
+    @Autowired
+    private MacdDataRepository macdDataRepository;
+
     private int daysOfData;
 
     private List<DailyData> dailyDataList;
@@ -40,31 +44,17 @@ public class AnalyzeDataOperation {
 
     private List<Recommendation> doAnalysis() {
         List<Recommendation> recommendations = new ArrayList<>();
-        int lastDayIndex = dailyDataList.size() - 1;
-        BigDecimal previousEmaVar = new BigDecimal(0);
-        BigDecimal currentEmaVar = null;
-
-        // If EMA is above average, the comparison will return 1.
-
-        // Need to understand trend, difference between long term and short term trend and decide based on trend
-        // Develop Algorithm to determine trend
-        // Calculate bullish and bearish interest based on technical, fundemental, social, and short
-
-        // if the five crosses the twenty moving average
-        // look at time intervals of trends to know likely intervals of upcoming trends.
-        // Use 5 day and 20 day sma as points to buy and sell options
-
-         /*
-        calculate a 10 day interval of exponential moving average,
-        and if the price rises above the EMA sell a one week put 100 points
-        below the support. If the price drops below the EMA, sell a one week call 100 points above a resistance
-        */
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
+        int lastDayIndex = dailyDataList.size() - 1;
+        // TODO: Find a good way to determine this limit, empirically
+        // 0.1 is best value so far w/ 90% accuracy, 0.2 only gives 95% and 0.05 gives 78%
+        BigDecimal macdHistLimit = new BigDecimal(0.1);
+
+        // Main Loop
         for (int i = lastDayIndex - 1; i >= 0; i--) {
-            currentEmaVar = calculateEmaVar(dailyDataList.get(i), previousEmaVar);
-            // Needs a little swing so filtering out all the cases where it isn't swinging.
             if (priceCrossedOverEma(dailyDataList.get(i))
-                    && !Swing.determineSwing(currentEmaVar).equals(Swing.NOT_SWINGING)) {
+                    && dailyDataList.get(i).getMacdHist().abs().compareTo(macdHistLimit) > 0) {
+                System.out.println(dailyDataList.get(i).getMacdHist().abs());
                 if (dailyDataList.get(i).averagedBelowEma()) {
                     Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
                             dailyDataList.get(i));
@@ -74,44 +64,33 @@ public class AnalyzeDataOperation {
                             dailyDataList.get(i));
                     recommendations.add(recommendation);
                 }
-                previousEmaVar = currentEmaVar;
-                previousEmaVar = previousEmaVar.setScale(2, RoundingMode.DOWN);
+
             }
-
-            // Use volume and variance to determine strategy (Iron Condor, Strangle, Butterfly, etc)
-            // Determine swing and if swing is high don't do iron condor or butterfly do strangles
-//            if (dailyDataList.get(i).getVolume().compareTo(dailyDataList.get(i + 1).getVolume()) > 0) {
-//                  stringBuilder.append("\nVolume is increasing, the trend is strengthening").append("\n");
-//            } else {
-//                if (currentEmaVar.abs().compareTo(BigDecimal.ONE) < 0) {
-//                         stringBuilder.append("\nSomething is happening ").append(dailyDataList.get(i).getDay()).append("\n");
-//                }
-//            }
         }
-
         return recommendations;
     }
 
     private void setDataFromDatabase(String ticker) {
-        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
-        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
-        dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
+        EmaData[] lastXDaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
+        StockData[] lastXDaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
+        MacdData[] lastXDaysMacdData = macdDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(MacdData[]::new);
+        dailyDataList = DailyData.generateDailyData(lastXDaysStockData, lastXDaysEmaData, lastXDaysMacdData);
     }
 
     private String generateRiseMessage(DailyData dailyData) {
         StringBuilder string = new StringBuilder();
-        string.append("\nprice rose above the ema, price was: ").append(dailyData.getPreviousDaysData().openCloseMean())
+        string.append("\nprice rose above the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
                 .append("\nema is: ").append(dailyData.getEma())
-                .append("\nprice is now: ").append(dailyData.openCloseMean())
+                .append("\nprice is now: ").append(dailyData.getOpenCloseMean())
                 .append("\nMessage: buy calls to sell.");
         return string.toString();
     }
 
     private String generateDropMessage(DailyData dailyData) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\nprice dropped below the ema, price was: ").append(dailyData.getPreviousDaysData().openCloseMean())
+        stringBuilder.append("\nprice dropped below the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
                 .append("\nema is: ").append(dailyData.getEma())
-                .append("\nprice is now: ").append(dailyData.openCloseMean())
+                .append("\nprice is now: ").append(dailyData.getOpenCloseMean())
                 .append("\nMessage: buy puts to sell.");
         return stringBuilder.toString();
     }
@@ -121,7 +100,7 @@ public class AnalyzeDataOperation {
     }
 
     private BigDecimal calculateEmaVar(DailyData currentDay, BigDecimal previousEmaVar) {
-        BigDecimal delta = currentDay.openCloseMean().subtract(currentDay.getPreviousDaysData().getEma());
+        BigDecimal delta = currentDay.getOpenCloseMean().subtract(currentDay.getPreviousDaysData().getEma());
         BigDecimal alpha = currentDay.getEma().subtract(currentDay.getPreviousDaysData().getEma()).divide(delta, RoundingMode.DOWN);
         return (BigDecimal.ONE.subtract(alpha).multiply(previousEmaVar.add(alpha.multiply(delta.multiply(delta)))));
     }

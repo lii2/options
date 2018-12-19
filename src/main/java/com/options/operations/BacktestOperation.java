@@ -3,12 +3,15 @@ package com.options.operations;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
 import com.options.entities.EmaData;
+import com.options.entities.MacdData;
 import com.options.entities.StockData;
 import com.options.repositories.EmaDataRepository;
+import com.options.repositories.MacdDataRepository;
 import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.Mac;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +31,9 @@ public class BacktestOperation {
     @Autowired
     private EmaDataRepository emaDataRepository;
 
+    @Autowired
+    private MacdDataRepository macdDataRepository;
+
     public BacktestOperation() {
         this.daysOfData = 100;
     }
@@ -46,26 +52,26 @@ public class BacktestOperation {
             if (datesOfRecommendations.contains(dailyDataList.get(i).getDay())) {
                 switch (getRecommendationByDate(dailyDataList.get(i).getDay()).getTrend()) {
                     case BEARISH:
-                        if (dailyDataList.get(i - 2).openCloseMean().compareTo(dailyDataList.get(i).openCloseMean()) < 0) {
+                        if (dailyDataList.get(i - 2).getOpenCloseMean().compareTo(dailyDataList.get(i).getOpenCloseMean()) < 0) {
                             result.append(dailyDataList.get(i).getDay()).append(": Bullish SUCCESS ")
-                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
                                     .append("$\n");
                             successes++;
                         } else {
                             result.append(dailyDataList.get(i).getDay()).append(": Bearish FAILURE ")
-                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
                                     .append("$\n");
                         }
                         break;
                     case BULLISH:
-                        if (dailyDataList.get(i - 2).openCloseMean().compareTo(dailyDataList.get(i).openCloseMean()) > 0) {
+                        if (dailyDataList.get(i - 2).getOpenCloseMean().compareTo(dailyDataList.get(i).getOpenCloseMean()) > 0) {
                             result.append(dailyDataList.get(i).getDay()).append(": Bullish SUCCESS ")
-                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
                                     .append("$\n");
                             successes++;
                         } else {
                             result.append(dailyDataList.get(i).getDay()).append(": Bearish FAILURE ")
-                                    .append(dailyDataList.get(i - 2).openCloseMean().subtract(dailyDataList.get(i).openCloseMean()))
+                                    .append(dailyDataList.get(i - 2).getOpenCloseMean().subtract(dailyDataList.get(i).getOpenCloseMean()))
                                     .append("$\n");
                         }
                         break;
@@ -82,9 +88,10 @@ public class BacktestOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        EmaData[] last30DaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
-        StockData[] last30DaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
-        dailyDataList = DailyData.generateDailyData(last30DaysStockData, last30DaysEmaData);
+        EmaData[] emaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
+        StockData[] stockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
+        MacdData[] macdData = macdDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(MacdData[]::new);
+        dailyDataList = DailyData.generateDailyData(stockData, emaData, macdData);
     }
 
     private Recommendation getRecommendationByDate(Date date) {

@@ -41,3 +41,27 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.stock_data
     OWNER to postgres;
+
+
+------------------
+
+-- Table: public.macd_data
+
+-- DROP TABLE public.macd_data;
+
+CREATE TABLE public.macd_data
+(
+    ticker character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    day date NOT NULL,
+    macd numeric,
+    macd_hist numeric,
+    macd_signal numeric,
+    CONSTRAINT macd_data_pkey PRIMARY KEY (ticker, day)
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public.macd_data
+    OWNER to postgres;
