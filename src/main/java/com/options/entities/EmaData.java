@@ -14,8 +14,6 @@ public class EmaData extends Data{
 
     private BigDecimal ema;
 
-    private transient static SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
-
     public EmaData() {
     }
 
