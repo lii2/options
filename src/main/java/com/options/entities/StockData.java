@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @Entity
-public class StockData {
+public class StockData extends Data{
 
     @EmbeddedId
     private StockDataKey stockDataKey;
@@ -26,8 +26,6 @@ public class StockData {
     private BigDecimal close;
 
     private BigInteger volume;
-
-    private transient static SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
 
     public StockData() {
     }

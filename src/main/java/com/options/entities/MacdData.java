@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 @Entity
-public class MacdData {
+public class MacdData extends Data{
 
     @EmbeddedId
     private MacdDataKey macdDataKey;
@@ -17,8 +17,6 @@ public class MacdData {
     private BigDecimal macdHist;
 
     private BigDecimal macdSignal;
-
-    private transient static SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
 
     public MacdData() {
     }
