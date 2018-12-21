@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static com.options.domain.DomainConstants.BIG_DECIMAL_TWO;
+import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_TWO;
 
 public class DailyData {
 

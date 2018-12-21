@@ -33,10 +33,6 @@ public class AlphaVantageConnector implements AlphaVantageConstants {
         }
     }
 
-    public static void main(String[] args) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
-
-    }
-
     public String getTimeSeriesDaily(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         String query = String.format(Query.TIME_SERIES_DAILY.getUrl(), ticker, TRADE_APP_API_KEY) + "&datatype=csv";
         RestTemplate restTemplate = getRestTemplate();
