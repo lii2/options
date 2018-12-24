@@ -1,7 +1,7 @@
 package com.options.entities;
 
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 abstract class EntityData {
-    transient static SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
+    transient static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 }

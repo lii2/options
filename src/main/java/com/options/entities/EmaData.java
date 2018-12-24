@@ -4,10 +4,10 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 @Entity
-public class EmaData extends EntityData{
+public class EmaData extends EntityData {
 
     @EmbeddedId
     private EmaDataKey emaDataKey;
@@ -18,8 +18,8 @@ public class EmaData extends EntityData{
     }
 
     public EmaData(String ticker, String[] row) throws ParseException {
-        this.emaDataKey = new EmaDataKey(smf.parse(row[0]), ticker);
-        this.ema = new BigDecimal(row[1].replace("\r",""));
+        this.emaDataKey = new EmaDataKey(LocalDate.parse(row[0], DATE_TIME_FORMATTER), ticker);
+        this.ema = new BigDecimal(row[1].replace("\r", ""));
     }
 
     public EmaData(EmaDataKey emaDataKey, BigDecimal ema) {

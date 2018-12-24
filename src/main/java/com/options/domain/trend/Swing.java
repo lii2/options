@@ -2,9 +2,12 @@ package com.options.domain.trend;
 
 import java.math.BigDecimal;
 
-import static com.options.domain.DomainConstants.*;
+import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_POINT_FIVE;
+import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_TWO;
 
 public enum Swing {
+
+
     // Heuristic for determining how fast the stock will move based on variance.
     NOT_SWINGING,
     SWINGING,

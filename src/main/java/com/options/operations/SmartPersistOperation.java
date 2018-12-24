@@ -57,7 +57,7 @@ public class SmartPersistOperation {
                 }
             } else {
                 for (StockData stockData : stockDataList) {
-                    if (lastStockData.getStockDataKey().getDay().before(stockData.getStockDataKey().getDay())) {
+                    if (lastStockData.getStockDataKey().getDay().isBefore(stockData.getStockDataKey().getDay())) {
                         stockDataRepository.save(stockData);
                         result.append(stockData.getStockDataKey().getDay()).append(" data saved.\n");
                     }
@@ -73,7 +73,7 @@ public class SmartPersistOperation {
                 }
             } else {
                 for (EmaData emaData : emaDataList) {
-                    if (lastEmaData.getEmaDataKey().getDay().before(emaData.getEmaDataKey().getDay())) {
+                    if (lastEmaData.getEmaDataKey().getDay().isBefore(emaData.getEmaDataKey().getDay())) {
                         emaDataRepository.save(emaData);
                     }
                 }
@@ -88,7 +88,7 @@ public class SmartPersistOperation {
                 }
             } else {
                 for (MacdData macdData : macdDataList) {
-                    if (lastMacdData.getMacdDataKey().getDay().before(lastMacdData.getMacdDataKey().getDay())) {
+                    if (lastMacdData.getMacdDataKey().getDay().isBefore(lastMacdData.getMacdDataKey().getDay())) {
                         macdDataRepository.save(macdData);
                     }
                 }
