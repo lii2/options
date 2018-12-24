@@ -2,17 +2,15 @@ package com.options.entities;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Locale;
 
 @Entity
-public class StockData extends EntityData{
+public class StockData extends EntityData {
 
     @EmbeddedId
     private StockDataKey stockDataKey;
@@ -30,13 +28,13 @@ public class StockData extends EntityData{
     public StockData() {
     }
 
-    public StockData(String ticker, String[] data) throws ParseException {
-        this.stockDataKey = new StockDataKey(smf.parse(data[0]), ticker);
-        this.open = new BigDecimal(data[1]);
-        this.high = new BigDecimal(data[2]);
-        this.low = new BigDecimal(data[3]);
-        this.close = new BigDecimal(data[4]);
-        this.volume = new BigInteger(data[5].replace("\r", ""));
+    public StockData(String ticker, String[] row) throws ParseException {
+        this.stockDataKey = new StockDataKey(LocalDate.parse(row[0], DATE_TIME_FORMATTER), ticker);
+        this.open = new BigDecimal(row[1]);
+        this.high = new BigDecimal(row[2]);
+        this.low = new BigDecimal(row[3]);
+        this.close = new BigDecimal(row[4]);
+        this.volume = new BigInteger(row[5].replace("\r", ""));
     }
 
     public StockData(StockDataKey stockDataKey, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigInteger volume) {

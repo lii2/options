@@ -1,30 +1,29 @@
 package com.options.entities;
 
 import javax.persistence.Embeddable;
-import javax.persistence.Id;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Embeddable
 public class StockDataKey implements Serializable {
 
-    private Date day;
+    private LocalDate day;
 
     private String ticker;
 
     public StockDataKey() {
     }
 
-    public StockDataKey(Date day, String ticker) {
+    public StockDataKey(LocalDate day, String ticker) {
         this.day = day;
         this.ticker = ticker;
     }
 
-    public Date getDay() {
+    public LocalDate getDay() {
         return day;
     }
 
-    public void setDay(Date day) {
+    public void setDay(LocalDate day) {
         this.day = day;
     }
 

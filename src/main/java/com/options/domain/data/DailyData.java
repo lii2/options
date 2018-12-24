@@ -7,15 +7,15 @@ import com.options.entities.StockData;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_TWO;
 
 public class DailyData {
 
-    private Date day;
+    private LocalDate day;
 
     private String ticker;
 
@@ -58,7 +58,7 @@ public class DailyData {
         this.macdHist = macdData.getMacdHist();
     }
 
-    public DailyData(Date day, String ticker, BigDecimal open, BigDecimal high,
+    public DailyData(LocalDate day, String ticker, BigDecimal open, BigDecimal high,
                      BigDecimal low, BigDecimal close, BigInteger volume, BigDecimal ema) {
         this.day = day;
         this.ticker = ticker;
@@ -70,11 +70,30 @@ public class DailyData {
         this.ema = ema;
     }
 
-    public Date getDay() {
+    public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData, MacdData[] macdData) {
+        List<DailyData> dailyDataList = new ArrayList<>();
+        for (int i = 0; i < stockData.length; i++) {
+            DailyData dailyData = new DailyData(stockData[i], emaData[i], macdData[i]);
+            dailyDataList.add(dailyData);
+        }
+
+        //  index Zero is the most recent data. By going from 0 to infinite we are going backwards.
+        for (int i = 0; i < stockData.length - 1; i++) {
+            dailyDataList.get(i).setPreviousDaysData(dailyDataList.get(i + 1));
+        }
+
+        for (int i = 1; i < stockData.length; i++) {
+            dailyDataList.get(i).setNextDaysData(dailyDataList.get(i - 1));
+        }
+
+        return dailyDataList;
+    }
+
+    public LocalDate getDay() {
         return day;
     }
 
-    public void setDay(Date day) {
+    public void setDay(LocalDate day) {
         this.day = day;
     }
 
@@ -145,25 +164,6 @@ public class DailyData {
         return (ema.compareTo(getOpenCloseMean()) > 0);
     }
 
-    public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData, MacdData[] macdData) {
-        List<DailyData> dailyDataList = new ArrayList<>();
-        for (int i = 0; i < stockData.length; i++) {
-            DailyData dailyData = new DailyData(stockData[i], emaData[i], macdData[i]);
-            dailyDataList.add(dailyData);
-        }
-
-        //  index Zero is the most recent data. By going from 0 to infinite we are going backwards.
-        for (int i = 0; i < stockData.length - 1; i++) {
-            dailyDataList.get(i).setPreviousDaysData(dailyDataList.get(i + 1));
-        }
-
-        for (int i = 1; i < stockData.length; i++) {
-            dailyDataList.get(i).setNextDaysData(dailyDataList.get(i - 1));
-        }
-
-        return dailyDataList;
-    }
-
     public DailyData getPreviousDaysData() {
         if (previousDaysData == null) {
             throw new UnsyncedDataException("Previous days data is null");
@@ -172,7 +172,7 @@ public class DailyData {
     }
 
     public void setPreviousDaysData(DailyData previousDaysData) {
-        if (previousDaysData.getDay().after(day)) {
+        if (previousDaysData.getDay().isAfter(day)) {
             throw new UnsyncedDataException("Incorrectly setting previousDaysData in DailyData.java");
         }
         this.previousDaysData = previousDaysData;
@@ -186,7 +186,7 @@ public class DailyData {
     }
 
     public void setNextDaysData(DailyData nextDaysData) {
-        if (day.after(nextDaysData.getDay())) {
+        if (day.isAfter(nextDaysData.getDay())) {
             throw new UnsyncedDataException("Incorrectly setting nextDaysData in DailyData.java");
         }
         this.nextDaysData = nextDaysData;

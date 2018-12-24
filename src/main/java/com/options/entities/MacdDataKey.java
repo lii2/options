@@ -3,29 +3,28 @@ package com.options.entities;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Embeddable
-public class MacdDataKey  implements Serializable {
-
-    private Date day;
-
-    private String ticker;
+public class MacdDataKey implements Serializable {
 
     private transient static SimpleDateFormat smf = new SimpleDateFormat("yyyy-MM-dd");
+    private LocalDate day;
+    private String ticker;
 
-    public MacdDataKey(){}
+    public MacdDataKey() {
+    }
 
-    public MacdDataKey(Date day, String ticker) {
+    public MacdDataKey(LocalDate day, String ticker) {
         this.day = day;
         this.ticker = ticker;
     }
 
-    public Date getDay() {
+    public LocalDate getDay() {
         return day;
     }
 
-    public void setDay(Date day) {
+    public void setDay(LocalDate day) {
         this.day = day;
     }
 

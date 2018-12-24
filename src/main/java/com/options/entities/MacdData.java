@@ -4,10 +4,10 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 @Entity
-public class MacdData extends EntityData{
+public class MacdData extends EntityData {
 
     @EmbeddedId
     private MacdDataKey macdDataKey;
@@ -22,7 +22,7 @@ public class MacdData extends EntityData{
     }
 
     public MacdData(String ticker, String[] row) throws ParseException {
-        this.macdDataKey = new MacdDataKey(smf.parse(row[0]), ticker);
+        this.macdDataKey = new MacdDataKey(LocalDate.parse(row[0], DATE_TIME_FORMATTER), ticker);
         this.macd = new BigDecimal(row[1]);
         this.macdHist = new BigDecimal(row[2]);
         this.macdSignal = new BigDecimal(row[3].replace("\r", ""));

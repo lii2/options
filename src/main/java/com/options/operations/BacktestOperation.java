@@ -1,7 +1,6 @@
 package com.options.operations;
 
 import com.options.domain.backtest.BacktestResponse;
-import com.options.domain.backtest.Outcome;
 import com.options.domain.backtest.RecommendationResult;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
@@ -15,21 +14,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Component
 public class BacktestOperation {
 
-    private List<Recommendation> recommendationList;
-
-    private List<DailyData> dailyDataList;
-
-    private int daysToTest;
-
     private final static int DAYS_HELD = 2;
-
+    private List<Recommendation> recommendationList;
+    private List<DailyData> dailyDataList;
+    private int daysToTest;
     @Autowired
     private StockDataRepository stockDataRepository;
 
@@ -46,7 +41,7 @@ public class BacktestOperation {
     public BacktestResponse execute(String ticker) {
         setDataFromDatabase(ticker);
         int lastDayIndex = dailyDataList.size() - 1;
-        List<Date> datesOfRecommendations = new ArrayList<>();
+        List<LocalDate> datesOfRecommendations = new ArrayList<>();
         for (Recommendation recommendation : recommendationList) {
             datesOfRecommendations.add(recommendation.getDataOfRecommendation().getDay());
         }
@@ -104,9 +99,9 @@ public class BacktestOperation {
         dailyDataList = DailyData.generateDailyData(stockData, emaData, macdData);
     }
 
-    private Recommendation getRecommendationByDate(Date date) {
+    private Recommendation getRecommendationByDate(LocalDate LocalDate) {
         for (Recommendation recommendation : recommendationList) {
-            if (recommendation.getDataOfRecommendation().getDay().equals(date))
+            if (recommendation.getDataOfRecommendation().getDay().equals(LocalDate))
                 return recommendation;
         }
         return null;

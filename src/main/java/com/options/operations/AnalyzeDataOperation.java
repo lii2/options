@@ -2,7 +2,6 @@ package com.options.operations;
 
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
-import com.options.domain.trend.Trend;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
@@ -13,8 +12,6 @@ import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 

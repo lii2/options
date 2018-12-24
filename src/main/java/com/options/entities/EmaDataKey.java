@@ -2,27 +2,28 @@ package com.options.entities;
 
 import javax.persistence.Embeddable;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Embeddable
 public class EmaDataKey implements Serializable {
 
-    private Date day;
+    private LocalDate day;
 
     private String ticker;
 
-    public EmaDataKey(){}
+    public EmaDataKey() {
+    }
 
-    public EmaDataKey(Date day, String ticker) {
+    public EmaDataKey(LocalDate day, String ticker) {
         this.day = day;
         this.ticker = ticker;
     }
 
-    public Date getDay() {
+    public LocalDate getDay() {
         return day;
     }
 
-    public void setDay(Date day) {
+    public void setDay(LocalDate day) {
         this.day = day;
     }
 

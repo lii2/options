@@ -2,7 +2,6 @@ package com.options.repositories;
 
 import com.options.entities.EmaData;
 import com.options.entities.EmaDataKey;
-import com.options.entities.StockData;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

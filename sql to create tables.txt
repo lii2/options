@@ -4,7 +4,7 @@
 
 CREATE TABLE public.ema_data
 (
-    day date NOT NULL,
+    day LocalDate NOT NULL,
     ticker character varying(50) COLLATE pg_catalog."default" NOT NULL,
     ema numeric,
     CONSTRAINT "EmaData_pkey" PRIMARY KEY (ticker, day)
@@ -25,7 +25,7 @@ ALTER TABLE public.ema_data
 
 CREATE TABLE public.stock_data
 (
-    day date NOT NULL,
+    day LocalDate NOT NULL,
     ticker character varying(50) COLLATE pg_catalog."default" NOT NULL,
     open numeric,
     close numeric,
@@ -52,7 +52,7 @@ ALTER TABLE public.stock_data
 CREATE TABLE public.macd_data
 (
     ticker character varying(50) COLLATE pg_catalog."default" NOT NULL,
-    day date NOT NULL,
+    day LocalDate NOT NULL,
     macd numeric,
     macd_hist numeric,
     macd_signal numeric,
