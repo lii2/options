@@ -6,6 +6,7 @@ import com.options.domain.trend.Trend;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
+import com.options.operations.analysis.EntranceStrategies;
 import com.options.repositories.EmaDataRepository;
 import com.options.repositories.MacdDataRepository;
 import com.options.repositories.StockDataRepository;
@@ -43,30 +44,15 @@ public class AnalyzeDataOperation {
     }
 
     private List<Recommendation> doAnalysis() {
-        List<Recommendation> recommendations = new ArrayList<>();
+        List<Recommendation> pendingRecommendations = new ArrayList<>();
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         int lastDayIndex = dailyDataList.size() - 1;
-        // TODO: Find a good way to determine this limit, empirically
-        // 0.1 is best value so far w/ 90% accuracy, 0.2 only gives 95% and 0.05 gives 78%
-        BigDecimal macdHistLimit = new BigDecimal(0.1);
-
+        EntranceStrategies entranceStrategies = new EntranceStrategies();
         // Main Loop
         for (int i = lastDayIndex - 1; i >= 0; i--) {
-            if (priceCrossedOverEma(dailyDataList.get(i))
-                    && dailyDataList.get(i).getMacdHist().abs().compareTo(macdHistLimit) > 0) {
-                if (dailyDataList.get(i).averagedBelowEma()) {
-                    Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(dailyDataList.get(i)),
-                            dailyDataList.get(i));
-                    recommendations.add(recommendation);
-                } else {
-                    Recommendation recommendation = new Recommendation(Trend.BULLISH, generateRiseMessage(dailyDataList.get(i)),
-                            dailyDataList.get(i));
-                    recommendations.add(recommendation);
-                }
-
-            }
+            entranceStrategies.findEntrance(dailyDataList.get(i), pendingRecommendations);
         }
-        return recommendations;
+        return pendingRecommendations;
     }
 
     private void setDataFromDatabase(String ticker) {
@@ -76,35 +62,7 @@ public class AnalyzeDataOperation {
         dailyDataList = DailyData.generateDailyData(lastXDaysStockData, lastXDaysEmaData, lastXDaysMacdData);
     }
 
-    private String generateRiseMessage(DailyData dailyData) {
-        StringBuilder string = new StringBuilder();
-        string.append("\nprice rose above the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
-                .append("\nema is: ").append(dailyData.getEma())
-                .append("\nprice is now: ").append(dailyData.getOpenCloseMean())
-                .append("\nMessage: buy calls to sell.");
-        return string.toString();
-    }
-
-    private String generateDropMessage(DailyData dailyData) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\nprice dropped below the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
-                .append("\nema is: ").append(dailyData.getEma())
-                .append("\nprice is now: ").append(dailyData.getOpenCloseMean())
-                .append("\nMessage: buy puts to sell.");
-        return stringBuilder.toString();
-    }
-
     public void setDaysOfData(int daysOfData) {
         this.daysOfData = daysOfData;
-    }
-
-    private BigDecimal calculateEmaVar(DailyData currentDay, BigDecimal previousEmaVar) {
-        BigDecimal delta = currentDay.getOpenCloseMean().subtract(currentDay.getPreviousDaysData().getEma());
-        BigDecimal alpha = currentDay.getEma().subtract(currentDay.getPreviousDaysData().getEma()).divide(delta, RoundingMode.DOWN);
-        return (BigDecimal.ONE.subtract(alpha).multiply(previousEmaVar.add(alpha.multiply(delta.multiply(delta)))));
-    }
-
-    private boolean priceCrossedOverEma(DailyData dailyData) {
-        return dailyData.averagedBelowEma() != dailyData.getPreviousDaysData().averagedBelowEma();
     }
 }
