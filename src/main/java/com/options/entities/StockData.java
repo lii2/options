@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
 import java.util.Locale;
 
 @Entity
@@ -29,7 +28,7 @@ public class StockData extends EntityData {
     }
 
     public StockData(String ticker, String[] row) throws ParseException {
-        this.stockDataKey = new StockDataKey(LocalDate.parse(row[0], DATE_TIME_FORMATTER), ticker);
+        this.stockDataKey = new StockDataKey(parseDate(row[0]), ticker);
         this.open = new BigDecimal(row[1]);
         this.high = new BigDecimal(row[2]);
         this.low = new BigDecimal(row[3]);

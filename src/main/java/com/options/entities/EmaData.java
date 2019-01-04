@@ -18,7 +18,7 @@ public class EmaData extends EntityData {
     }
 
     public EmaData(String ticker, String[] row) throws ParseException {
-        this.emaDataKey = new EmaDataKey(LocalDate.parse(row[0], DATE_TIME_FORMATTER), ticker);
+        this.emaDataKey = new EmaDataKey(parseDate(row[0]), ticker);
         this.ema = new BigDecimal(row[1].replace("\r", ""));
     }
 
