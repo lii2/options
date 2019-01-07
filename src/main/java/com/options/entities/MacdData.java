@@ -3,7 +3,6 @@ package com.options.entities;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
-import java.text.ParseException;
 
 @Entity
 public class MacdData extends EntityData {

@@ -3,8 +3,6 @@ package com.options.entities;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.time.LocalDate;
 
 @Entity
 public class EmaData extends EntityData {

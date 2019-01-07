@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Locale;
 
 @Entity

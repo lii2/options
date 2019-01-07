@@ -4,6 +4,7 @@ import com.options.domain.alphavantage.AlphaVantageClient;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
+import com.options.repositories.BbandDataRepository;
 import com.options.repositories.EmaDataRepository;
 import com.options.repositories.MacdDataRepository;
 import com.options.repositories.StockDataRepository;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 import java.util.List;
 
 @Component
@@ -29,21 +29,24 @@ public class SmartPersistOperation {
     @Autowired
     private MacdDataRepository macdDataRepository;
 
+    @Autowired
+    private BbandDataRepository bbandDataRepository;
+
     private AlphaVantageClient alphaVantageClient;
 
     public SmartPersistOperation() {
         alphaVantageClient = new AlphaVantageClient();
     }
 
-    public String execute(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+    public String execute(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         return getData(ticker);
     }
 
-    private String getData(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+    private String getData(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         return smartPersist(ticker);
     }
 
-    private String smartPersist(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException, ParseException {
+    private String smartPersist(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         StringBuilder result = new StringBuilder();
         // TODO: Check if data from today is already in database, if so, skip persistance
         if (StringUtils.isNotBlank(ticker)) {
