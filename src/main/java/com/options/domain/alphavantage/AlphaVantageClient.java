@@ -50,7 +50,7 @@ public class AlphaVantageClient {
     public List<BbandData> getBbandData(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         List<BbandData> bbandDataList = new ArrayList<>();
         String[] bbandDataArray = connector.getBbandsDaily(ticker).split("\n");
-        for (int i = 0; i < bbandDataArray.length; i++) {
+        for (int i = 1; i < bbandDataArray.length; i++) {
             bbandDataList.add(new BbandData(ticker, bbandDataArray[i].split(",")));
         }
         return bbandDataList;

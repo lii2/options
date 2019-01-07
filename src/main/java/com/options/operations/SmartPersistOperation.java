@@ -1,6 +1,7 @@
 package com.options.operations;
 
 import com.options.domain.alphavantage.AlphaVantageClient;
+import com.options.entities.BbandData;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
@@ -70,7 +71,6 @@ public class SmartPersistOperation {
             EmaData lastEmaData = emaDataRepository.getLatestRecord(ticker);
             List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData(ticker, "10");
             if (lastEmaData == null) {
-
                 for (EmaData emaData : emaDataList) {
                     emaDataRepository.save(emaData);
                 }
@@ -85,14 +85,27 @@ public class SmartPersistOperation {
             MacdData lastMacdData = macdDataRepository.getLatestRecord(ticker);
             List<MacdData> macdDataList = alphaVantageClient.getMacdData(ticker);
             if (lastMacdData == null) {
-
                 for (MacdData macdData : macdDataList) {
                     macdDataRepository.save(macdData);
                 }
             } else {
                 for (MacdData macdData : macdDataList) {
-                    if (lastMacdData.getMacdDataKey().getDay().isBefore(lastMacdData.getMacdDataKey().getDay())) {
+                    if (lastMacdData.getMacdDataKey().getDay().isBefore(macdData.getMacdDataKey().getDay())) {
                         macdDataRepository.save(macdData);
+                    }
+                }
+            }
+
+            BbandData lastBbandData = bbandDataRepository.getLatestRecord(ticker);
+            List<BbandData> bbandDataList = alphaVantageClient.getBbandData(ticker);
+            if (lastBbandData == null) {
+                for (MacdData macdData : macdDataList) {
+                    macdDataRepository.save(macdData);
+                }
+            } else {
+                for (BbandData bbandData : bbandDataList) {
+                    if (lastBbandData.getBbandDataKey().getDay().isBefore(bbandData.getBbandDataKey().getDay())) {
+                        bbandDataRepository.save(bbandData);
                     }
                 }
             }
