@@ -21,9 +21,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class AlphaVantageConnector implements AlphaVantageConstants {
+class AlphaVantageConnector implements AlphaVantageConstants {
 
-    public AlphaVantageConnector() {
+    AlphaVantageConnector() {
         Set<String> loggers = new HashSet<>(Arrays.asList("org.apache.http", "groovyx.net.http"));
         for (String log : loggers) {
             Logger logger = (Logger) LoggerFactory.getLogger(log);
@@ -32,32 +32,28 @@ public class AlphaVantageConnector implements AlphaVantageConstants {
         }
     }
 
-    public String getTimeSeriesDaily(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    String getTimeSeriesDaily(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         String query = String.format(Query.TIME_SERIES_DAILY.getUrl(), ticker, TRADE_APP_API_KEY) + "&datatype=csv";
         RestTemplate restTemplate = getRestTemplate();
-        String response = restTemplate.getForObject(query, String.class);
-        return response;
+        return restTemplate.getForObject(query, String.class);
     }
 
-    public String getSmaDaily(String ticker, String interval) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
-        String query = String.format(Query.SMA_DAILY.getUrl(), ticker, interval, TRADE_APP_API_KEY) + "&datatype=csv";
+    String getBbandsDaily(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+        String query = String.format(Query.BBANDS_DAILY.getUrl(), ticker, TRADE_APP_API_KEY) + "&datatype=csv";
         RestTemplate restTemplate = getRestTemplate();
-        String response = restTemplate.getForObject(query, String.class);
-        return response;
+        return restTemplate.getForObject(query, String.class);
     }
 
-    public String getEmaDaily(String ticker, String interval) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    String getEmaDaily(String ticker, String interval) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         String query = String.format(Query.EMA_DAILY.getUrl(), ticker, interval, TRADE_APP_API_KEY) + "&datatype=csv";
         RestTemplate restTemplate = getRestTemplate();
-        String response = restTemplate.getForObject(query, String.class);
-        return response;
+        return restTemplate.getForObject(query, String.class);
     }
 
-    public String getMacd(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    String getMacd(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         String query = String.format(Query.MACD_DAILY.getUrl(), ticker, TRADE_APP_API_KEY) + "&datatype=csv";
         RestTemplate restTemplate = getRestTemplate();
-        String response = restTemplate.getForObject(query, String.class);
-        return response;
+        return restTemplate.getForObject(query, String.class);
     }
 
     private RestTemplate getRestTemplate() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
