@@ -27,7 +27,7 @@ public class StockData extends EntityData {
     public StockData() {
     }
 
-    public StockData(String ticker, String[] row) throws ParseException {
+    public StockData(String ticker, String[] row){
         this.stockDataKey = new StockDataKey(parseDate(row[0]), ticker);
         this.open = new BigDecimal(row[1]);
         this.high = new BigDecimal(row[2]);

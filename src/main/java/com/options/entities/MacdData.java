@@ -20,7 +20,7 @@ public class MacdData extends EntityData {
     public MacdData() {
     }
 
-    public MacdData(String ticker, String[] row) throws ParseException {
+    public MacdData(String ticker, String[] row) {
         this.macdDataKey = new MacdDataKey(parseDate(row[0]), ticker);
         this.macd = new BigDecimal(row[1]);
         this.macdHist = new BigDecimal(row[2]);
