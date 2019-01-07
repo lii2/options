@@ -4,9 +4,11 @@ import com.options.domain.backtest.BacktestResponse;
 import com.options.domain.backtest.RecommendationResult;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
+import com.options.entities.BbandData;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
+import com.options.repositories.BbandDataRepository;
 import com.options.repositories.EmaDataRepository;
 import com.options.repositories.MacdDataRepository;
 import com.options.repositories.StockDataRepository;
@@ -33,6 +35,9 @@ public class BacktestOperation {
 
     @Autowired
     private MacdDataRepository macdDataRepository;
+
+    @Autowired
+    private BbandDataRepository bbandDataRepository;
 
     public BacktestOperation() {
         this.daysToTest = 100;
@@ -96,7 +101,8 @@ public class BacktestOperation {
         EmaData[] emaData = emaDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(EmaData[]::new);
         StockData[] stockData = stockDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(StockData[]::new);
         MacdData[] macdData = macdDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(MacdData[]::new);
-        dailyDataList = DailyData.generateDailyData(stockData, emaData, macdData);
+        BbandData[] lastXDaysBbandData = bbandDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(BbandData[]::new);
+        dailyDataList = DailyData.generateDailyData(stockData, emaData, macdData, lastXDaysBbandData);
     }
 
     private Recommendation getRecommendationByDate(LocalDate LocalDate) {

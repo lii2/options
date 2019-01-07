@@ -99,8 +99,8 @@ public class SmartPersistOperation {
             BbandData lastBbandData = bbandDataRepository.getLatestRecord(ticker);
             List<BbandData> bbandDataList = alphaVantageClient.getBbandData(ticker);
             if (lastBbandData == null) {
-                for (MacdData macdData : macdDataList) {
-                    macdDataRepository.save(macdData);
+                for (BbandData bbandData : bbandDataList) {
+                    bbandDataRepository.save(bbandData);
                 }
             } else {
                 for (BbandData bbandData : bbandDataList) {
