@@ -104,10 +104,6 @@ public class DailyData {
         return day;
     }
 
-    public void setDay(LocalDate day) {
-        this.day = day;
-    }
-
     public String getTicker() {
         return ticker;
     }
@@ -120,48 +116,24 @@ public class DailyData {
         return open;
     }
 
-    public void setOpen(BigDecimal open) {
-        this.open = open;
-    }
-
     public BigDecimal getHigh() {
         return high;
-    }
-
-    public void setHigh(BigDecimal high) {
-        this.high = high;
     }
 
     public BigDecimal getLow() {
         return low;
     }
 
-    public void setLow(BigDecimal low) {
-        this.low = low;
-    }
-
     public BigDecimal getClose() {
         return close;
-    }
-
-    public void setClose(BigDecimal close) {
-        this.close = close;
     }
 
     public BigInteger getVolume() {
         return volume;
     }
 
-    public void setVolume(BigInteger volume) {
-        this.volume = volume;
-    }
-
     public BigDecimal getEma() {
         return ema;
-    }
-
-    public void setEma(BigDecimal ema) {
-        this.ema = ema;
     }
 
     public BigDecimal getOpenCloseMean() {
@@ -203,29 +175,30 @@ public class DailyData {
         this.nextDaysData = nextDaysData;
     }
 
-
     public BigDecimal getMacdHist() {
         return macdHist;
-    }
-
-    public void setMacdHist(BigDecimal macdHist) {
-        this.macdHist = macdHist;
     }
 
     public BigDecimal getRealLowerBand() {
         return realLowerBand;
     }
 
-    public void setRealLowerBand(BigDecimal realLowerBand) {
-        this.realLowerBand = realLowerBand;
-    }
-
     public BigDecimal getRealUpperBand() {
         return realUpperBand;
     }
 
-    public void setRealUpperBand(BigDecimal realUpperBand) {
-        this.realUpperBand = realUpperBand;
+    public BigDecimal getBoxHigh() {
+        if (open.compareTo(close) > 0)
+            return open;
+        else
+            return close;
+    }
+
+    public BigDecimal getBoxLow() {
+        if (open.compareTo(close) > 0)
+            return close;
+        else
+            return open;
     }
 
     @Override

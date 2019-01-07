@@ -56,7 +56,8 @@ public class BacktestOperation {
             if (datesOfRecommendations.contains(dailyDataList.get(i).getDay())) {
                 Recommendation recommendation = getRecommendationByDate(dailyDataList.get(i).getDay());
                 RecommendationResult recommendationResult = new RecommendationResult(DAYS_HELD, recommendation.getTrend(),
-                        dailyDataList.get(i).getOpenCloseMean().subtract(dailyDataList.get(i - DAYS_HELD).getOpenCloseMean()));
+                        dailyDataList.get(i).getOpenCloseMean().subtract(dailyDataList.get(i - DAYS_HELD).getOpenCloseMean()),
+                        recommendation.getDataOfRecommendation().getDay());
                 results.add(recommendationResult);
             }
         }

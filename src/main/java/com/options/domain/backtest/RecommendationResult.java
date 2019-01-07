@@ -3,6 +3,7 @@ package com.options.domain.backtest;
 import com.options.domain.trend.Trend;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class RecommendationResult {
 
@@ -14,12 +15,14 @@ public class RecommendationResult {
 
     private BigDecimal priceChange;
 
+    private LocalDate recommendationDay;
+
     private int daysHeld;
 
     public RecommendationResult() {
     }
 
-    public RecommendationResult(int daysHeld, Trend trend, BigDecimal priceChange) {
+    public RecommendationResult(int daysHeld, Trend trend, BigDecimal priceChange, LocalDate recommendationDay) {
         if (priceChange.abs().compareTo(INDIFFERENCE_LIMIT) > 0) {
             switch (trend) {
                 case BEARISH:
@@ -38,6 +41,7 @@ public class RecommendationResult {
         } else {
             outcome = Outcome.INDIFFERENT;
         }
+        this.recommendationDay = recommendationDay;
         this.trend = trend;
         this.priceChange = priceChange;
         this.daysHeld = daysHeld;
@@ -76,14 +80,24 @@ public class RecommendationResult {
     public void setDaysHeld(int daysHeld) {
         this.daysHeld = daysHeld;
     }
+        
+    public LocalDate getRecommendationDay() {
+        return recommendationDay;
+    }
+
+    public void setRecommendationDay(LocalDate recommendationDay) {
+        this.recommendationDay = recommendationDay;
+    }
 
     @Override
     public String toString() {
         return "RecommendationResult{" +
+                "recommendationDay=" + recommendationDay +
                 "outcome=" + outcome +
                 ", trend=" + trend +
                 ", priceChange=" + priceChange +
                 ", daysHeld=" + daysHeld +
                 '}';
     }
+
 }

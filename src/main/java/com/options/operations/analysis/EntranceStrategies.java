@@ -14,7 +14,12 @@ public class EntranceStrategies {
     private static final BigDecimal MACD_HIST_LIMIT = new BigDecimal(0.1);
 
     public void findEntrance(DailyData daysData, List<Recommendation> pendingRecommendations) {
-        if (priceCrossedOverEma(daysData)
+        emaCrossing(daysData, pendingRecommendations);
+        leavingBollingerBandOutskirts(daysData, pendingRecommendations);
+    }
+
+    private void emaCrossing(DailyData daysData, List<Recommendation> pendingRecommendations) {
+        if (daysData.averagedBelowEma() != daysData.getPreviousDaysData().averagedBelowEma()
                 && daysData.getMacdHist().abs().compareTo(MACD_HIST_LIMIT) > 0) {
             if (daysData.averagedBelowEma()) {
                 Recommendation recommendation = new Recommendation(Trend.BEARISH, generateDropMessage(daysData),
@@ -46,7 +51,17 @@ public class EntranceStrategies {
         return stringBuilder.toString();
     }
 
-    private boolean priceCrossedOverEma(DailyData dailyData) {
-        return dailyData.averagedBelowEma() != dailyData.getPreviousDaysData().averagedBelowEma();
+    private void leavingBollingerBandOutskirts(DailyData dailyData, List<Recommendation> pendingRecommendations) {
+        if (dailyData.getPreviousDaysData().getBoxHigh().compareTo(dailyData.getPreviousDaysData().getRealUpperBand()) > 0
+                && dailyData.getBoxHigh().compareTo(dailyData.getRealUpperBand()) < 0) {
+            Recommendation recommendation = new Recommendation(Trend.BEARISH, "Buy puts, Ticker leaving overbought territory",
+                    dailyData);
+            pendingRecommendations.add(recommendation);
+        } else if (dailyData.getPreviousDaysData().getBoxLow().compareTo(dailyData.getPreviousDaysData().getRealLowerBand()) < 0
+                && dailyData.getBoxLow().compareTo(dailyData.getRealLowerBand()) > 0) {
+            Recommendation recommendation = new Recommendation(Trend.BULLISH, "Buy calls, Ticker leaving oversold territory",
+                    dailyData);
+            pendingRecommendations.add(recommendation);
+        }
     }
 }
