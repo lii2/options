@@ -1,5 +1,6 @@
 package com.options.domain.data;
 
+import com.options.entities.BbandData;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
@@ -35,6 +36,10 @@ public class DailyData {
 
     private BigDecimal macdHist;
 
+    private BigDecimal realLowerBand;
+
+    private BigDecimal realUpperBand;
+
     private DailyData previousDaysData;
 
     private DailyData nextDaysData;
@@ -42,9 +47,13 @@ public class DailyData {
     public DailyData() {
     }
 
-    public DailyData(StockData stockData, EmaData emaData, MacdData macdData) {
+    public DailyData(StockData stockData, EmaData emaData, MacdData macdData, BbandData bbandData) {
         if (!emaData.getEmaDataKey().getDay().equals(stockData.getStockDataKey().getDay())
-                || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(stockData.getStockDataKey().getTicker())) {
+                || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(stockData.getStockDataKey().getTicker())
+                || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(macdData.getMacdDataKey().getTicker())
+                || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(bbandData.getBbandDataKey().getTicker())
+                || !emaData.getEmaDataKey().getDay().equals(macdData.getMacdDataKey().getDay())
+                || !emaData.getEmaDataKey().getDay().equals(bbandData.getBbandDataKey().getDay())) {
             throw new UnsyncedDataException("Trying to created a DailyData object with unsynced data");
         }
         this.day = emaData.getEmaDataKey().getDay();
@@ -56,6 +65,8 @@ public class DailyData {
         this.volume = stockData.getVolume();
         this.ema = emaData.getEma();
         this.macdHist = macdData.getMacdHist();
+        this.realLowerBand = bbandData.getRealLowerBand();
+        this.realUpperBand = bbandData.getRealUpperBand();
     }
 
     public DailyData(LocalDate day, String ticker, BigDecimal open, BigDecimal high,
@@ -70,10 +81,10 @@ public class DailyData {
         this.ema = ema;
     }
 
-    public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData, MacdData[] macdData) {
+    public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData, MacdData[] macdData, BbandData[] bbandData) {
         List<DailyData> dailyDataList = new ArrayList<>();
         for (int i = 0; i < stockData.length; i++) {
-            DailyData dailyData = new DailyData(stockData[i], emaData[i], macdData[i]);
+            DailyData dailyData = new DailyData(stockData[i], emaData[i], macdData[i], bbandData[i]);
             dailyDataList.add(dailyData);
         }
 
@@ -93,10 +104,6 @@ public class DailyData {
         return day;
     }
 
-    public void setDay(LocalDate day) {
-        this.day = day;
-    }
-
     public String getTicker() {
         return ticker;
     }
@@ -109,48 +116,24 @@ public class DailyData {
         return open;
     }
 
-    public void setOpen(BigDecimal open) {
-        this.open = open;
-    }
-
     public BigDecimal getHigh() {
         return high;
-    }
-
-    public void setHigh(BigDecimal high) {
-        this.high = high;
     }
 
     public BigDecimal getLow() {
         return low;
     }
 
-    public void setLow(BigDecimal low) {
-        this.low = low;
-    }
-
     public BigDecimal getClose() {
         return close;
-    }
-
-    public void setClose(BigDecimal close) {
-        this.close = close;
     }
 
     public BigInteger getVolume() {
         return volume;
     }
 
-    public void setVolume(BigInteger volume) {
-        this.volume = volume;
-    }
-
     public BigDecimal getEma() {
         return ema;
-    }
-
-    public void setEma(BigDecimal ema) {
-        this.ema = ema;
     }
 
     public BigDecimal getOpenCloseMean() {
@@ -192,13 +175,30 @@ public class DailyData {
         this.nextDaysData = nextDaysData;
     }
 
-
     public BigDecimal getMacdHist() {
         return macdHist;
     }
 
-    public void setMacdHist(BigDecimal macdHist) {
-        this.macdHist = macdHist;
+    public BigDecimal getRealLowerBand() {
+        return realLowerBand;
+    }
+
+    public BigDecimal getRealUpperBand() {
+        return realUpperBand;
+    }
+
+    public BigDecimal getBoxHigh() {
+        if (open.compareTo(close) > 0)
+            return open;
+        else
+            return close;
+    }
+
+    public BigDecimal getBoxLow() {
+        if (open.compareTo(close) > 0)
+            return close;
+        else
+            return open;
     }
 
     @Override

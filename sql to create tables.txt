@@ -65,3 +65,26 @@ TABLESPACE pg_default;
 
 ALTER TABLE public.macd_data
     OWNER to postgres;
+
+ -------------------
+
+ -- Table: public.bband_data
+
+ -- DROP TABLE public.bband_data;
+
+ CREATE TABLE public.bband_data
+ (
+     day date NOT NULL,
+     ticker character varying(50) COLLATE pg_catalog."default" NOT NULL,
+     real_lower_band numeric(50,0),
+     real_upper_band numeric(50,0),
+     real_middle_band numeric(50,0),
+     CONSTRAINT bband_data_pkey PRIMARY KEY (day, ticker)
+ )
+ WITH (
+     OIDS = FALSE
+ )
+ TABLESPACE pg_default;
+
+ ALTER TABLE public.bband_data
+     OWNER to postgres;

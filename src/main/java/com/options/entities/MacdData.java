@@ -3,7 +3,6 @@ package com.options.entities;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
-import java.text.ParseException;
 
 @Entity
 public class MacdData extends EntityData {
@@ -20,7 +19,7 @@ public class MacdData extends EntityData {
     public MacdData() {
     }
 
-    public MacdData(String ticker, String[] row) throws ParseException {
+    public MacdData(String ticker, String[] row) {
         this.macdDataKey = new MacdDataKey(parseDate(row[0]), ticker);
         this.macd = new BigDecimal(row[1]);
         this.macdHist = new BigDecimal(row[2]);

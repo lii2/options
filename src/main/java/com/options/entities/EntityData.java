@@ -7,6 +7,9 @@ abstract class EntityData {
     private transient static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
     protected LocalDate parseDate(String dateString) {
-        return LocalDate.parse(dateString.substring(0, 10), DATE_TIME_FORMATTER);
+        if (dateString.length() > 10) {
+            return LocalDate.parse(dateString.substring(0, 10), DATE_TIME_FORMATTER);
+        } else
+            return LocalDate.parse(dateString, DATE_TIME_FORMATTER);
     }
 }
