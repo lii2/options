@@ -1,10 +1,19 @@
 package com.options.entities;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class BbandData extends EntityData {
 
     @EmbeddedId
@@ -16,46 +25,11 @@ public class BbandData extends EntityData {
 
     private BigDecimal realUpperBand;
 
-    public BbandData() {
-    }
-
     public BbandData(String ticker, String[] row) {
         this.bbandDataKey = new BbandDataKey(parseDate(row[0]), ticker);
         this.realLowerBand = new BigDecimal(row[1]);
         this.realMiddleBand = new BigDecimal(row[2]);
         this.realUpperBand = new BigDecimal(row[3].replace("\r", ""));
-    }
-
-    public BbandDataKey getBbandDataKey() {
-        return bbandDataKey;
-    }
-
-    public void setBbandDataKey(BbandDataKey bbandDataKey) {
-        this.bbandDataKey = bbandDataKey;
-    }
-
-    public BigDecimal getRealLowerBand() {
-        return realLowerBand;
-    }
-
-    public void setRealLowerBand(BigDecimal realLowerBand) {
-        this.realLowerBand = realLowerBand;
-    }
-
-    public BigDecimal getRealUpperBand() {
-        return realUpperBand;
-    }
-
-    public void setRealUpperBand(BigDecimal realUpperBand) {
-        this.realUpperBand = realUpperBand;
-    }
-
-    public BigDecimal getRealMiddleBand() {
-        return realMiddleBand;
-    }
-
-    public void setRealMiddleBand(BigDecimal realMiddleBand) {
-        this.realMiddleBand = realMiddleBand;
     }
 
     @Override
