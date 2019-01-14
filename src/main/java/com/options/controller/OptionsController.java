@@ -6,7 +6,6 @@ import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;
 import io.micrometer.core.instrument.util.StringUtils;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RestController

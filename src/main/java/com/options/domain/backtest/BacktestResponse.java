@@ -1,5 +1,6 @@
 package com.options.domain.backtest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class BacktestResponse {
     private float percentSuccess;
     private float percentNotFailed;
 
+
     @Override
     public String toString() {
         return "BacktestResponse{" +
@@ -44,6 +46,14 @@ public class BacktestResponse {
                 "\nresults=" + Arrays.toString(results.toArray()) +
 
                 '}';
+    }
+
+    @JsonProperty
+    public float PercentKellyInvestement() {
+        // John Kelly Investment Percentage is the optimum percentage of portfolio asset allocation
+        float success = percentSuccess / 100;
+        float fail = 1.0F - (percentSuccess / 100);
+        return (success - (fail/(successes / failures))) * 100;
     }
 
 }
