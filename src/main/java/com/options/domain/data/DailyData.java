@@ -1,9 +1,13 @@
 package com.options.domain.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.options.entities.BbandData;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -14,38 +18,27 @@ import java.util.List;
 
 import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_TWO;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DailyData {
 
     private LocalDate day;
-
     private String ticker;
-
     private BigDecimal open;
-
     private BigDecimal high;
-
     private BigDecimal low;
-
     private BigDecimal close;
-
     private BigInteger volume;
-
     private BigDecimal ema;
-
     private BigDecimal openCloseMean;
-
     private BigDecimal macdHist;
-
     private BigDecimal realLowerBand;
-
     private BigDecimal realUpperBand;
-
+    @JsonIgnore
     private DailyData previousDaysData;
-
+    @JsonIgnore
     private DailyData nextDaysData;
-
-    public DailyData() {
-    }
 
     public DailyData(StockData stockData, EmaData emaData, MacdData macdData, BbandData bbandData) {
         if (!emaData.getEmaDataKey().getDay().equals(stockData.getStockDataKey().getDay())
@@ -69,18 +62,6 @@ public class DailyData {
         this.realUpperBand = bbandData.getRealUpperBand();
     }
 
-    public DailyData(LocalDate day, String ticker, BigDecimal open, BigDecimal high,
-                     BigDecimal low, BigDecimal close, BigInteger volume, BigDecimal ema) {
-        this.day = day;
-        this.ticker = ticker;
-        this.open = open;
-        this.high = high;
-        this.low = low;
-        this.close = close;
-        this.volume = volume;
-        this.ema = ema;
-    }
-
     public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData, MacdData[] macdData, BbandData[] bbandData) {
         List<DailyData> dailyDataList = new ArrayList<>();
         for (int i = 0; i < stockData.length; i++) {
@@ -100,41 +81,6 @@ public class DailyData {
         return dailyDataList;
     }
 
-    public LocalDate getDay() {
-        return day;
-    }
-
-    public String getTicker() {
-        return ticker;
-    }
-
-    public void setTicker(String ticker) {
-        this.ticker = ticker;
-    }
-
-    public BigDecimal getOpen() {
-        return open;
-    }
-
-    public BigDecimal getHigh() {
-        return high;
-    }
-
-    public BigDecimal getLow() {
-        return low;
-    }
-
-    public BigDecimal getClose() {
-        return close;
-    }
-
-    public BigInteger getVolume() {
-        return volume;
-    }
-
-    public BigDecimal getEma() {
-        return ema;
-    }
 
     public BigDecimal getOpenCloseMean() {
         if (openCloseMean == null) {
@@ -173,18 +119,6 @@ public class DailyData {
             throw new UnsyncedDataException("Incorrectly setting nextDaysData in DailyData.java");
         }
         this.nextDaysData = nextDaysData;
-    }
-
-    public BigDecimal getMacdHist() {
-        return macdHist;
-    }
-
-    public BigDecimal getRealLowerBand() {
-        return realLowerBand;
-    }
-
-    public BigDecimal getRealUpperBand() {
-        return realUpperBand;
     }
 
     public BigDecimal getBoxHigh() {
