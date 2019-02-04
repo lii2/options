@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDate;
 
 @Entity
@@ -14,8 +15,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
 public class DailyDataEntity {
+
+    @Id
     public int dailyDataKey;
+
     public String ticker;
+
     public LocalDate day;
 
     @Override
