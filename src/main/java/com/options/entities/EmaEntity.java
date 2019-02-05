@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -17,6 +16,7 @@ import java.math.BigDecimal;
 public class EmaEntity {
 
     @Id
+    @Column(insertable = false, updatable = false)
     public int emaKey;
 
     public String seriesType;
@@ -25,8 +25,12 @@ public class EmaEntity {
 
     public BigDecimal ema;
 
+    @Column(insertable = false, updatable = false)
     public int dailyTechnicalsKey;
 
+    @OneToOne
+    @JoinColumn(name = "dailyTechnicalsKey")
+    public DailyTechnicalsEntity dailyTechnicals;
 
     @Override
     public String toString() {

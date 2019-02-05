@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -17,18 +16,23 @@ import java.math.BigDecimal;
 public class TimeSeriesDailyEntity {
 
     @Id
-    public int timeSeriesDailyKey;
+    @Column(insertable = false, updatable = false)
+    private int timeSeriesDailyKey;
 
-    public int dailyDataKey;
+    @Column(insertable = false, updatable = false)
+    private int dailyDataKey;
 
-    public BigDecimal open;
+    private BigDecimal open;
 
-    public BigDecimal close;
+    private BigDecimal close;
 
-    public BigDecimal high;
+    private BigDecimal high;
 
-    public BigDecimal low;
+    private BigDecimal low;
 
+    @OneToOne
+    @JoinColumn(name = "dailyDataKey")
+    private DailyDataEntity dailyData;
 
     @Override
     public String toString() {

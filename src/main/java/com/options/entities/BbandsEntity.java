@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -17,6 +16,7 @@ import java.math.BigDecimal;
 public class BbandsEntity {
 
     @Id
+    @Column(insertable = false, updatable = false)
     public int bBandsKey;
 
     public int timePeriod;
@@ -35,7 +35,12 @@ public class BbandsEntity {
 
     public BigDecimal realLowerBand;
 
+    @Column(insertable = false, updatable = false)
     public int dailyTechnicalsKey;
+
+    @OneToOne
+    @JoinColumn(name = "dailyTechnicalsKey")
+    private DailyTechnicalsEntity dailyTechnicals;
 
     @Override
     public String toString() {

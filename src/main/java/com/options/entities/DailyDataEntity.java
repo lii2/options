@@ -5,8 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import java.time.LocalDate;
 
 @Entity
@@ -17,11 +19,18 @@ import java.time.LocalDate;
 public class DailyDataEntity {
 
     @Id
-    public int dailyDataKey;
+    @Column(insertable = false, updatable = false)
+    private int dailyDataKey;
 
-    public String ticker;
+    private String ticker;
 
-    public LocalDate day;
+    private LocalDate day;
+
+    @OneToOne
+    private TimeSeriesDailyEntity timeSeriesDaily;
+
+    @OneToOne
+    private DailyTechnicalsEntity dailyTechnicals;
 
     @Override
     public String toString() {

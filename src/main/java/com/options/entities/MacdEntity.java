@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -17,23 +16,29 @@ import java.math.BigDecimal;
 public class MacdEntity {
 
     @Id
-    public int macdKey;
+    @Column(insertable = false, updatable = false)
+    private int macdKey;
 
-    public String seriesType;
+    private String seriesType;
 
-    public int fastPeriod;
+    private int fastPeriod;
 
-    public int slowPeriod;
+    private int slowPeriod;
 
-    public int signalPeriod;
+    private int signalPeriod;
 
-    public BigDecimal macdHist;
+    private BigDecimal macdHist;
 
-    public BigDecimal macdSignal;
+    private BigDecimal macdSignal;
 
-    public BigDecimal macd;
+    private BigDecimal macd;
 
-    public int dailyTechnicalsKey;
+    @Column(insertable = false, updatable = false)
+    private int dailyTechnicalsKey;
+
+    @OneToOne
+    @JoinColumn(name = "dailyTechnicalsKey")
+    private DailyTechnicalsEntity dailyTechnicals;
 
     @Override
     public String toString() {
