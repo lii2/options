@@ -11,8 +11,8 @@ First, let's define the subject. Technical analysis is the study of market actio
 ##PHILOSOPHY OR RATIONALE
 There are three premises on which the technical approach is based:
 1. Market action discounts everything.
-1.Prices move in trends.
-1.History repeats itself.
+1. Prices move in trends.
+1. History repeats itself.
 
 ## Market Action Discounts Everything
 The statement "market action discounts everything" forms what is probably the cornerstone of technical analysis. Unless the full significance of this first premise is fully understood and accepted, nothing else that follows makes much sense. The technician believes that anything that can possibly affect the price—fundamentally, politically, psychologically, or otherwise—is actually reflected in the price of that market. It follows, therefore, that a study of price action is all that is required. While this claim may seem presumptuous, it is hard to disagree with if one takes the time to consider its true meaning. 
