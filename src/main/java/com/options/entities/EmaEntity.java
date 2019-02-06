@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Data
+@Table(name = "ema")
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
@@ -21,7 +22,7 @@ public class EmaEntity {
 
     public String seriesType;
 
-    public int timePeriod;
+    public Integer timePeriod;
 
     public BigDecimal ema;
 

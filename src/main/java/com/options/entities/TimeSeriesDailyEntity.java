@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Data
+@Table(name = "time_series_daily")
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
@@ -38,7 +39,6 @@ public class TimeSeriesDailyEntity {
     public String toString() {
         return "TimeSeriesDailyEntity{" +
                 "timeSeriesDailyKey=" + timeSeriesDailyKey +
-                ", dailyDataKey=" + dailyDataKey +
                 ", open=" + open +
                 ", close=" + close +
                 ", high=" + high +

@@ -5,13 +5,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Table(name = "daily_data")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,9 +25,11 @@ public class DailyDataEntity {
     private LocalDate day;
 
     @OneToOne
+    @JoinColumn(name = "dailyDataKey")
     private TimeSeriesDailyEntity timeSeriesDaily;
 
     @OneToOne
+    @JoinColumn(name = "dailyDataKey")
     private DailyTechnicalsEntity dailyTechnicals;
 
     @Override
@@ -38,6 +38,9 @@ public class DailyDataEntity {
                 "dailyDataKey=" + dailyDataKey +
                 ", ticker='" + ticker + '\'' +
                 ", day=" + day +
+                ", timeSeriesDaily=" + timeSeriesDaily +
+                ", dailyTechnicals=" + dailyTechnicals +
                 '}';
     }
+
 }

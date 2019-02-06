@@ -5,10 +5,7 @@ import com.options.entities.BbandData;
 import com.options.entities.EmaData;
 import com.options.entities.MacdData;
 import com.options.entities.StockData;
-import com.options.repositories.BbandDataRepository;
-import com.options.repositories.EmaDataRepository;
-import com.options.repositories.MacdDataRepository;
-import com.options.repositories.StockDataRepository;
+import com.options.repositories.*;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,6 +29,9 @@ public class SmartPersistOperation {
 
     @Autowired
     private BbandDataRepository bbandDataRepository;
+
+    @Autowired
+    private DailyDataRepository dailyDataRepository;
 
     private AlphaVantageClient alphaVantageClient;
 
@@ -113,5 +113,8 @@ public class SmartPersistOperation {
         return result.toString();
     }
 
+    public String test(){
+        return dailyDataRepository.findById(1).get().toString();
+    }
 
 }

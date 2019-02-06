@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Data
+@Table(name = "bbands")
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
@@ -17,15 +18,15 @@ public class BbandsEntity {
 
     @Id
     @Column(insertable = false, updatable = false)
-    public int bBandsKey;
+    public int bbandsKey;
 
     public int timePeriod;
 
     public String seriesType;
 
-    public int nbdevup;
+    public Integer nbdevup;
 
-    public int nbdevdn;
+    public Integer nbdevdn;
 
     public String maType;
 
@@ -45,7 +46,7 @@ public class BbandsEntity {
     @Override
     public String toString() {
         return "BbandsEntity{" +
-                "bBandsKey=" + bBandsKey +
+                "bbandsKey=" + bbandsKey +
                 ", timePeriod=" + timePeriod +
                 ", seriesType='" + seriesType + '\'' +
                 ", nbdevup=" + nbdevup +

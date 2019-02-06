@@ -40,6 +40,11 @@ public class OptionsController implements ApplicationContextAware {
         this.backtestOperation = backtestOperation;
     }
 
+    @GetMapping("/test")
+    public String test(){
+        return smartPersistOperation.test();
+    }
+
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
     public Recommendation quickAnalyze(@PathVariable String ticker) throws Exception {
         String output = getTickerData(ticker);
