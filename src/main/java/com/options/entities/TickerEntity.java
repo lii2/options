@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "ticker")
@@ -23,7 +24,7 @@ public class TickerEntity {
 
     @OneToMany
     @JoinColumn(name = "tickerKey")
-    private DailyDataEntity dailyData;
+    private List<DailyDataEntity> dailyDataList;
 
     @Override
     public String toString() {

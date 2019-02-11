@@ -20,6 +20,7 @@ public class DailyDataEntity {
     @Column(insertable = false, updatable = false)
     private int dailyDataKey;
 
+    @Column(insertable = false, updatable = false)
     private int tickerKey;
 
     private LocalDate day;
