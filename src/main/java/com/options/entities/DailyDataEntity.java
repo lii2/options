@@ -20,7 +20,7 @@ public class DailyDataEntity {
     @Column(insertable = false, updatable = false)
     private int dailyDataKey;
 
-    private String ticker;
+    private int tickerKey;
 
     private LocalDate day;
 
@@ -32,11 +32,15 @@ public class DailyDataEntity {
     @JoinColumn(name = "dailyDataKey")
     private DailyTechnicalsEntity dailyTechnicals;
 
+    @ManyToOne
+    @JoinColumn(name = "tickerKey")
+    private TickerEntity tickerEntity;
+
     @Override
     public String toString() {
         return "DailyDataEntity{" +
                 "dailyDataKey=" + dailyDataKey +
-                ", ticker='" + ticker + '\'' +
+                ", ticker='" + tickerEntity + '\'' +
                 ", day=" + day +
                 ", timeSeriesDaily=" + timeSeriesDaily +
                 ", dailyTechnicals=" + dailyTechnicals +

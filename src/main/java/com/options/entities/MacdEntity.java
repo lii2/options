@@ -20,14 +20,6 @@ public class MacdEntity {
     @Column(insertable = false, updatable = false)
     private int macdKey;
 
-    private String seriesType;
-
-    private Integer fastPeriod;
-
-    private Integer slowPeriod;
-
-    private Integer signalPeriod;
-
     private BigDecimal macdHist;
 
     private BigDecimal macdSignal;
@@ -45,14 +37,9 @@ public class MacdEntity {
     public String toString() {
         return "MacdEntity{" +
                 "macdKey=" + macdKey +
-                ", seriesType='" + seriesType + '\'' +
-                ", fastPeriod=" + fastPeriod +
-                ", slowPeriod=" + slowPeriod +
-                ", signalPeriod=" + signalPeriod +
                 ", macdHist=" + macdHist +
                 ", macdSignal=" + macdSignal +
                 ", macd=" + macd +
-                ", dailyTechnicalsKey=" + dailyTechnicalsKey +
                 '}';
     }
 }

@@ -1,8 +1,23 @@
+-- Table: public.ticker
+
+CREATE TABLE ticker
+(
+    ticker_key SERIAL PRIMARY KEY,
+    ticker_symbol VARCHAR NOT NULL,
+)
+
 -- Table: public.daily_data
 
-CREATE TABLE daily_data(daily_data_key SERIAL PRIMARY KEY, ticker VARCHAR NOT NULL, "day" date NOT NULL);
-	SELECT * FROM DAILY_DATA;
-
+CREATE TABLE daily_data
+(
+    daily_data_key SERIAL PRIMARY KEY,
+    ticker_key VARCHAR NOT NULL,
+     "day" date NOT NULL,
+    CONSTRAINT daily_data_fk FOREIGN KEY (daily_data_key)
+         REFERENCES public.ticker (ticker_key) MATCH SIMPLE
+         ON UPDATE NO ACTION
+         ON DELETE CASCADE
+)
 
 -- Table: public.daily_technicals
 
@@ -17,8 +32,6 @@ CREATE TABLE daily_technicals
 )
 
 -- Table: public.time_series_daily
-
--- DROP TABLE public.time_series_daily;
 
 CREATE TABLE public.time_series_daily
 (
@@ -36,15 +49,9 @@ CREATE TABLE public.time_series_daily
 
 -- Table: public.bbands
 
-
 CREATE TABLE bbands
 (
     bbands_key SERIAL PRIMARY KEY,
-    time_period numeric,
-    series_type character varying COLLATE pg_catalog."default",
-    nbdevup numeric,
-    nbdevdn numeric,
-    matype character varying COLLATE pg_catalog."default",
     real_middle_band numeric NOT NULL,
     real_upper_band numeric NOT NULL,
     real_lower_band numeric NOT NULL,
@@ -55,13 +62,10 @@ CREATE TABLE bbands
         ON DELETE CASCADE
 )
 
-
 -- Table: public.ema
 CREATE TABLE ema
 (
     ema_key SERIAL PRIMARY KEY,
-    series_type character varying COLLATE pg_catalog."default",
-    time_period numeric,
     ema numeric NOT NULL,
     daily_technicals_key integer NOT NULL,
     CONSTRAINT daily_technicals_fk FOREIGN KEY (daily_technicals_key)
@@ -75,10 +79,6 @@ CREATE TABLE ema
 CREATE TABLE macd
 (
     macd_key SERIAL PRIMARY KEY,
-    series_type character varying COLLATE pg_catalog."default",
-    fast_period numeric,
-    slow_period numeric,
-    signal_period numeric,
     macd_hist numeric,
     macd_signal numeric,
     macd numeric NOT NULL,

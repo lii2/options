@@ -20,10 +20,6 @@ public class EmaEntity {
     @Column(insertable = false, updatable = false)
     public int emaKey;
 
-    public String seriesType;
-
-    public Integer timePeriod;
-
     public BigDecimal ema;
 
     @Column(insertable = false, updatable = false)
@@ -37,10 +33,7 @@ public class EmaEntity {
     public String toString() {
         return "EmaEntity{" +
                 "emaKey=" + emaKey +
-                ", seriesType='" + seriesType + '\'' +
-                ", timePeriod=" + timePeriod +
                 ", ema=" + ema +
-                ", dailyTechnicalsKey=" + dailyTechnicalsKey +
                 '}';
     }
 }
