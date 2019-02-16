@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
@@ -13,7 +16,7 @@ import java.math.BigDecimal;
 @Table(name = "macd")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class MacdEntity {
 
     @Id
@@ -25,6 +28,13 @@ public class MacdEntity {
     private BigDecimal macdSignal;
 
     private BigDecimal macd;
+
+    public MacdEntity(BigDecimal macdHist, BigDecimal macdSignal, BigDecimal macd) {
+        this.macdKey = 0;
+        this.macdHist = macdHist;
+        this.macdSignal = macdSignal;
+        this.macd = macd;
+    }
 
     @Override
     public String toString() {

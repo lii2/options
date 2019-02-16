@@ -5,7 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
@@ -13,7 +16,7 @@ import java.math.BigDecimal;
 @Table(name = "bbands")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class BbandsEntity {
 
     @Id
@@ -25,6 +28,13 @@ public class BbandsEntity {
     public BigDecimal realUpperBand;
 
     public BigDecimal realLowerBand;
+
+    public BbandsEntity(BigDecimal realMiddleBand, BigDecimal realUpperBand, BigDecimal realLowerBand) {
+        this.bbandsKey = 0;
+        this.realMiddleBand = realMiddleBand;
+        this.realUpperBand = realUpperBand;
+        this.realLowerBand = realLowerBand;
+    }
 
     @Override
     public String toString() {
