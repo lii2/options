@@ -26,10 +26,6 @@ public class BbandsEntity {
 
     public BigDecimal realLowerBand;
 
-    @OneToOne
-    @JoinColumn(name = "dailyDataKey")
-    private DailyDataEntity dailyDataKey;
-
     @Override
     public String toString() {
         return "BbandsEntity{" +

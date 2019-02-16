@@ -26,7 +26,6 @@ public class DailyDataEntity {
     @JoinColumn(name = "dailyDataKey")
     private TimeSeriesDailyEntity timeSeriesDaily;
 
-
     @ManyToOne
     @JoinColumn(name = "tickerKey")
     private TickerEntity tickerEntity;
@@ -42,7 +41,6 @@ public class DailyDataEntity {
     @OneToOne
     @JoinColumn(name = "dailyDataKey")
     private EmaEntity emaEntity;
-
 
     @Override
     public String toString() {

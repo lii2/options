@@ -38,7 +38,8 @@ public class PersistDailyData {
             tickerRepository.save(new TickerEntity(tickerSymbol));
         }
 
-        // dailyDataRepository.save(new DailyDataEntity(day, tickerRepository.findByTickerSymbol(tickerSymbol).get()));
+        
+        DailyDataEntity dailyDataEntity = new DailyDataEntity(0, day );
 
     }
 }

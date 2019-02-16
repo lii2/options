@@ -26,10 +26,6 @@ public class MacdEntity {
 
     private BigDecimal macd;
 
-    @OneToOne
-    @JoinColumn(name = "dailyDataKey")
-    private DailyDataEntity dailyDataKey;
-
     @Override
     public String toString() {
         return "MacdEntity{" +

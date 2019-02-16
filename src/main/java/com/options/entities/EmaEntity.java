@@ -22,10 +22,6 @@ public class EmaEntity {
 
     public BigDecimal ema;
 
-    @OneToOne
-    @JoinColumn(name = "dailyDataKey")
-    public DailyDataEntity dailyDataEntity;
-
     @Override
     public String toString() {
         return "EmaEntity{" +

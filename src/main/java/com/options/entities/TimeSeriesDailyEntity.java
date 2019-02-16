@@ -20,9 +20,6 @@ public class TimeSeriesDailyEntity {
     @Column(insertable = false, updatable = false)
     private int timeSeriesDailyKey;
 
-    @Column(insertable = false, updatable = false)
-    private int dailyDataKey;
-
     private BigDecimal open;
 
     private BigDecimal close;
@@ -30,10 +27,6 @@ public class TimeSeriesDailyEntity {
     private BigDecimal high;
 
     private BigDecimal low;
-
-    @OneToOne
-    @JoinColumn(name = "dailyDataKey")
-    private DailyDataEntity dailyData;
 
     @Override
     public String toString() {
