@@ -26,12 +26,9 @@ public class MacdEntity {
 
     private BigDecimal macd;
 
-    @Column(insertable = false, updatable = false)
-    private int dailyTechnicalsKey;
-
     @OneToOne
-    @JoinColumn(name = "dailyTechnicalsKey")
-    private DailyTechnicalsEntity dailyTechnicals;
+    @JoinColumn(name = "dailyDataKey")
+    private DailyDataEntity dailyDataKey;
 
     @Override
     public String toString() {

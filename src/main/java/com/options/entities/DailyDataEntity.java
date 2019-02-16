@@ -22,32 +22,38 @@ public class DailyDataEntity {
     private int dailyDataKey;
     private LocalDate day;
 
-    public DailyDataEntity(LocalDate day, TickerEntity tickerEntity){
-        this.day = day;
-        this.tickerEntity = tickerEntity;
-    }
-
     @OneToOne
     @JoinColumn(name = "dailyDataKey")
     private TimeSeriesDailyEntity timeSeriesDaily;
 
-    @OneToOne
-    @JoinColumn(name = "dailyDataKey")
-    private DailyTechnicalsEntity dailyTechnicals;
 
     @ManyToOne
     @JoinColumn(name = "tickerKey")
     private TickerEntity tickerEntity;
 
+    @OneToOne
+    @JoinColumn(name = "dailyDataKey")
+    private MacdEntity macdEntity;
+
+    @OneToOne
+    @JoinColumn(name = "dailyDataKey")
+    private BbandsEntity bbandsEntity;
+
+    @OneToOne
+    @JoinColumn(name = "dailyDataKey")
+    private EmaEntity emaEntity;
+
+
     @Override
     public String toString() {
         return "DailyDataEntity{" +
                 "dailyDataKey=" + dailyDataKey +
-                ", ticker='" + tickerEntity + '\'' +
                 ", day=" + day +
                 ", timeSeriesDaily=" + timeSeriesDaily +
-                ", dailyTechnicals=" + dailyTechnicals +
+                ", macd=" + macdEntity +
+                ", bbands=" + bbandsEntity +
+                ", ema=" + emaEntity +
+                ", tickerEntity=" + tickerEntity +
                 '}';
     }
-
 }

@@ -22,9 +22,6 @@ public class PersistDailyData {
     TimeSeriesDailyRepository timeSeriesDailyRepository;
 
     @Autowired
-    DailyTechnicalsRepository dailyTechnicalsRepository;
-
-    @Autowired
     MacdRepository macdRepository;
 
     @Autowired
@@ -41,7 +38,7 @@ public class PersistDailyData {
             tickerRepository.save(new TickerEntity(tickerSymbol));
         }
 
-        dailyDataRepository.save(new DailyDataEntity(day, tickerRepository.findByTickerSymbol(tickerSymbol).get()));
+        // dailyDataRepository.save(new DailyDataEntity(day, tickerRepository.findByTickerSymbol(tickerSymbol).get()));
 
     }
 }

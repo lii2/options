@@ -22,12 +22,9 @@ public class EmaEntity {
 
     public BigDecimal ema;
 
-    @Column(insertable = false, updatable = false)
-    public int dailyTechnicalsKey;
-
     @OneToOne
-    @JoinColumn(name = "dailyTechnicalsKey")
-    public DailyTechnicalsEntity dailyTechnicals;
+    @JoinColumn(name = "dailyDataKey")
+    public DailyDataEntity dailyDataEntity;
 
     @Override
     public String toString() {
