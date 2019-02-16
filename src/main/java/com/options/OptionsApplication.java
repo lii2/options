@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@ComponentScan({"com.options.controller", "com.options.operations"})
+@ComponentScan({"com.options.controller", "com.options.operations", "com.options.operations.persist"})
 @EnableJpaRepositories(basePackages = "com.options.repositories")
 @EntityScan(basePackages = "com.options.entities")
 @SpringBootApplication

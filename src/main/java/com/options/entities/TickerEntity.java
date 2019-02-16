@@ -26,6 +26,10 @@ public class TickerEntity {
     @JoinColumn(name = "tickerKey")
     private List<DailyDataEntity> dailyDataList;
 
+    public TickerEntity(String tickerSymbol){
+        this.tickerSymbol = tickerSymbol;
+    }
+
     @Override
     public String toString() {
         return "TickerEntity{" +

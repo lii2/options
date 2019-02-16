@@ -1,5 +1,6 @@
 package com.options.entities;
 
+import com.google.common.base.Ticker;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,11 +20,12 @@ public class DailyDataEntity {
     @Id
     @Column(insertable = false, updatable = false)
     private int dailyDataKey;
-
-    @Column(insertable = false, updatable = false)
-    private int tickerKey;
-
     private LocalDate day;
+
+    public DailyDataEntity(LocalDate day, TickerEntity tickerEntity){
+        this.day = day;
+        this.tickerEntity = tickerEntity;
+    }
 
     @OneToOne
     @JoinColumn(name = "dailyDataKey")
