@@ -5,6 +5,7 @@ import com.options.domain.choice.Recommendation;
 import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;
+import com.options.operations.persist.DatabaseClient;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,22 +31,34 @@ public class OptionsController implements ApplicationContextAware {
     private AnalyzeDataOperation analyzeDataOperation;
     private SmartPersistOperation smartPersistOperation;
     private BacktestOperation backtestOperation;
+    private DatabaseClient databaseClient;
     private ApplicationContext context;
 
     @Autowired
     public OptionsController(
             AnalyzeDataOperation analyzeDataOperation,
             SmartPersistOperation smartPersistOperation,
-            BacktestOperation backtestOperation) {
+            BacktestOperation backtestOperation,
+            DatabaseClient databaseClient) {
+        this.databaseClient = databaseClient;
         this.analyzeDataOperation = analyzeDataOperation;
         this.smartPersistOperation = smartPersistOperation;
         this.backtestOperation = backtestOperation;
     }
 
-    @GetMapping("/test")
-    public String test(){
-        return smartPersistOperation.test();
+    @GetMapping("/getDailyDataById/{id}")
+    public String getDailyDataById(@PathVariable int id){
+        return databaseClient.getDailyDataById(id);
     }
+
+    @GetMapping("/persist")
+    public String persist(){
+        databaseClient.persistData("SPY", LocalDate.now(), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
+                BigDecimal.ONE, BigDecimal.ONE);
+        return "data persisted";
+    }
+
 
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
     public Recommendation quickAnalyze(@PathVariable String ticker) throws Exception {

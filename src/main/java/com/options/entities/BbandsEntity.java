@@ -5,10 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -20,7 +17,7 @@ import java.math.BigDecimal;
 public class BbandsEntity {
 
     @Id
-    @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     public int bbandsKey;
 
     public BigDecimal realMiddleBand;

@@ -113,8 +113,4 @@ public class SmartPersistOperation {
         return result.toString();
     }
 
-    public String test(){
-        return dailyDataRepository.findById(1).get().toString();
-    }
-
 }

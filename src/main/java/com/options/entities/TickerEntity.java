@@ -17,7 +17,7 @@ import java.util.List;
 public class TickerEntity {
 
     @Id
-    @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private int tickerKey;
 
     private String tickerSymbol;

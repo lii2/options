@@ -18,7 +18,7 @@ import java.time.LocalDate;
 public class DailyDataEntity {
 
     @Id
-    @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private int dailyDataKey;
     private LocalDate day;
 

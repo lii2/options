@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Component
-public class PersistDailyData {
+public class DatabaseClient {
 
     @Autowired
     TickerRepository tickerRepository;
@@ -38,13 +38,24 @@ public class PersistDailyData {
         }
 
         TimeSeriesDailyEntity timeSeriesDailyEntity = new TimeSeriesDailyEntity(0, open, close, high, low);
+        timeSeriesDailyRepository.save(timeSeriesDailyEntity);
+
         EmaEntity emaEntity = new EmaEntity(0, ema);
+        emaRepository.save(emaEntity);
+
         MacdEntity macdEntity = new MacdEntity(macdHist, macdSignal, macd);
+        macdRepository.save(macdEntity);
+
         BbandsEntity bbandsEntity = new BbandsEntity(realMiddleBand, realUpperBand, realLowerBand);
+        bbandsRepository.save(bbandsEntity);
 
         DailyDataEntity dailyDataEntity = new DailyDataEntity(0, day, timeSeriesDailyEntity,
                 tickerRepository.findByTickerSymbol(tickerSymbol).get(), macdEntity, bbandsEntity, emaEntity);
 
         dailyDataRepository.save(dailyDataEntity);
+    }
+
+    public String getDailyDataById(int id) {
+        return dailyDataRepository.findById(id).get().toString();
     }
 }

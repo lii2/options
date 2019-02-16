@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class TimeSeriesDailyEntity {
 
     @Id
-    @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private int timeSeriesDailyKey;
 
     private BigDecimal open;
