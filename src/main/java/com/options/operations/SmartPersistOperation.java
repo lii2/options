@@ -68,9 +68,10 @@ public class SmartPersistOperation {
                             new BigDecimal(timeSeriesRow[3]), new BigDecimal(timeSeriesRow[4]), new BigDecimal(emaRow[1]),
                             new BigDecimal(macdRow[1]), new BigDecimal(macdRow[2]), new BigDecimal(macdRow[3]),
                             new BigDecimal(bbandRow[1]), new BigDecimal(bbandRow[2]), new BigDecimal(bbandRow[3]));
-                    t++;
-                    result.append(timeSeriesRow[0]).append(" data appended\n");
+
+                    result.append(timeSeriesRow[0]).append(" data persisted to database\n");
                 }
+                t++;
             }
         }
         return result.toString();
