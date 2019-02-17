@@ -64,8 +64,8 @@ public class DatabaseClient {
         bbandsEntity.setRealMiddleBand(realMiddleBand);
         bbandsEntity.setRealUpperBand(realUpperBand);
 
-        // TODO: Figure this out if the database ever grows to 999999 rows.
-        DailyDataEntity dailyDataEntity = new DailyDataEntity(999999, day, timeSeriesDailyEntity,
+        // Let hibernate generate key automatically
+        DailyDataEntity dailyDataEntity = new DailyDataEntity(0, day, timeSeriesDailyEntity,
                 tickerRepository.findByTickerSymbol(tickerSymbol).get(), macdEntity, bbandsEntity, emaEntity);
 
         timeSeriesDailyEntity.setDailyDataEntity(dailyDataEntity);

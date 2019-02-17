@@ -18,6 +18,7 @@ public class EmaEntity {
 
     @Id
     @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int emaKey;
 
     public BigDecimal ema;

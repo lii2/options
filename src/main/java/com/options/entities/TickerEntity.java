@@ -18,6 +18,7 @@ public class TickerEntity {
 
     @Id
     @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int tickerKey;
 
     private String tickerSymbol;

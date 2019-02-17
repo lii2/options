@@ -18,9 +18,7 @@ import java.time.LocalDate;
 public class DailyDataEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "daily_data_key_generator")
-    @SequenceGenerator(name="daily_data_key_generator", sequenceName = "daily_data_daily_data_key_seq")
-    @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int dailyDataKey;
 
     private LocalDate day;

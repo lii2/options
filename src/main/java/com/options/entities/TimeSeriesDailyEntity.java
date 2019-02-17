@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 public class TimeSeriesDailyEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(insertable = false, updatable = false)
     private int timeSeriesDailyKey;
 

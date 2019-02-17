@@ -18,6 +18,7 @@ public class BbandsEntity {
 
     @Id
     @Column(insertable = false, updatable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int bbandsKey;
 
     private BigDecimal realMiddleBand;
