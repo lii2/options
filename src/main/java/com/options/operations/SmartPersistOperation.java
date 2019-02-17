@@ -47,6 +47,7 @@ public class SmartPersistOperation {
             int t = 1, e = 1, m = 1, b = 1;
 
             while (t < timeSeriesData.length) {
+                System.out.println("loop    : " + t);
                 String[] timeSeriesRow = timeSeriesData[t].split(",");
                 LocalDate day = parseDate(timeSeriesRow[0]);
                 if(!databaseClient.getDailyDataByDay(day).isPresent()) {
