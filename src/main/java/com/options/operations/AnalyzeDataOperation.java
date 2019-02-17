@@ -2,13 +2,9 @@ package com.options.operations;
 
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
-import com.options.entities.*;
+import com.options.entities.DailyDataEntity;
 import com.options.operations.analysis.EntranceStrategies;
 import com.options.operations.persist.DatabaseClient;
-import com.options.repositories.BbandDataRepository;
-import com.options.repositories.EmaDataRepository;
-import com.options.repositories.MacdDataRepository;
-import com.options.repositories.StockDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

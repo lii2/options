@@ -73,6 +73,7 @@ public class DatabaseClient {
         macdEntity.setDailyDataEntity(dailyDataEntity);
         bbandsEntity.setDailyDataEntity(dailyDataEntity);
 
+        System.out.println(dailyDataEntity);
         dailyDataRepository.save(dailyDataEntity);
     }
 

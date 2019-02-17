@@ -46,11 +46,6 @@ public class OptionsController implements ApplicationContextAware {
         this.backtestOperation = backtestOperation;
     }
 
-    @GetMapping("/getDailyDataById/{id}")
-    public String getDailyDataById(@PathVariable int id){
-        return databaseClient.getDailyDataById(id);
-    }
-
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
     public Recommendation quickAnalyze(@PathVariable String ticker) throws Exception {
         String output = getTickerData(ticker);

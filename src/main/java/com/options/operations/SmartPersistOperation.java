@@ -47,31 +47,30 @@ public class SmartPersistOperation {
             int t = 1, e = 1, m = 1, b = 1;
 
             while (t < timeSeriesData.length) {
-                System.out.println("loop    : " + t);
                 String[] timeSeriesRow = timeSeriesData[t].split(",");
                 LocalDate day = parseDate(timeSeriesRow[0]);
-                if(!databaseClient.getDailyDataByDay(day).isPresent()) {
-                    while (!emaData[e].contains(timeSeriesRow[0])) {
-                        e++;
-                    }
-                    while (!macdData[m].contains(timeSeriesRow[0])) {
-                        m++;
-                    }
-                    while (!bbandData[b].contains(timeSeriesRow[0])) {
-                        b++;
-                    }
+                if (!databaseClient.getDailyDataByDay(day).isPresent()) {
                     String[] emaRow = emaData[e].split(",");
                     String[] macdRow = macdData[m].split(",");
                     String[] bbandRow = bbandData[b].split(",");
+                    LocalDate emaDate = parseDate(emaRow[0]);
+                    LocalDate macdDate = parseDate(macdRow[0]);
+                    LocalDate bbandDate = parseDate(bbandRow[0]);
 
-                    databaseClient.persistData(tickerSymbol, day, new BigDecimal(timeSeriesRow[1]), new BigDecimal(timeSeriesRow[2]),
-                            new BigDecimal(timeSeriesRow[3]), new BigDecimal(timeSeriesRow[4]), new BigDecimal(emaRow[1]),
-                            new BigDecimal(macdRow[1]), new BigDecimal(macdRow[2]), new BigDecimal(macdRow[3]),
-                            new BigDecimal(bbandRow[1]), new BigDecimal(bbandRow[2]), new BigDecimal(bbandRow[3]));
-
+                    if (day.equals(emaDate)
+                            && day.equals(macdDate)
+                            && day.equals(bbandDate)) {
+                        databaseClient.persistData(tickerSymbol, day, new BigDecimal(timeSeriesRow[1]), new BigDecimal(timeSeriesRow[2]),
+                                new BigDecimal(timeSeriesRow[3]), new BigDecimal(timeSeriesRow[4]), new BigDecimal(emaRow[1]),
+                                new BigDecimal(macdRow[1]), new BigDecimal(macdRow[2]), new BigDecimal(macdRow[3]),
+                                new BigDecimal(bbandRow[1]), new BigDecimal(bbandRow[2]), new BigDecimal(bbandRow[3]));
+                    }
                     result.append(timeSeriesRow[0]).append(" data persisted to database\n");
                 }
                 t++;
+                e++;
+                m++;
+                b++;
             }
         }
         return result.toString();

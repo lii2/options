@@ -78,19 +78,28 @@ public class DailyData {
 
     public static List<DailyData> generateDailyData(List<DailyDataEntity> dailyDataEntities) {
         List<DailyData> dailyDataList = new ArrayList<>();
+
+
         for (DailyDataEntity dailyDataEntity : dailyDataEntities) {
-            DailyData dailyData = new DailyData();
-            dailyData.setTicker(dailyDataEntity.getTickerEntity().getTickerSymbol());
-            dailyData.setDay(dailyDataEntity.getDay());
-            dailyData.setOpen(dailyDataEntity.getTimeSeriesDaily().getOpen());
-            dailyData.setHigh(dailyDataEntity.getTimeSeriesDaily().getHigh());
-            dailyData.setLow(dailyDataEntity.getTimeSeriesDaily().getLow());
-            dailyData.setClose(dailyDataEntity.getTimeSeriesDaily().getClose());
-            dailyData.setEma(dailyDataEntity.getEmaEntity().getEma());
-            dailyData.setMacdHist(dailyDataEntity.getMacdEntity().getMacdHist());
-            dailyData.setRealLowerBand(dailyDataEntity.getBbandsEntity().getRealLowerBand());
-            dailyData.setRealUpperBand(dailyDataEntity.getBbandsEntity().getRealUpperBand());
-            dailyDataList.add(dailyData);
+            // For some reason, Hibernate makes some child entities null, only at the end.
+            // TODO: FIGURE OUT WHY AND FIX.
+            if (dailyDataEntity.getTimeSeriesDaily() != null
+                    && dailyDataEntity.getMacdEntity() != null
+                    && dailyDataEntity.getBbandsEntity() != null
+                    && dailyDataEntity.getEmaEntity() != null) {
+                DailyData dailyData = new DailyData();
+                dailyData.setTicker(dailyDataEntity.getTickerEntity().getTickerSymbol());
+                dailyData.setDay(dailyDataEntity.getDay());
+                dailyData.setOpen(dailyDataEntity.getTimeSeriesDaily().getOpen());
+                dailyData.setHigh(dailyDataEntity.getTimeSeriesDaily().getHigh());
+                dailyData.setLow(dailyDataEntity.getTimeSeriesDaily().getLow());
+                dailyData.setClose(dailyDataEntity.getTimeSeriesDaily().getClose());
+                dailyData.setEma(dailyDataEntity.getEmaEntity().getEma());
+                dailyData.setMacdHist(dailyDataEntity.getMacdEntity().getMacdHist());
+                dailyData.setRealLowerBand(dailyDataEntity.getBbandsEntity().getRealLowerBand());
+                dailyData.setRealUpperBand(dailyDataEntity.getBbandsEntity().getRealUpperBand());
+                dailyDataList.add(dailyData);
+            }
         }
 
         //  index Zero is the most recent data. By going from 0 to infinite we are going backwards.
@@ -101,6 +110,7 @@ public class DailyData {
         for (int i = 1; i < dailyDataList.size(); i++) {
             dailyDataList.get(i).setNextDaysData(dailyDataList.get(i - 1));
         }
+
         return dailyDataList;
     }
 
