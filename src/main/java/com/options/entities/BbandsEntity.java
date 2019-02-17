@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class BbandsEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @Column(insertable = false, updatable = false)
     public int bbandsKey;
 
     public BigDecimal realMiddleBand;

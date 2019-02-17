@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class EmaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @Column(insertable = false, updatable = false)
     public int emaKey;
 
     public BigDecimal ema;

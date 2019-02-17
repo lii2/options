@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class MacdEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @Column(insertable = false, updatable = false)
     private int macdKey;
 
     private BigDecimal macdHist;

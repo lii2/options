@@ -18,8 +18,9 @@ import java.time.LocalDate;
 public class DailyDataEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @Column(insertable = false, updatable = false)
     private int dailyDataKey;
+
     private LocalDate day;
 
     @OneToOne
