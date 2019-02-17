@@ -1,16 +1,12 @@
 package com.options.domain.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.options.entities.BbandData;
-import com.options.entities.EmaData;
-import com.options.entities.MacdData;
-import com.options.entities.StockData;
+import com.options.entities.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -29,12 +25,12 @@ public class DailyData {
     private BigDecimal high;
     private BigDecimal low;
     private BigDecimal close;
-    private BigInteger volume;
     private BigDecimal ema;
     private BigDecimal openCloseMean;
     private BigDecimal macdHist;
     private BigDecimal realLowerBand;
     private BigDecimal realUpperBand;
+
     @JsonIgnore
     private DailyData previousDaysData;
     @JsonIgnore
@@ -55,7 +51,6 @@ public class DailyData {
         this.high = stockData.getHigh();
         this.low = stockData.getLow();
         this.close = stockData.getClose();
-        this.volume = stockData.getVolume();
         this.ema = emaData.getEma();
         this.macdHist = macdData.getMacdHist();
         this.realLowerBand = bbandData.getRealLowerBand();
@@ -78,6 +73,34 @@ public class DailyData {
             dailyDataList.get(i).setNextDaysData(dailyDataList.get(i - 1));
         }
 
+        return dailyDataList;
+    }
+
+    public static List<DailyData> generateDailyData(List<DailyDataEntity> dailyDataEntities) {
+        List<DailyData> dailyDataList = new ArrayList<>();
+        for (DailyDataEntity dailyDataEntity : dailyDataEntities) {
+            DailyData dailyData = new DailyData();
+            dailyData.setTicker(dailyDataEntity.getTickerEntity().getTickerSymbol());
+            dailyData.setDay(dailyDataEntity.getDay());
+            dailyData.setOpen(dailyDataEntity.getTimeSeriesDaily().getOpen());
+            dailyData.setHigh(dailyDataEntity.getTimeSeriesDaily().getHigh());
+            dailyData.setLow(dailyDataEntity.getTimeSeriesDaily().getLow());
+            dailyData.setClose(dailyDataEntity.getTimeSeriesDaily().getClose());
+            dailyData.setEma(dailyDataEntity.getEmaEntity().getEma());
+            dailyData.setMacdHist(dailyDataEntity.getMacdEntity().getMacdHist());
+            dailyData.setRealLowerBand(dailyDataEntity.getBbandsEntity().getRealLowerBand());
+            dailyData.setRealUpperBand(dailyDataEntity.getBbandsEntity().getRealUpperBand());
+            dailyDataList.add(dailyData);
+        }
+
+        //  index Zero is the most recent data. By going from 0 to infinite we are going backwards.
+        for (int i = 0; i < dailyDataList.size() - 1; i++) {
+            dailyDataList.get(i).setPreviousDaysData(dailyDataList.get(i + 1));
+        }
+
+        for (int i = 1; i < dailyDataList.size(); i++) {
+            dailyDataList.get(i).setNextDaysData(dailyDataList.get(i - 1));
+        }
         return dailyDataList;
     }
 

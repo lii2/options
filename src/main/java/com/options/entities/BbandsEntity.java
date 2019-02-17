@@ -18,13 +18,13 @@ public class BbandsEntity {
 
     @Id
     @Column(insertable = false, updatable = false)
-    public int bbandsKey;
+    private int bbandsKey;
 
-    public BigDecimal realMiddleBand;
+    private BigDecimal realMiddleBand;
 
-    public BigDecimal realUpperBand;
+    private BigDecimal realUpperBand;
 
-    public BigDecimal realLowerBand;
+    private BigDecimal realLowerBand;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dailyDataKey")

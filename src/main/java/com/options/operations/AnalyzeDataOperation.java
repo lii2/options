@@ -2,11 +2,9 @@ package com.options.operations;
 
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
-import com.options.entities.BbandData;
-import com.options.entities.EmaData;
-import com.options.entities.MacdData;
-import com.options.entities.StockData;
+import com.options.entities.*;
 import com.options.operations.analysis.EntranceStrategies;
+import com.options.operations.persist.DatabaseClient;
 import com.options.repositories.BbandDataRepository;
 import com.options.repositories.EmaDataRepository;
 import com.options.repositories.MacdDataRepository;
@@ -21,21 +19,13 @@ import java.util.List;
 public class AnalyzeDataOperation {
 
     @Autowired
-    private StockDataRepository stockDataRepository;
-
-    @Autowired
-    private EmaDataRepository emaDataRepository;
-
-    @Autowired
-    private MacdDataRepository macdDataRepository;
-
-    @Autowired
-    private BbandDataRepository bbandDataRepository;
+    private DatabaseClient databaseClient;
 
     private int daysOfData;
 
     private List<DailyData> dailyDataList;
 
+    @Autowired
     public AnalyzeDataOperation() {
         this.daysOfData = 30;
     }
@@ -58,11 +48,7 @@ public class AnalyzeDataOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        EmaData[] lastXDaysEmaData = emaDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(EmaData[]::new);
-        StockData[] lastXDaysStockData = stockDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(StockData[]::new);
-        MacdData[] lastXDaysMacdData = macdDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(MacdData[]::new);
-        BbandData[] lastXDaysBbandData = bbandDataRepository.getLastXDays(ticker, daysOfData).stream().toArray(BbandData[]::new);
-        dailyDataList = DailyData.generateDailyData(lastXDaysStockData, lastXDaysEmaData, lastXDaysMacdData, lastXDaysBbandData);
+        dailyDataList = DailyData.generateDailyData(databaseClient.getLast100DaysData(ticker));
     }
 
     public void setDaysOfData(int daysOfData) {

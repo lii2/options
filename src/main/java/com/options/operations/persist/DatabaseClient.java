@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -18,6 +21,21 @@ public class DatabaseClient {
 
     @Autowired
     DailyDataRepository dailyDataRepository;
+
+    // The tickerSymbol is the key, the tickerKey is the value.
+    private final Map<String, Integer> tickerMap;
+
+    @Autowired
+    public DatabaseClient(TickerRepository tickerRepository,
+                          DailyDataRepository dailyDataRepository) {
+        this.tickerRepository = tickerRepository;
+        this.dailyDataRepository = dailyDataRepository;
+        this.tickerMap = new HashMap<>();
+        for (TickerEntity tickerEntity : tickerRepository.findAll()) {
+            tickerMap.put(tickerEntity.getTickerSymbol(), tickerEntity.getTickerKey());
+        }
+
+    }
 
     public void persistData(String tickerSymbol, LocalDate day, BigDecimal open, BigDecimal high, BigDecimal low,
                             BigDecimal close, BigDecimal ema, BigDecimal macd, BigDecimal macdHist, BigDecimal macdSignal,
@@ -64,5 +82,9 @@ public class DatabaseClient {
 
     public Optional<DailyDataEntity> getDailyDataByDay(LocalDate day) {
         return dailyDataRepository.findByDay(day);
+    }
+
+    public List<DailyDataEntity> getLast100DaysData(String tickerSymbol) {
+        return dailyDataRepository.findLastXDaysByTickerKey(tickerMap.get(tickerSymbol), 100);
     }
 }
