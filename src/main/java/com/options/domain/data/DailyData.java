@@ -36,46 +36,6 @@ public class DailyData {
     @JsonIgnore
     private DailyData nextDaysData;
 
-    public DailyData(StockData stockData, EmaData emaData, MacdData macdData, BbandData bbandData) {
-        if (!emaData.getEmaDataKey().getDay().equals(stockData.getStockDataKey().getDay())
-                || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(stockData.getStockDataKey().getTicker())
-                || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(macdData.getMacdDataKey().getTicker())
-                || !emaData.getEmaDataKey().getTicker().equalsIgnoreCase(bbandData.getBbandDataKey().getTicker())
-                || !emaData.getEmaDataKey().getDay().equals(macdData.getMacdDataKey().getDay())
-                || !emaData.getEmaDataKey().getDay().equals(bbandData.getBbandDataKey().getDay())) {
-            throw new UnsyncedDataException("Trying to created a DailyData object with unsynced data");
-        }
-        this.day = emaData.getEmaDataKey().getDay();
-        this.ticker = emaData.getEmaDataKey().getTicker();
-        this.open = stockData.getOpen();
-        this.high = stockData.getHigh();
-        this.low = stockData.getLow();
-        this.close = stockData.getClose();
-        this.ema = emaData.getEma();
-        this.macdHist = macdData.getMacdHist();
-        this.realLowerBand = bbandData.getRealLowerBand();
-        this.realUpperBand = bbandData.getRealUpperBand();
-    }
-
-    public static List<DailyData> generateDailyData(StockData[] stockData, EmaData[] emaData, MacdData[] macdData, BbandData[] bbandData) {
-        List<DailyData> dailyDataList = new ArrayList<>();
-        for (int i = 0; i < stockData.length; i++) {
-            DailyData dailyData = new DailyData(stockData[i], emaData[i], macdData[i], bbandData[i]);
-            dailyDataList.add(dailyData);
-        }
-
-        //  index Zero is the most recent data. By going from 0 to infinite we are going backwards.
-        for (int i = 0; i < stockData.length - 1; i++) {
-            dailyDataList.get(i).setPreviousDaysData(dailyDataList.get(i + 1));
-        }
-
-        for (int i = 1; i < stockData.length; i++) {
-            dailyDataList.get(i).setNextDaysData(dailyDataList.get(i - 1));
-        }
-
-        return dailyDataList;
-    }
-
     public static List<DailyData> generateDailyData(List<DailyDataEntity> dailyDataEntities) {
         List<DailyData> dailyDataList = new ArrayList<>();
 
