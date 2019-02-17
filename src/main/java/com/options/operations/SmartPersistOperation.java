@@ -1,112 +1,74 @@
 package com.options.operations;
 
 import com.options.domain.alphavantage.AlphaVantageClient;
-import com.options.entities.BbandData;
-import com.options.entities.EmaData;
-import com.options.entities.MacdData;
-import com.options.entities.StockData;
-import com.options.repositories.*;
+import com.options.operations.persist.DatabaseClient;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class SmartPersistOperation {
 
     @Autowired
-    private StockDataRepository stockDataRepository;
-
-    @Autowired
-    private EmaDataRepository emaDataRepository;
-
-    @Autowired
-    private MacdDataRepository macdDataRepository;
-
-    @Autowired
-    private BbandDataRepository bbandDataRepository;
-
-    @Autowired
-    private DailyDataRepository dailyDataRepository;
+    private DatabaseClient databaseClient;
 
     private AlphaVantageClient alphaVantageClient;
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+
+    private LocalDate parseDate(String dateString) {
+        if (dateString.length() > 10) {
+            return LocalDate.parse(dateString.substring(0, 10), DATE_TIME_FORMATTER);
+        } else
+            return LocalDate.parse(dateString, DATE_TIME_FORMATTER);
+    }
 
     public SmartPersistOperation() {
         alphaVantageClient = new AlphaVantageClient();
     }
 
-    public String execute(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
-        return getData(ticker);
-    }
-
-    private String getData(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
-        return smartPersist(ticker);
-    }
-
-    private String smartPersist(String ticker) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    public String smartPersist(String tickerSymbol) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         StringBuilder result = new StringBuilder();
         // TODO: Check if data from today is already in database, if so, skip persistance
-        if (StringUtils.isNotBlank(ticker)) {
-            ticker = ticker.toUpperCase();
-            StockData lastStockData = stockDataRepository.getLatestRecord(ticker);
-            List<StockData> stockDataList = alphaVantageClient.getLast100DaysTimeSeriesData(ticker);
-            if (lastStockData == null) {
-                for (StockData stockData : stockDataList) {
-                    stockDataRepository.save(stockData);
-                    result.append(stockData.getStockDataKey().getDay()).append(" data saved.\n");
-                }
-            } else {
-                for (StockData stockData : stockDataList) {
-                    if (lastStockData.getStockDataKey().getDay().isBefore(stockData.getStockDataKey().getDay())) {
-                        stockDataRepository.save(stockData);
-                        result.append(stockData.getStockDataKey().getDay()).append(" data saved.\n");
-                    }
-                }
-            }
+        if (StringUtils.isNotBlank(tickerSymbol)) {
+            tickerSymbol = tickerSymbol.toUpperCase();
+            String[] timeSeriesData = alphaVantageClient.getLast100DaysTimeSeriesData(tickerSymbol);
+            String[] emaData = alphaVantageClient.getLast100DaysEmaData(tickerSymbol, "10");
+            String[] macdData = alphaVantageClient.getMacdData(tickerSymbol);
+            String[] bbandData = alphaVantageClient.getBbandData(tickerSymbol);
 
-            EmaData lastEmaData = emaDataRepository.getLatestRecord(ticker);
-            List<EmaData> emaDataList = alphaVantageClient.getLast100DaysEmaData(ticker, "10");
-            if (lastEmaData == null) {
-                for (EmaData emaData : emaDataList) {
-                    emaDataRepository.save(emaData);
-                }
-            } else {
-                for (EmaData emaData : emaDataList) {
-                    if (lastEmaData.getEmaDataKey().getDay().isBefore(emaData.getEmaDataKey().getDay())) {
-                        emaDataRepository.save(emaData);
-                    }
-                }
-            }
+            int t = 1, e = 1, m = 1, b = 1;
 
-            MacdData lastMacdData = macdDataRepository.getLatestRecord(ticker);
-            List<MacdData> macdDataList = alphaVantageClient.getMacdData(ticker);
-            if (lastMacdData == null) {
-                for (MacdData macdData : macdDataList) {
-                    macdDataRepository.save(macdData);
-                }
-            } else {
-                for (MacdData macdData : macdDataList) {
-                    if (lastMacdData.getMacdDataKey().getDay().isBefore(macdData.getMacdDataKey().getDay())) {
-                        macdDataRepository.save(macdData);
+            while (t < timeSeriesData.length) {
+                String[] timeSeriesRow = timeSeriesData[t].split(",");
+                LocalDate day = parseDate(timeSeriesRow[0]);
+                if(!databaseClient.getDailyDataByDay(day).isPresent()) {
+                    while (!emaData[e].contains(timeSeriesRow[0])) {
+                        e++;
                     }
-                }
-            }
+                    while (!macdData[m].contains(timeSeriesRow[0])) {
+                        m++;
+                    }
+                    while (!bbandData[b].contains(timeSeriesRow[0])) {
+                        b++;
+                    }
+                    String[] emaRow = emaData[e].split(",");
+                    String[] macdRow = macdData[m].split(",");
+                    String[] bbandRow = bbandData[b].split(",");
 
-            BbandData lastBbandData = bbandDataRepository.getLatestRecord(ticker);
-            List<BbandData> bbandDataList = alphaVantageClient.getBbandData(ticker);
-            if (lastBbandData == null) {
-                for (BbandData bbandData : bbandDataList) {
-                    bbandDataRepository.save(bbandData);
-                }
-            } else {
-                for (BbandData bbandData : bbandDataList) {
-                    if (lastBbandData.getBbandDataKey().getDay().isBefore(bbandData.getBbandDataKey().getDay())) {
-                        bbandDataRepository.save(bbandData);
-                    }
+                    databaseClient.persistData(tickerSymbol, day, new BigDecimal(timeSeriesRow[1]), new BigDecimal(timeSeriesRow[2]),
+                            new BigDecimal(timeSeriesRow[3]), new BigDecimal(timeSeriesRow[4]), new BigDecimal(emaRow[1]),
+                            new BigDecimal(macdRow[1]), new BigDecimal(macdRow[2]), new BigDecimal(macdRow[3]),
+                            new BigDecimal(bbandRow[1]), new BigDecimal(bbandRow[2]), new BigDecimal(bbandRow[3]));
+                    t++;
+                    result.append(timeSeriesRow[0]).append(" data appended\n");
                 }
             }
         }

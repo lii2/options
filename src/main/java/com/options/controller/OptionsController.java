@@ -51,15 +51,6 @@ public class OptionsController implements ApplicationContextAware {
         return databaseClient.getDailyDataById(id);
     }
 
-    @GetMapping("/persist")
-    public String persist(){
-        databaseClient.persistData("SPY", LocalDate.now(), BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE, BigDecimal.ONE,
-                BigDecimal.ONE, BigDecimal.ONE);
-        return "data persisted";
-    }
-
-
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
     public Recommendation quickAnalyze(@PathVariable String ticker) throws Exception {
         String output = getTickerData(ticker);
@@ -101,7 +92,7 @@ public class OptionsController implements ApplicationContextAware {
     private String getTickerData(String ticker) throws Exception {
         if (ticker == null || StringUtils.isBlank(ticker))
             ticker = defaultTicker;
-        String result = smartPersistOperation.execute(ticker);
+        String result = smartPersistOperation.smartPersist(ticker);
         return result.isEmpty()
                 ? noNewDataFetched
                 : result;

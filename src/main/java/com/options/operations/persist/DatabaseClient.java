@@ -1,12 +1,14 @@
 package com.options.operations.persist;
 
 import com.options.entities.*;
-import com.options.repositories.*;
+import com.options.repositories.DailyDataRepository;
+import com.options.repositories.TickerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 public class DatabaseClient {
@@ -17,21 +19,9 @@ public class DatabaseClient {
     @Autowired
     DailyDataRepository dailyDataRepository;
 
-    @Autowired
-    TimeSeriesDailyRepository timeSeriesDailyRepository;
-
-    @Autowired
-    MacdRepository macdRepository;
-
-    @Autowired
-    BbandsRepository bbandsRepository;
-
-    @Autowired
-    EmaRepository emaRepository;
-
-    public void persistData(String tickerSymbol, LocalDate day, BigDecimal open, BigDecimal close, BigDecimal high,
-                            BigDecimal low, BigDecimal ema, BigDecimal macdHist, BigDecimal macdSignal, BigDecimal macd,
-                            BigDecimal realMiddleBand, BigDecimal realUpperBand, BigDecimal realLowerBand) {
+    public void persistData(String tickerSymbol, LocalDate day, BigDecimal open, BigDecimal high, BigDecimal low,
+                            BigDecimal close, BigDecimal ema, BigDecimal macd, BigDecimal macdHist, BigDecimal macdSignal,
+                            BigDecimal realLowerBand, BigDecimal realMiddleBand, BigDecimal realUpperBand) {
         // Save ticker symbol if not there
         if (!tickerRepository.findByTickerSymbol(tickerSymbol).isPresent()) {
             tickerRepository.save(new TickerEntity(tickerSymbol));
@@ -56,7 +46,8 @@ public class DatabaseClient {
         bbandsEntity.setRealMiddleBand(realMiddleBand);
         bbandsEntity.setRealUpperBand(realUpperBand);
 
-        DailyDataEntity dailyDataEntity = new DailyDataEntity(0, day, timeSeriesDailyEntity,
+        // TODO: Figure this out if the database ever grows to 999999 rows.
+        DailyDataEntity dailyDataEntity = new DailyDataEntity(999999, day, timeSeriesDailyEntity,
                 tickerRepository.findByTickerSymbol(tickerSymbol).get(), macdEntity, bbandsEntity, emaEntity);
 
         timeSeriesDailyEntity.setDailyDataEntity(dailyDataEntity);
@@ -69,5 +60,9 @@ public class DatabaseClient {
 
     public String getDailyDataById(int id) {
         return dailyDataRepository.findById(id).get().toString();
+    }
+
+    public Optional<DailyDataEntity> getDailyDataByDay(LocalDate day) {
+        return dailyDataRepository.findByDay(day);
     }
 }
