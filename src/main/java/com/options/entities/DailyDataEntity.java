@@ -23,23 +23,23 @@ public class DailyDataEntity {
 
     private LocalDate day;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dailyDataKey")
     private TimeSeriesDailyEntity timeSeriesDaily;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "tickerKey")
     private TickerEntity tickerEntity;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dailyDataKey")
     private MacdEntity macdEntity;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dailyDataKey")
     private BbandsEntity bbandsEntity;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "dailyDataKey")
     private EmaEntity emaEntity;
 

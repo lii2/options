@@ -22,7 +22,7 @@ public class TickerEntity {
 
     private String tickerSymbol;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "tickerKey")
     private List<DailyDataEntity> dailyDataList;
 

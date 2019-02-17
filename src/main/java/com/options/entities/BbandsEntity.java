@@ -26,12 +26,9 @@ public class BbandsEntity {
 
     public BigDecimal realLowerBand;
 
-    public BbandsEntity(BigDecimal realMiddleBand, BigDecimal realUpperBand, BigDecimal realLowerBand) {
-        this.bbandsKey = 0;
-        this.realMiddleBand = realMiddleBand;
-        this.realUpperBand = realUpperBand;
-        this.realLowerBand = realLowerBand;
-    }
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dailyDataKey")
+    private DailyDataEntity dailyDataEntity;
 
     @Override
     public String toString() {

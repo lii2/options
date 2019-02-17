@@ -28,6 +28,10 @@ public class TimeSeriesDailyEntity {
 
     private BigDecimal low;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dailyDataKey")
+    private DailyDataEntity dailyDataEntity;
+
     @Override
     public String toString() {
         return "TimeSeriesDailyEntity{" +

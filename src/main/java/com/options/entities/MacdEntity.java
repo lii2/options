@@ -26,12 +26,9 @@ public class MacdEntity {
 
     private BigDecimal macd;
 
-    public MacdEntity(BigDecimal macdHist, BigDecimal macdSignal, BigDecimal macd) {
-        this.macdKey = 0;
-        this.macdHist = macdHist;
-        this.macdSignal = macdSignal;
-        this.macd = macd;
-    }
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "dailyDataKey")
+    private DailyDataEntity dailyDataEntity;
 
     @Override
     public String toString() {

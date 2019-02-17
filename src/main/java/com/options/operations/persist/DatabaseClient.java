@@ -37,20 +37,32 @@ public class DatabaseClient {
             tickerRepository.save(new TickerEntity(tickerSymbol));
         }
 
-        TimeSeriesDailyEntity timeSeriesDailyEntity = new TimeSeriesDailyEntity(0, open, close, high, low);
-        timeSeriesDailyRepository.save(timeSeriesDailyEntity);
+        TimeSeriesDailyEntity timeSeriesDailyEntity = new TimeSeriesDailyEntity();
+        timeSeriesDailyEntity.setOpen(open);
+        timeSeriesDailyEntity.setClose(close);
+        timeSeriesDailyEntity.setHigh(high);
+        timeSeriesDailyEntity.setLow(low);
 
-        EmaEntity emaEntity = new EmaEntity(0, ema);
-        emaRepository.save(emaEntity);
+        EmaEntity emaEntity = new EmaEntity();
+        emaEntity.setEma(ema);
 
-        MacdEntity macdEntity = new MacdEntity(macdHist, macdSignal, macd);
-        macdRepository.save(macdEntity);
+        MacdEntity macdEntity = new MacdEntity();
+        macdEntity.setMacdHist(macdHist);
+        macdEntity.setMacdSignal(macdSignal);
+        macdEntity.setMacd(macd);
 
-        BbandsEntity bbandsEntity = new BbandsEntity(realMiddleBand, realUpperBand, realLowerBand);
-        bbandsRepository.save(bbandsEntity);
+        BbandsEntity bbandsEntity = new BbandsEntity();
+        bbandsEntity.setRealLowerBand(realLowerBand);
+        bbandsEntity.setRealMiddleBand(realMiddleBand);
+        bbandsEntity.setRealUpperBand(realUpperBand);
 
         DailyDataEntity dailyDataEntity = new DailyDataEntity(0, day, timeSeriesDailyEntity,
                 tickerRepository.findByTickerSymbol(tickerSymbol).get(), macdEntity, bbandsEntity, emaEntity);
+
+        timeSeriesDailyEntity.setDailyDataEntity(dailyDataEntity);
+        emaEntity.setDailyDataEntity(dailyDataEntity);
+        macdEntity.setDailyDataEntity(dailyDataEntity);
+        bbandsEntity.setDailyDataEntity(dailyDataEntity);
 
         dailyDataRepository.save(dailyDataEntity);
     }
