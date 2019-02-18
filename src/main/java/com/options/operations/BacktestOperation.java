@@ -4,14 +4,7 @@ import com.options.domain.backtest.BacktestResponse;
 import com.options.domain.backtest.RecommendationResult;
 import com.options.domain.choice.Recommendation;
 import com.options.domain.data.DailyData;
-import com.options.entities.BbandData;
-import com.options.entities.EmaData;
-import com.options.entities.MacdData;
-import com.options.entities.StockData;
-import com.options.repositories.BbandDataRepository;
-import com.options.repositories.EmaDataRepository;
-import com.options.repositories.MacdDataRepository;
-import com.options.repositories.StockDataRepository;
+import com.options.operations.persist.DatabaseClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,16 +21,7 @@ public class BacktestOperation {
     private List<DailyData> dailyDataList;
     private int daysToTest;
     @Autowired
-    private StockDataRepository stockDataRepository;
-
-    @Autowired
-    private EmaDataRepository emaDataRepository;
-
-    @Autowired
-    private MacdDataRepository macdDataRepository;
-
-    @Autowired
-    private BbandDataRepository bbandDataRepository;
+    private DatabaseClient databaseClient;
 
     public BacktestOperation() {
         this.daysToTest = 100;
@@ -99,11 +83,7 @@ public class BacktestOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        EmaData[] emaData = emaDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(EmaData[]::new);
-        StockData[] stockData = stockDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(StockData[]::new);
-        MacdData[] macdData = macdDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(MacdData[]::new);
-        BbandData[] lastXDaysBbandData = bbandDataRepository.getLastXDays(ticker, daysToTest).stream().toArray(BbandData[]::new);
-        dailyDataList = DailyData.generateDailyData(stockData, emaData, macdData, lastXDaysBbandData);
+        dailyDataList = DailyData.generateDailyData(databaseClient.getLast100DaysData(ticker));
     }
 
     private Recommendation getRecommendationByDate(LocalDate LocalDate) {

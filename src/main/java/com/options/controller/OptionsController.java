@@ -5,6 +5,7 @@ import com.options.domain.choice.Recommendation;
 import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;
+import com.options.operations.persist.DatabaseClient;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -28,13 +31,16 @@ public class OptionsController implements ApplicationContextAware {
     private AnalyzeDataOperation analyzeDataOperation;
     private SmartPersistOperation smartPersistOperation;
     private BacktestOperation backtestOperation;
+    private DatabaseClient databaseClient;
     private ApplicationContext context;
 
     @Autowired
     public OptionsController(
             AnalyzeDataOperation analyzeDataOperation,
             SmartPersistOperation smartPersistOperation,
-            BacktestOperation backtestOperation) {
+            BacktestOperation backtestOperation,
+            DatabaseClient databaseClient) {
+        this.databaseClient = databaseClient;
         this.analyzeDataOperation = analyzeDataOperation;
         this.smartPersistOperation = smartPersistOperation;
         this.backtestOperation = backtestOperation;
@@ -81,7 +87,7 @@ public class OptionsController implements ApplicationContextAware {
     private String getTickerData(String ticker) throws Exception {
         if (ticker == null || StringUtils.isBlank(ticker))
             ticker = defaultTicker;
-        String result = smartPersistOperation.execute(ticker);
+        String result = smartPersistOperation.smartPersist(ticker);
         return result.isEmpty()
                 ? noNewDataFetched
                 : result;
