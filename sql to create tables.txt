@@ -13,14 +13,17 @@ select * from macd;
 select * from bbands;
 select * from ema;
 
+delete from daily_data where daily_data_key = 203;
+
+select sequence_schema, sequence_name
+from information_schema.sequences;
+
 --drop table ema
 --drop table bbands
 --drop table macd
 --drop table time_series_daily
 --drop table daily_data
 --drop table ticker
-
-
 
 -- Table: public.ticker
 CREATE TABLE ticker
@@ -37,7 +40,7 @@ CREATE TABLE daily_data
      "day" date NOT NULL,
     CONSTRAINT ticker_key_fk FOREIGN KEY (ticker_key)
          REFERENCES public.ticker (ticker_key) MATCH SIMPLE
-         ON UPDATE NO ACTION
+         ON UPDATE CASCADE
          ON DELETE CASCADE
 )
 
@@ -52,7 +55,7 @@ CREATE TABLE public.time_series_daily
     low numeric NOT NULL,
      CONSTRAINT daily_data_fk FOREIGN KEY (daily_data_key)
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
 
@@ -66,7 +69,7 @@ CREATE TABLE bbands
     daily_data_key integer NOT NULL,
      CONSTRAINT daily_data_fk FOREIGN KEY (daily_data_key)
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
 
@@ -78,7 +81,7 @@ CREATE TABLE ema
       daily_data_key integer NOT NULL,
      CONSTRAINT daily_data_fk FOREIGN KEY (daily_data_key)
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
 
@@ -92,6 +95,6 @@ CREATE TABLE macd
      daily_data_key integer NOT NULL,
      CONSTRAINT daily_data_fk FOREIGN KEY (daily_data_key)
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
-        ON UPDATE NO ACTION
+        ON UPDATE CASCADE
         ON DELETE CASCADE
 )
