@@ -44,15 +44,15 @@ public class SmartPersistOperation {
             String[] macdData = alphaVantageClient.getMacdData(tickerSymbol);
             String[] bbandData = alphaVantageClient.getBbandData(tickerSymbol);
 
-            int t = 1, e = 1, m = 1, b = 1;
+            int timeSeriesIndex = 1, emaDataIndex = 1, macdDataIndex = 1, bbandDataIndex = 1;
 
-            while (t < timeSeriesData.length) {
-                String[] timeSeriesRow = timeSeriesData[t].split(",");
+            while (timeSeriesIndex < timeSeriesData.length) {
+                String[] timeSeriesRow = timeSeriesData[timeSeriesIndex].split(",");
                 LocalDate day = parseDate(timeSeriesRow[0]);
                 if (!databaseClient.getDailyDataByDay(day).isPresent()) {
-                    String[] emaRow = emaData[e].split(",");
-                    String[] macdRow = macdData[m].split(",");
-                    String[] bbandRow = bbandData[b].split(",");
+                    String[] emaRow = emaData[emaDataIndex].split(",");
+                    String[] macdRow = macdData[macdDataIndex].split(",");
+                    String[] bbandRow = bbandData[bbandDataIndex].split(",");
                     LocalDate emaDate = parseDate(emaRow[0]);
                     LocalDate macdDate = parseDate(macdRow[0]);
                     LocalDate bbandDate = parseDate(bbandRow[0]);
@@ -67,10 +67,10 @@ public class SmartPersistOperation {
                     }
                     result.append(timeSeriesRow[0]).append(" data persisted to database\n");
                 }
-                t++;
-                e++;
-                m++;
-                b++;
+                timeSeriesIndex++;
+                emaDataIndex++;
+                macdDataIndex++;
+                bbandDataIndex++;
             }
         }
         return result.toString();
