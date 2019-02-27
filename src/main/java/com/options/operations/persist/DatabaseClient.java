@@ -23,17 +23,15 @@ public class DatabaseClient {
     DailyDataRepository dailyDataRepository;
 
     // The tickerSymbol is the key, the tickerKey is the value.
-    private final Map<String, Integer> tickerMap;
+    private Map<String, Integer> tickerMap;
 
     @Autowired
     public DatabaseClient(TickerRepository tickerRepository,
                           DailyDataRepository dailyDataRepository) {
         this.tickerRepository = tickerRepository;
         this.dailyDataRepository = dailyDataRepository;
-        this.tickerMap = new HashMap<>();
-        for (TickerEntity tickerEntity : tickerRepository.findAll()) {
-            tickerMap.put(tickerEntity.getTickerSymbol(), tickerEntity.getTickerKey());
-        }
+
+        fillTickerMap();
 
     }
 
@@ -86,6 +84,16 @@ public class DatabaseClient {
     }
 
     public List<DailyDataEntity> getLast100DaysData(String tickerSymbol) {
+        if(tickerMap == null){
+            fillTickerMap();
+        }
         return dailyDataRepository.findLastXDaysByTickerKey(tickerMap.get(tickerSymbol), 100);
+    }
+
+    private void fillTickerMap(){
+        this.tickerMap = new HashMap<>();
+        for (TickerEntity tickerEntity : tickerRepository.findAll()) {
+            tickerMap.put(tickerEntity.getTickerSymbol(), tickerEntity.getTickerKey());
+        }
     }
 }
