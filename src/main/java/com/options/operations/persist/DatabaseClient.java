@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -22,16 +20,11 @@ public class DatabaseClient {
     @Autowired
     DailyDataRepository dailyDataRepository;
 
-    // The tickerSymbol is the key, the tickerKey is the value.
-    private Map<String, Integer> tickerMap;
-
     @Autowired
     public DatabaseClient(TickerRepository tickerRepository,
                           DailyDataRepository dailyDataRepository) {
         this.tickerRepository = tickerRepository;
         this.dailyDataRepository = dailyDataRepository;
-
-        fillTickerMap();
 
     }
 
@@ -84,16 +77,15 @@ public class DatabaseClient {
     }
 
     public List<DailyDataEntity> getLast100DaysData(String tickerSymbol) {
-        if(tickerMap == null){
-            fillTickerMap();
-        }
-        return dailyDataRepository.findLastXDaysByTickerKey(tickerMap.get(tickerSymbol), 100);
+        return dailyDataRepository.findLastXDaysByTickerKey(getTickerKey(tickerSymbol), 100);
     }
 
-    private void fillTickerMap(){
-        this.tickerMap = new HashMap<>();
+    private int getTickerKey(String tickerSymbol) {
         for (TickerEntity tickerEntity : tickerRepository.findAll()) {
-            tickerMap.put(tickerEntity.getTickerSymbol(), tickerEntity.getTickerKey());
+            if (tickerEntity.getTickerSymbol().equalsIgnoreCase(tickerSymbol)) {
+                return tickerEntity.getTickerKey();
+            }
         }
+        throw new RuntimeException("Ticker symbol not found in database");
     }
 }
