@@ -1,8 +1,6 @@
-package com.options.operations.analysis;
+package com.options.analysis;
 
-import com.options.backtest.Recommendation;
 import com.options.data.DailyData;
-import com.options.trend.Trend;
 
 import java.math.BigDecimal;
 import java.util.List;

@@ -2,7 +2,7 @@ package com.options.operations;
 
 import com.options.json.BacktestResponse;
 import com.options.backtest.RecommendationResult;
-import com.options.backtest.Recommendation;
+import com.options.analysis.Recommendation;
 import com.options.data.DailyData;
 import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;

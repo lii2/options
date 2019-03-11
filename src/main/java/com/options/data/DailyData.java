@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.options.trend.ImportantNumbers.BIG_DECIMAL_TWO;
+import static com.options.data.ImportantNumbers.BIG_DECIMAL_TWO;
 
 @Data
 @NoArgsConstructor

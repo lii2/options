@@ -1,7 +1,7 @@
 package com.options.controller;
 
 import com.options.json.BacktestResponse;
-import com.options.backtest.Recommendation;
+import com.options.analysis.Recommendation;
 import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;

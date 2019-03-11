@@ -1,8 +1,8 @@
 package com.options.operations;
 
-import com.options.backtest.Recommendation;
+import com.options.analysis.Recommendation;
 import com.options.data.DailyData;
-import com.options.operations.analysis.EntranceStrategies;
+import com.options.analysis.EntranceStrategies;
 import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
