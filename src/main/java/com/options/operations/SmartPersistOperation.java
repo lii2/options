@@ -1,7 +1,7 @@
 package com.options.operations;
 
-import com.options.domain.alphavantage.AlphaVantageClient;
-import com.options.operations.persist.DatabaseClient;
+import com.options.clients.alphavantage.AlphaVantageClient;
+import com.options.clients.database.PostgreClient;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 public class SmartPersistOperation {
 
     @Autowired
-    private DatabaseClient databaseClient;
+    private PostgreClient postgreClient;
 
     private AlphaVantageClient alphaVantageClient;
 
@@ -49,7 +49,7 @@ public class SmartPersistOperation {
             while (timeSeriesIndex < timeSeriesData.length) {
                 String[] timeSeriesRow = timeSeriesData[timeSeriesIndex].split(",");
                 LocalDate day = parseDate(timeSeriesRow[0]);
-                if (!databaseClient.getDailyDataByDay(day).isPresent()) {
+                if (!postgreClient.getDailyDataByDay(day).isPresent()) {
                     String[] emaRow = emaData[emaDataIndex].split(",");
                     String[] macdRow = macdData[macdDataIndex].split(",");
                     String[] bbandRow = bbandData[bbandDataIndex].split(",");
@@ -60,7 +60,7 @@ public class SmartPersistOperation {
                     if (day.equals(emaDate)
                             && day.equals(macdDate)
                             && day.equals(bbandDate)) {
-                        databaseClient.persistData(tickerSymbol, day, new BigDecimal(timeSeriesRow[1]), new BigDecimal(timeSeriesRow[2]),
+                        postgreClient.persistData(tickerSymbol, day, new BigDecimal(timeSeriesRow[1]), new BigDecimal(timeSeriesRow[2]),
                                 new BigDecimal(timeSeriesRow[3]), new BigDecimal(timeSeriesRow[4]), new BigDecimal(emaRow[1]),
                                 new BigDecimal(macdRow[1]), new BigDecimal(macdRow[2]), new BigDecimal(macdRow[3]),
                                 new BigDecimal(bbandRow[1]), new BigDecimal(bbandRow[2]), new BigDecimal(bbandRow[3]));

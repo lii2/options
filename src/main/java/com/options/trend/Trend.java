@@ -1,4 +1,4 @@
-package com.options.domain.trend;
+package com.options.trend;
 
 public enum Trend {
     BEARISH,

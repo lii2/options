@@ -1,4 +1,4 @@
-package com.options.domain.alphavantage;
+package com.options.clients.alphavantage;
 
 public interface AlphaVantageConstants {
 

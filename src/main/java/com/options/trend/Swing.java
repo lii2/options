@@ -1,9 +1,9 @@
-package com.options.domain.trend;
+package com.options.trend;
 
 import java.math.BigDecimal;
 
-import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_POINT_FIVE;
-import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_TWO;
+import static com.options.trend.ImportantNumbers.BIG_DECIMAL_POINT_FIVE;
+import static com.options.trend.ImportantNumbers.BIG_DECIMAL_TWO;
 
 public enum Swing {
 

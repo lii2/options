@@ -1,10 +1,10 @@
 package com.options.operations;
 
-import com.options.domain.backtest.BacktestResponse;
-import com.options.domain.backtest.RecommendationResult;
-import com.options.domain.choice.Recommendation;
-import com.options.domain.data.DailyData;
-import com.options.operations.persist.DatabaseClient;
+import com.options.json.BacktestResponse;
+import com.options.backtest.RecommendationResult;
+import com.options.backtest.Recommendation;
+import com.options.data.DailyData;
+import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +21,7 @@ public class BacktestOperation {
     private List<DailyData> dailyDataList;
     private int daysToTest;
     @Autowired
-    private DatabaseClient databaseClient;
+    private PostgreClient postgreClient;
 
     public BacktestOperation() {
         this.daysToTest = 100;
@@ -83,7 +83,7 @@ public class BacktestOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        dailyDataList = DailyData.generateDailyData(databaseClient.getLast100DaysData(ticker));
+        dailyDataList = DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
 
     private Recommendation getRecommendationByDate(LocalDate LocalDate) {

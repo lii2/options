@@ -1,10 +1,9 @@
 package com.options.operations;
 
-import com.options.domain.choice.Recommendation;
-import com.options.domain.data.DailyData;
-import com.options.entities.DailyDataEntity;
+import com.options.backtest.Recommendation;
+import com.options.data.DailyData;
 import com.options.operations.analysis.EntranceStrategies;
-import com.options.operations.persist.DatabaseClient;
+import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,7 @@ import java.util.List;
 public class AnalyzeDataOperation {
 
     @Autowired
-    private DatabaseClient databaseClient;
+    private PostgreClient postgreClient;
 
     private int daysOfData;
 
@@ -44,7 +43,7 @@ public class AnalyzeDataOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        dailyDataList = DailyData.generateDailyData(databaseClient.getLast100DaysData(ticker));
+        dailyDataList = DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
 
     public void setDaysOfData(int daysOfData) {

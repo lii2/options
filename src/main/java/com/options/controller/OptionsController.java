@@ -1,11 +1,11 @@
 package com.options.controller;
 
-import com.options.domain.backtest.BacktestResponse;
-import com.options.domain.choice.Recommendation;
+import com.options.json.BacktestResponse;
+import com.options.backtest.Recommendation;
 import com.options.operations.AnalyzeDataOperation;
 import com.options.operations.BacktestOperation;
 import com.options.operations.SmartPersistOperation;
-import com.options.operations.persist.DatabaseClient;
+import com.options.clients.database.PostgreClient;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -31,7 +29,7 @@ public class OptionsController implements ApplicationContextAware {
     private AnalyzeDataOperation analyzeDataOperation;
     private SmartPersistOperation smartPersistOperation;
     private BacktestOperation backtestOperation;
-    private DatabaseClient databaseClient;
+    private PostgreClient postgreClient;
     private ApplicationContext context;
 
     @Autowired
@@ -39,8 +37,8 @@ public class OptionsController implements ApplicationContextAware {
             AnalyzeDataOperation analyzeDataOperation,
             SmartPersistOperation smartPersistOperation,
             BacktestOperation backtestOperation,
-            DatabaseClient databaseClient) {
-        this.databaseClient = databaseClient;
+            PostgreClient postgreClient) {
+        this.postgreClient = postgreClient;
         this.analyzeDataOperation = analyzeDataOperation;
         this.smartPersistOperation = smartPersistOperation;
         this.backtestOperation = backtestOperation;

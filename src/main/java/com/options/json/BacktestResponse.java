@@ -1,6 +1,7 @@
-package com.options.domain.backtest;
+package com.options.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.options.backtest.RecommendationResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

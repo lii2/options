@@ -1,4 +1,4 @@
-package com.options.domain.trend;
+package com.options.trend;
 
 import java.math.BigDecimal;
 
