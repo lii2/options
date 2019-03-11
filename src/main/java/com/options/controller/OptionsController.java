@@ -1,10 +1,13 @@
 package com.options.controller;
 
+import com.options.agents.Tester;
 import com.options.analysis.Recommendation;
 import com.options.json.responses.BacktestResponse;
-import com.options.operations.Analyst;
-import com.options.operations.Backtester;
-import com.options.operations.DatabaseAdministrator;
+import com.options.json.responses.FullAnalyzeResponse;
+import com.options.json.responses.GetDataResponse;
+import com.options.json.responses.QuickAnalyzeResponse;
+import com.options.agents.Analyst;
+import com.options.agents.DatabaseAdministrator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,44 +26,45 @@ public class OptionsController implements ApplicationContextAware {
 
     private Analyst analyst;
     private DatabaseAdministrator databaseAdministrator;
-    private Backtester backtester;
+    private Tester tester;
     private ApplicationContext context;
 
     @Autowired
     public OptionsController(
             Analyst analyst,
             DatabaseAdministrator databaseAdministrator,
-            Backtester backtester) {
+            Tester tester) {
         this.analyst = analyst;
         this.databaseAdministrator = databaseAdministrator;
-        this.backtester = backtester;
+        this.tester = tester;
     }
 
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
-    public Recommendation quickAnalyze(@PathVariable String ticker) throws Exception {
+    public QuickAnalyzeResponse quickAnalyze(@PathVariable String ticker) throws Exception {
         Recommendation result = null;
         List<Recommendation> recommendations = analyst.analyzeData(100, ticker);
         if (!recommendations.isEmpty()) {
             result = recommendations.get(recommendations.size() - 1);
         }
-        return result;
+        return new QuickAnalyzeResponse(result);
     }
 
     @GetMapping(value = "/getData/{ticker}", name = "Fetch the data for selected ticker")
-    public String getData(@PathVariable String ticker) throws Exception {
-        return databaseAdministrator.smartPersist(ticker);
+    public GetDataResponse getData(@PathVariable String ticker) throws Exception {
+        return new GetDataResponse(databaseAdministrator.smartPersist(ticker));
     }
 
     @GetMapping(value = "/fullAnalyze/{ticker}", name = "Give full recommendation list for selected ticker")
-    public List<Recommendation> fullAnalyze(@PathVariable String ticker) {
-        return analyst.analyzeData(100, ticker);
+    public FullAnalyzeResponse fullAnalyze(@PathVariable String ticker) {
+        return new FullAnalyzeResponse(analyst.analyzeData(100, ticker));
     }
 
     @GetMapping("/backtest/{ticker}")
     public BacktestResponse backtest(@PathVariable String ticker) {
         analyst.setDaysOfData(100);
-        backtester.setRecommendationList(analyst.analyzeData(ticker));
-        return backtester.execute(ticker);
+        tester.setRecommendationList(analyst.analyzeData(ticker));
+        // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.
+        return tester.backtest(ticker);
     }
 
     @GetMapping("/shutdownContext")

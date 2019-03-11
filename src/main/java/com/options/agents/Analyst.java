@@ -1,4 +1,4 @@
-package com.options.operations;
+package com.options.agents;
 
 import com.options.analysis.Recommendation;
 import com.options.data.DailyData;

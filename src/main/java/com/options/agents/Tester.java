@@ -1,4 +1,4 @@
-package com.options.operations;
+package com.options.agents;
 
 import com.options.json.responses.BacktestResponse;
 import com.options.backtest.RecommendationResult;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class Backtester {
+public class Tester {
 
     private final static int DAYS_HELD = 2;
     private List<Recommendation> recommendationList;
@@ -23,11 +23,11 @@ public class Backtester {
     @Autowired
     private PostgreClient postgreClient;
 
-    public Backtester() {
+    public Tester() {
         this.daysToTest = 100;
     }
 
-    public BacktestResponse execute(String ticker) {
+    public BacktestResponse backtest(String ticker) {
         setDataFromDatabase(ticker);
         int lastDayIndex = dailyDataList.size() - 1;
         List<LocalDate> datesOfRecommendations = new ArrayList<>();

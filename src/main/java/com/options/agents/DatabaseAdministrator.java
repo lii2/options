@@ -1,4 +1,4 @@
-package com.options.operations;
+package com.options.agents;
 
 import com.options.clients.alphavantage.AlphaVantageClient;
 import com.options.clients.database.PostgreClient;
