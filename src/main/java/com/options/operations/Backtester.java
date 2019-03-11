@@ -1,6 +1,6 @@
 package com.options.operations;
 
-import com.options.json.BacktestResponse;
+import com.options.json.responses.BacktestResponse;
 import com.options.backtest.RecommendationResult;
 import com.options.analysis.Recommendation;
 import com.options.data.DailyData;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BacktestOperation {
+public class Backtester {
 
     private final static int DAYS_HELD = 2;
     private List<Recommendation> recommendationList;
@@ -23,7 +23,7 @@ public class BacktestOperation {
     @Autowired
     private PostgreClient postgreClient;
 
-    public BacktestOperation() {
+    public Backtester() {
         this.daysToTest = 100;
     }
 

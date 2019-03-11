@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AnalyzeDataOperation {
+public class Analyst {
 
     @Autowired
     private PostgreClient postgreClient;
@@ -21,11 +21,11 @@ public class AnalyzeDataOperation {
     private List<DailyData> dailyDataList;
 
     @Autowired
-    public AnalyzeDataOperation() {
+    public Analyst() {
         this.daysOfData = 30;
     }
 
-    public List<Recommendation> execute(String ticker) {
+    public List<Recommendation> analyzeData(String ticker) {
         setDataFromDatabase(ticker);
         return doAnalysis();
     }
@@ -48,5 +48,10 @@ public class AnalyzeDataOperation {
 
     public void setDaysOfData(int daysOfData) {
         this.daysOfData = daysOfData;
+    }
+
+    public List<Recommendation> analyzeData(int daysToAnalyze, String ticker) {
+        setDaysOfData(daysToAnalyze);
+        return analyzeData(ticker);
     }
 }

@@ -1,12 +1,10 @@
 package com.options.controller;
 
-import com.options.json.BacktestResponse;
 import com.options.analysis.Recommendation;
-import com.options.operations.AnalyzeDataOperation;
-import com.options.operations.BacktestOperation;
-import com.options.operations.SmartPersistOperation;
-import com.options.clients.database.PostgreClient;
-import io.micrometer.core.instrument.util.StringUtils;
+import com.options.json.responses.BacktestResponse;
+import com.options.operations.Analyst;
+import com.options.operations.Backtester;
+import com.options.operations.DatabaseAdministrator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -23,32 +21,25 @@ import java.util.List;
 @RequestMapping("/api/options")
 public class OptionsController implements ApplicationContextAware {
 
-    private static final String defaultTicker = "SPY";
-    private static final String noNewDataFetched = "No new data added";
-
-    private AnalyzeDataOperation analyzeDataOperation;
-    private SmartPersistOperation smartPersistOperation;
-    private BacktestOperation backtestOperation;
-    private PostgreClient postgreClient;
+    private Analyst analyst;
+    private DatabaseAdministrator databaseAdministrator;
+    private Backtester backtester;
     private ApplicationContext context;
 
     @Autowired
     public OptionsController(
-            AnalyzeDataOperation analyzeDataOperation,
-            SmartPersistOperation smartPersistOperation,
-            BacktestOperation backtestOperation,
-            PostgreClient postgreClient) {
-        this.postgreClient = postgreClient;
-        this.analyzeDataOperation = analyzeDataOperation;
-        this.smartPersistOperation = smartPersistOperation;
-        this.backtestOperation = backtestOperation;
+            Analyst analyst,
+            DatabaseAdministrator databaseAdministrator,
+            Backtester backtester) {
+        this.analyst = analyst;
+        this.databaseAdministrator = databaseAdministrator;
+        this.backtester = backtester;
     }
 
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
     public Recommendation quickAnalyze(@PathVariable String ticker) throws Exception {
-        String output = getTickerData(ticker);
         Recommendation result = null;
-        List<Recommendation> recommendations = analyzeData(ticker);
+        List<Recommendation> recommendations = analyst.analyzeData(100, ticker);
         if (!recommendations.isEmpty()) {
             result = recommendations.get(recommendations.size() - 1);
         }
@@ -57,19 +48,19 @@ public class OptionsController implements ApplicationContextAware {
 
     @GetMapping(value = "/getData/{ticker}", name = "Fetch the data for selected ticker")
     public String getData(@PathVariable String ticker) throws Exception {
-        return getTickerData(ticker);
+        return databaseAdministrator.smartPersist(ticker);
     }
 
     @GetMapping(value = "/fullAnalyze/{ticker}", name = "Give full recommendation list for selected ticker")
     public List<Recommendation> fullAnalyze(@PathVariable String ticker) {
-        return analyzeData(ticker);
+        return analyst.analyzeData(100, ticker);
     }
 
     @GetMapping("/backtest/{ticker}")
     public BacktestResponse backtest(@PathVariable String ticker) {
-        analyzeDataOperation.setDaysOfData(100);
-        backtestOperation.setRecommendationList(analyzeDataOperation.execute(ticker));
-        return backtestOperation.execute(ticker);
+        analyst.setDaysOfData(100);
+        backtester.setRecommendationList(analyst.analyzeData(ticker));
+        return backtester.execute(ticker);
     }
 
     @GetMapping("/shutdownContext")
@@ -81,22 +72,5 @@ public class OptionsController implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         this.context = ctx;
     }
-
-    private String getTickerData(String ticker) throws Exception {
-        if (ticker == null || StringUtils.isBlank(ticker))
-            ticker = defaultTicker;
-        String result = smartPersistOperation.smartPersist(ticker);
-        return result.isEmpty()
-                ? noNewDataFetched
-                : result;
-    }
-
-    private List<Recommendation> analyzeData(String ticker) {
-        if (ticker == null || StringUtils.isBlank(ticker))
-            ticker = defaultTicker;
-        analyzeDataOperation.setDaysOfData(100);
-        return analyzeDataOperation.execute(ticker);
-    }
-
 
 }

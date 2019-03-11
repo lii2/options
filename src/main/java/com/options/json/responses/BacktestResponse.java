@@ -1,4 +1,4 @@
-package com.options.json;
+package com.options.json.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.options.backtest.RecommendationResult;

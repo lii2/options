@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class SmartPersistOperation {
+public class DatabaseAdministrator {
 
     @Autowired
     private PostgreClient postgreClient;
@@ -23,6 +23,8 @@ public class SmartPersistOperation {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
+    private static final String noNewDataFetched = "No new data added";
+
     private LocalDate parseDate(String dateString) {
         if (dateString.length() > 10) {
             return LocalDate.parse(dateString.substring(0, 10), DATE_TIME_FORMATTER);
@@ -30,7 +32,7 @@ public class SmartPersistOperation {
             return LocalDate.parse(dateString, DATE_TIME_FORMATTER);
     }
 
-    public SmartPersistOperation() {
+    public DatabaseAdministrator() {
         alphaVantageClient = new AlphaVantageClient();
     }
 
@@ -73,7 +75,8 @@ public class SmartPersistOperation {
                 bbandDataIndex++;
             }
         }
-        return result.toString();
+        return result.length() < 1
+                ? noNewDataFetched
+                : result.toString();
     }
-
 }
