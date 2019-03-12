@@ -33,19 +33,19 @@ public class EntranceStrategies {
 
     private String generateRiseMessage(DailyData dailyData) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" \n price rose above the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
-                .append(" \n ema is: ").append(dailyData.getEma())
-                .append(" \n price is now: ").append(dailyData.getOpenCloseMean())
-                .append(" \n Message: buy calls to sell.");
+        stringBuilder.append(" price rose above the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
+                .append(" ema is: ").append(dailyData.getEma() )
+                .append(" price is now: ").append(dailyData.getOpenCloseMean() )
+                .append(" Message: buy calls to sell.");
         return stringBuilder.toString();
     }
 
     private String generateDropMessage(DailyData dailyData) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" \n price dropped below the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
-                .append(" \n ema is: ").append(dailyData.getEma())
-                .append(" \n price is now: ").append(dailyData.getOpenCloseMean())
-                .append(" \n Message: buy puts to sell.");
+        stringBuilder.append(" price dropped below the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
+                .append(" ema is: ").append(dailyData.getEma())
+                .append(" price is now: ").append(dailyData.getOpenCloseMean())
+                .append(" Message: buy puts to sell.");
         return stringBuilder.toString();
     }
 

@@ -17,7 +17,7 @@ public class Recommendation {
 
     @Override
     public String toString() {
-        return "\n \nRecommendation{" +
+        return "\nRecommendation{" +
                 "trend=" + trend +
                 ", message='" + message + '\'' +
                 ", dataOfRecommendation=" + dataOfRecommendation +
