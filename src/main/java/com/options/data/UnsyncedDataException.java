@@ -1,4 +1,4 @@
-package com.options.domain.data;
+package com.options.data;
 
 public class UnsyncedDataException extends RuntimeException {
 

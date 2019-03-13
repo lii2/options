@@ -1,4 +1,4 @@
-package com.options.operations.persist;
+package com.options.clients.database;
 
 import com.options.entities.*;
 import com.options.repositories.DailyDataRepository;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class DatabaseClient {
+public class PostgreClient {
 
     @Autowired
     TickerRepository tickerRepository;
@@ -21,8 +21,8 @@ public class DatabaseClient {
     DailyDataRepository dailyDataRepository;
 
     @Autowired
-    public DatabaseClient(TickerRepository tickerRepository,
-                          DailyDataRepository dailyDataRepository) {
+    public PostgreClient(TickerRepository tickerRepository,
+                         DailyDataRepository dailyDataRepository) {
         this.tickerRepository = tickerRepository;
         this.dailyDataRepository = dailyDataRepository;
 

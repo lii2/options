@@ -1,7 +1,7 @@
-package com.options.operations;
+package com.options.agents;
 
-import com.options.domain.alphavantage.AlphaVantageClient;
-import com.options.operations.persist.DatabaseClient;
+import com.options.clients.alphavantage.AlphaVantageClient;
+import com.options.clients.database.PostgreClient;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,14 +14,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Component
-public class SmartPersistOperation {
+public class DatabaseAdministrator {
 
     @Autowired
-    private DatabaseClient databaseClient;
+    private PostgreClient postgreClient;
 
     private AlphaVantageClient alphaVantageClient;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+
+    private static final String noNewDataFetched = "No new data added";
 
     private LocalDate parseDate(String dateString) {
         if (dateString.length() > 10) {
@@ -30,7 +32,7 @@ public class SmartPersistOperation {
             return LocalDate.parse(dateString, DATE_TIME_FORMATTER);
     }
 
-    public SmartPersistOperation() {
+    public DatabaseAdministrator() {
         alphaVantageClient = new AlphaVantageClient();
     }
 
@@ -49,7 +51,7 @@ public class SmartPersistOperation {
             while (timeSeriesIndex < timeSeriesData.length) {
                 String[] timeSeriesRow = timeSeriesData[timeSeriesIndex].split(",");
                 LocalDate day = parseDate(timeSeriesRow[0]);
-                if (!databaseClient.getDailyDataByDay(day).isPresent()) {
+                if (!postgreClient.getDailyDataByDay(day).isPresent()) {
                     String[] emaRow = emaData[emaDataIndex].split(",");
                     String[] macdRow = macdData[macdDataIndex].split(",");
                     String[] bbandRow = bbandData[bbandDataIndex].split(",");
@@ -60,12 +62,12 @@ public class SmartPersistOperation {
                     if (day.equals(emaDate)
                             && day.equals(macdDate)
                             && day.equals(bbandDate)) {
-                        databaseClient.persistData(tickerSymbol, day, new BigDecimal(timeSeriesRow[1]), new BigDecimal(timeSeriesRow[2]),
+                        postgreClient.persistData(tickerSymbol, day, new BigDecimal(timeSeriesRow[1]), new BigDecimal(timeSeriesRow[2]),
                                 new BigDecimal(timeSeriesRow[3]), new BigDecimal(timeSeriesRow[4]), new BigDecimal(emaRow[1]),
                                 new BigDecimal(macdRow[1]), new BigDecimal(macdRow[2]), new BigDecimal(macdRow[3]),
                                 new BigDecimal(bbandRow[1]), new BigDecimal(bbandRow[2]), new BigDecimal(bbandRow[3]));
                     }
-                    result.append(timeSeriesRow[0]).append(" data persisted to database\n");
+                    result.append(timeSeriesRow[0]).append(" data persisted to database \n ");
                 }
                 timeSeriesIndex++;
                 emaDataIndex++;
@@ -73,7 +75,8 @@ public class SmartPersistOperation {
                 bbandDataIndex++;
             }
         }
-        return result.toString();
+        return result.length() < 1
+                ? noNewDataFetched
+                : result.toString();
     }
-
 }

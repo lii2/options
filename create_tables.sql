@@ -72,3 +72,53 @@ CREATE TABLE macd
         ON UPDATE CASCADE
         ON DELETE CASCADE
 )
+
+
+-- Table: public.recommendation_strategy
+CREATE TABLE recommendation_strategy
+(
+    recommendation_strategy_key SERIAL PRIMARY KEY,
+    trend varchar check (trend = 'BULLISH' OR trend = 'BEARISH'),
+    name varchar not null,
+    description varchar
+ )
+
+-- Table: public.recommendation_strategy_version
+CREATE TABLE recommendation_strategy_version
+(
+    recommendation_strategy_version_key SERIAL PRIMARY KEY,
+    recommendation_strategy_key integer NOT NULL,
+    version integer not null,
+     CONSTRAINT recommendation_strategy_fk FOREIGN KEY (recommendation_strategy_key)
+        REFERENCES public.recommendation_strategy (recommendation_strategy_key) MATCH SIMPLE
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+ )
+
+-- Table: public.backtest_result
+create table backtest_result
+(
+    backtest_result_key SERIAL PRIMARY KEY,
+    recommendation_strategy_version_key integer not null,
+    ticker_key integer not null,
+    date_tested date not null,
+    days_to_hold integer not null,
+    biggest_loss numeric not null,
+    successes integer not null,
+    failures integer not null,
+    fizzles integer not null,
+    total integer not null,
+    percent_success numeric not null,
+    percent_not_failed numeric not null,
+
+    CONSTRAINT ticker_key_fk FOREIGN KEY (ticker_key)
+         REFERENCES public.ticker (ticker_key) MATCH SIMPLE
+         ON UPDATE CASCADE
+         ON DELETE CASCADE,
+
+    CONSTRAINT recommendation_strategy_version_fk FOREIGN KEY (recommendation_strategy_version_key)
+         REFERENCES public.recommendation_strategy_version (recommendation_strategy_version_key) MATCH SIMPLE
+         ON UPDATE CASCADE
+         ON DELETE CASCADE
+
+)

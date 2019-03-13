@@ -1,10 +1,10 @@
-package com.options.operations;
+package com.options.agents;
 
-import com.options.domain.backtest.BacktestResponse;
-import com.options.domain.backtest.RecommendationResult;
-import com.options.domain.choice.Recommendation;
-import com.options.domain.data.DailyData;
-import com.options.operations.persist.DatabaseClient;
+import com.options.json.responses.BacktestResponse;
+import com.options.backtest.RecommendationResult;
+import com.options.analysis.Recommendation;
+import com.options.data.DailyData;
+import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,20 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class BacktestOperation {
+public class Tester {
 
     private final static int DAYS_HELD = 2;
     private List<Recommendation> recommendationList;
     private List<DailyData> dailyDataList;
     private int daysToTest;
     @Autowired
-    private DatabaseClient databaseClient;
+    private PostgreClient postgreClient;
 
-    public BacktestOperation() {
+    public Tester() {
         this.daysToTest = 100;
     }
 
-    public BacktestResponse execute(String ticker) {
+    public BacktestResponse backtest(String ticker) {
         setDataFromDatabase(ticker);
         int lastDayIndex = dailyDataList.size() - 1;
         List<LocalDate> datesOfRecommendations = new ArrayList<>();
@@ -83,7 +83,7 @@ public class BacktestOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        dailyDataList = DailyData.generateDailyData(databaseClient.getLast100DaysData(ticker));
+        dailyDataList = DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
 
     private Recommendation getRecommendationByDate(LocalDate LocalDate) {

@@ -1,6 +1,6 @@
-package com.options.domain.backtest;
+package com.options.backtest;
 
-import com.options.domain.trend.Trend;
+import com.options.analysis.Trend;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

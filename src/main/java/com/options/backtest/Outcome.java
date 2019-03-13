@@ -1,4 +1,4 @@
-package com.options.domain.backtest;
+package com.options.backtest;
 
 public enum Outcome {
     SUCCESS,

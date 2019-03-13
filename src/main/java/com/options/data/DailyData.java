@@ -1,4 +1,4 @@
-package com.options.domain.data;
+package com.options.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.options.entities.*;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.options.domain.trend.ImportantNumbers.BIG_DECIMAL_TWO;
+import static com.options.data.ImportantNumbers.BIG_DECIMAL_TWO;
 
 @Data
 @NoArgsConstructor

@@ -1,7 +1,7 @@
-package com.options.domain.choice;
+package com.options.analysis;
 
-import com.options.domain.data.DailyData;
-import com.options.domain.trend.Trend;
+import com.options.data.DailyData;
+import com.options.analysis.Trend;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ public class Recommendation {
 
     @Override
     public String toString() {
-        return "\n \nRecommendation{" +
+        return "\nRecommendation{" +
                 "trend=" + trend +
                 ", message='" + message + '\'' +
                 ", dataOfRecommendation=" + dataOfRecommendation +

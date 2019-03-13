@@ -1,10 +1,9 @@
-package com.options.operations;
+package com.options.agents;
 
-import com.options.domain.choice.Recommendation;
-import com.options.domain.data.DailyData;
-import com.options.entities.DailyDataEntity;
-import com.options.operations.analysis.EntranceStrategies;
-import com.options.operations.persist.DatabaseClient;
+import com.options.analysis.Recommendation;
+import com.options.data.DailyData;
+import com.options.analysis.EntranceStrategies;
+import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,21 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class AnalyzeDataOperation {
+public class Analyst {
 
     @Autowired
-    private DatabaseClient databaseClient;
+    private PostgreClient postgreClient;
 
     private int daysOfData;
 
     private List<DailyData> dailyDataList;
 
     @Autowired
-    public AnalyzeDataOperation() {
+    public Analyst() {
         this.daysOfData = 30;
     }
 
-    public List<Recommendation> execute(String ticker) {
+    public List<Recommendation> analyzeData(String ticker) {
         setDataFromDatabase(ticker);
         return doAnalysis();
     }
@@ -44,10 +43,15 @@ public class AnalyzeDataOperation {
     }
 
     private void setDataFromDatabase(String ticker) {
-        dailyDataList = DailyData.generateDailyData(databaseClient.getLast100DaysData(ticker));
+        dailyDataList = DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
 
     public void setDaysOfData(int daysOfData) {
         this.daysOfData = daysOfData;
+    }
+
+    public List<Recommendation> analyzeData(int daysToAnalyze, String ticker) {
+        setDaysOfData(daysToAnalyze);
+        return analyzeData(ticker);
     }
 }

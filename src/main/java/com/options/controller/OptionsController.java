@@ -1,12 +1,13 @@
 package com.options.controller;
 
-import com.options.domain.backtest.BacktestResponse;
-import com.options.domain.choice.Recommendation;
-import com.options.operations.AnalyzeDataOperation;
-import com.options.operations.BacktestOperation;
-import com.options.operations.SmartPersistOperation;
-import com.options.operations.persist.DatabaseClient;
-import io.micrometer.core.instrument.util.StringUtils;
+import com.options.agents.Tester;
+import com.options.analysis.Recommendation;
+import com.options.json.responses.BacktestResponse;
+import com.options.json.responses.FullAnalyzeResponse;
+import com.options.json.responses.GetDataResponse;
+import com.options.json.responses.QuickAnalyzeResponse;
+import com.options.agents.Analyst;
+import com.options.agents.DatabaseAdministrator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -17,61 +18,53 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/options")
 public class OptionsController implements ApplicationContextAware {
 
-    private static final String defaultTicker = "SPY";
-    private static final String noNewDataFetched = "No new data added";
-
-    private AnalyzeDataOperation analyzeDataOperation;
-    private SmartPersistOperation smartPersistOperation;
-    private BacktestOperation backtestOperation;
-    private DatabaseClient databaseClient;
+    private Analyst analyst;
+    private DatabaseAdministrator databaseAdministrator;
+    private Tester tester;
     private ApplicationContext context;
 
     @Autowired
     public OptionsController(
-            AnalyzeDataOperation analyzeDataOperation,
-            SmartPersistOperation smartPersistOperation,
-            BacktestOperation backtestOperation,
-            DatabaseClient databaseClient) {
-        this.databaseClient = databaseClient;
-        this.analyzeDataOperation = analyzeDataOperation;
-        this.smartPersistOperation = smartPersistOperation;
-        this.backtestOperation = backtestOperation;
+            Analyst analyst,
+            DatabaseAdministrator databaseAdministrator,
+            Tester tester) {
+        this.analyst = analyst;
+        this.databaseAdministrator = databaseAdministrator;
+        this.tester = tester;
     }
 
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
-    public Recommendation quickAnalyze(@PathVariable String ticker) throws Exception {
-        String output = getTickerData(ticker);
+    public QuickAnalyzeResponse quickAnalyze(@PathVariable String ticker) throws Exception {
         Recommendation result = null;
-        List<Recommendation> recommendations = analyzeData(ticker);
+        List<Recommendation> recommendations = analyst.analyzeData(100, ticker);
         if (!recommendations.isEmpty()) {
             result = recommendations.get(recommendations.size() - 1);
         }
-        return result;
+        return new QuickAnalyzeResponse(result);
     }
 
     @GetMapping(value = "/getData/{ticker}", name = "Fetch the data for selected ticker")
-    public String getData(@PathVariable String ticker) throws Exception {
-        return getTickerData(ticker);
+    public GetDataResponse getData(@PathVariable String ticker) throws Exception {
+        return new GetDataResponse(databaseAdministrator.smartPersist(ticker));
     }
 
     @GetMapping(value = "/fullAnalyze/{ticker}", name = "Give full recommendation list for selected ticker")
-    public List<Recommendation> fullAnalyze(@PathVariable String ticker) {
-        return analyzeData(ticker);
+    public FullAnalyzeResponse fullAnalyze(@PathVariable String ticker) {
+        return new FullAnalyzeResponse(analyst.analyzeData(100, ticker));
     }
 
     @GetMapping("/backtest/{ticker}")
     public BacktestResponse backtest(@PathVariable String ticker) {
-        analyzeDataOperation.setDaysOfData(100);
-        backtestOperation.setRecommendationList(analyzeDataOperation.execute(ticker));
-        return backtestOperation.execute(ticker);
+        analyst.setDaysOfData(100);
+        tester.setRecommendationList(analyst.analyzeData(ticker));
+        // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.
+        return tester.backtest(ticker);
     }
 
     @GetMapping("/shutdownContext")
@@ -83,22 +76,5 @@ public class OptionsController implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
         this.context = ctx;
     }
-
-    private String getTickerData(String ticker) throws Exception {
-        if (ticker == null || StringUtils.isBlank(ticker))
-            ticker = defaultTicker;
-        String result = smartPersistOperation.smartPersist(ticker);
-        return result.isEmpty()
-                ? noNewDataFetched
-                : result;
-    }
-
-    private List<Recommendation> analyzeData(String ticker) {
-        if (ticker == null || StringUtils.isBlank(ticker))
-            ticker = defaultTicker;
-        analyzeDataOperation.setDaysOfData(100);
-        return analyzeDataOperation.execute(ticker);
-    }
-
 
 }
