@@ -27,6 +27,10 @@ public class TickerEntity {
     @JoinColumn(name = "tickerKey")
     private List<DailyDataEntity> dailyDataList;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "tickerKey")
+    private List<BacktestResultEntity> backtestResultList;
+
     public TickerEntity(String tickerSymbol){
         this.tickerSymbol = tickerSymbol;
     }
