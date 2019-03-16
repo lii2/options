@@ -67,6 +67,10 @@ public class OptionsController implements ApplicationContextAware {
 
     @GetMapping("/backtest/{ticker}")
     public BacktestResponse backtest(@PathVariable String ticker) {
+
+        // TODO: GET list of recommendation Strategies
+
+        // TODO:
         analyst.setDaysOfData(100);
         tester.setRecommendationList(analyst.analyzeData(ticker));
         // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.
