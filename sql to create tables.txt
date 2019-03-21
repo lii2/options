@@ -18,19 +18,22 @@ delete from daily_data where daily_data_key = 203;
 select sequence_schema, sequence_name
 from information_schema.sequences;
 
---drop table ema
---drop table bbands
---drop table macd
---drop table time_series_daily
---drop table daily_data
---drop table ticker
+
+------------ Actual Scripts to recreate database ------------
+
+drop table ema;
+drop table bbands;
+drop table macd;
+drop table time_series_daily;
+drop table daily_data;
+drop table ticker;
 
 -- Table: public.ticker
 CREATE TABLE ticker
 (
     ticker_key SERIAL PRIMARY KEY,
     ticker_symbol VARCHAR NOT NULL UNIQUE
-)
+);
 
 -- Table: public.daily_data
 CREATE TABLE daily_data
@@ -42,7 +45,7 @@ CREATE TABLE daily_data
          REFERENCES public.ticker (ticker_key) MATCH SIMPLE
          ON UPDATE CASCADE
          ON DELETE CASCADE
-)
+);
 
 -- Table: public.time_series_daily
 CREATE TABLE public.time_series_daily
@@ -57,7 +60,7 @@ CREATE TABLE public.time_series_daily
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
-)
+);
 
 -- Table: public.bbands
 CREATE TABLE bbands
@@ -71,7 +74,7 @@ CREATE TABLE bbands
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
-)
+);
 
 -- Table: public.ema
 CREATE TABLE ema
@@ -83,7 +86,7 @@ CREATE TABLE ema
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
-)
+);
 
 -- Table: public.macd
 CREATE TABLE macd
@@ -97,7 +100,7 @@ CREATE TABLE macd
         REFERENCES public.daily_data (daily_data_key) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
-)
+);
 
 
 -- Table: public.recommendation_strategy
@@ -107,7 +110,7 @@ CREATE TABLE recommendation_strategy
     trend varchar check (trend = 'BULLISH' OR trend = 'BEARISH'),
     name varchar not null,
     description varchar
- )
+ );
 
 -- Table: public.recommendation_strategy_version
 CREATE TABLE recommendation_strategy_version
@@ -119,7 +122,7 @@ CREATE TABLE recommendation_strategy_version
         REFERENCES public.recommendation_strategy (recommendation_strategy_key) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE CASCADE
- )
+ );
 
 -- Table: public.backtest_result
 create table backtest_result
@@ -147,4 +150,4 @@ create table backtest_result
          ON UPDATE CASCADE
          ON DELETE CASCADE
 
-)
+);
