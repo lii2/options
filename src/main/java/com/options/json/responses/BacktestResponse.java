@@ -29,7 +29,6 @@ public class BacktestResponse {
     private float percentSuccess;
     private float percentNotFailed;
 
-
     @Override
     public String toString() {
         return "BacktestResponse{" +

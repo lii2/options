@@ -1,13 +1,15 @@
 package com.options.controller;
 
+import com.options.agents.Analyst;
+import com.options.agents.DatabaseAdministrator;
 import com.options.agents.Tester;
 import com.options.analysis.Recommendation;
+import com.options.clients.alphavantage.AlphaVantageClient;
+import com.options.clients.alphavantage.AlphaVantageDataPackage;
 import com.options.json.responses.BacktestResponse;
 import com.options.json.responses.FullAnalyzeResponse;
 import com.options.json.responses.GetDataResponse;
 import com.options.json.responses.QuickAnalyzeResponse;
-import com.options.agents.Analyst;
-import com.options.agents.DatabaseAdministrator;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -28,15 +30,18 @@ public class OptionsController implements ApplicationContextAware {
     private DatabaseAdministrator databaseAdministrator;
     private Tester tester;
     private ApplicationContext context;
+    private AlphaVantageClient alphaVantageClient;
 
     @Autowired
     public OptionsController(
             Analyst analyst,
             DatabaseAdministrator databaseAdministrator,
-            Tester tester) {
+            Tester tester,
+            AlphaVantageClient alphaVantageClient) {
         this.analyst = analyst;
         this.databaseAdministrator = databaseAdministrator;
         this.tester = tester;
+        this.alphaVantageClient = alphaVantageClient;
     }
 
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
@@ -51,7 +56,8 @@ public class OptionsController implements ApplicationContextAware {
 
     @GetMapping(value = "/getData/{ticker}", name = "Fetch the data for selected ticker")
     public GetDataResponse getData(@PathVariable String ticker) throws Exception {
-        return new GetDataResponse(databaseAdministrator.smartPersist(ticker));
+        AlphaVantageDataPackage dataPackage = alphaVantageClient.getAlphaVantageDataPackage(ticker);
+        return new GetDataResponse(databaseAdministrator.smartPersist(dataPackage, ticker));
     }
 
     @GetMapping(value = "/fullAnalyze/{ticker}", name = "Give full recommendation list for selected ticker")
@@ -61,6 +67,10 @@ public class OptionsController implements ApplicationContextAware {
 
     @GetMapping("/backtest/{ticker}")
     public BacktestResponse backtest(@PathVariable String ticker) {
+
+        // TODO: GET list of recommendation Strategies
+
+        // TODO:
         analyst.setDaysOfData(100);
         tester.setRecommendationList(analyst.analyzeData(ticker));
         // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.

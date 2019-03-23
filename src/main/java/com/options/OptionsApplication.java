@@ -12,7 +12,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.io.IOException;
 
-@ComponentScan({"com.options.controller", "com.options.agents", "com.options.clients.database"})
+@ComponentScan({"com.options.controller", "com.options.agents", "com.options.clients.database", "com.options.clients.alphavantage"})
 @EnableJpaRepositories(basePackages = "com.options.repositories")
 @EntityScan(basePackages = "com.options.entities")
 @SpringBootApplication
