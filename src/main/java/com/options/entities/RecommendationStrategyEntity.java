@@ -22,7 +22,7 @@ public class RecommendationStrategyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int recommendationStrategyKey;
 
-    private Trend trend;
+    private String trend;
 
     private String name;
 

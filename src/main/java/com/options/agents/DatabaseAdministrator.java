@@ -1,7 +1,9 @@
 package com.options.agents;
 
+import com.options.analysis.RecommendationStrategy;
 import com.options.clients.alphavantage.AlphaVantageDataPackage;
 import com.options.clients.database.PostgreClient;
+import com.options.entities.RecommendationStrategyEntity;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class DatabaseAdministrator {
@@ -66,5 +70,13 @@ public class DatabaseAdministrator {
         return result.length() < 1
                 ? noNewDataFetched
                 : result.toString();
+    }
+
+    public List<RecommendationStrategy> getRecommendationStrategies() {
+        List<RecommendationStrategy> recommendationStrategies = new ArrayList<>();
+        for (RecommendationStrategyEntity entity : postgreClient.getAllRecommendationStrategies()) {
+            recommendationStrategies.add(new RecommendationStrategy(entity));
+        }
+        return recommendationStrategies;
     }
 }

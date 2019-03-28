@@ -6,10 +6,7 @@ import com.options.agents.Tester;
 import com.options.analysis.Recommendation;
 import com.options.clients.alphavantage.AlphaVantageClient;
 import com.options.clients.alphavantage.AlphaVantageDataPackage;
-import com.options.json.responses.BacktestResponse;
-import com.options.json.responses.FullAnalyzeResponse;
-import com.options.json.responses.GetDataResponse;
-import com.options.json.responses.QuickAnalyzeResponse;
+import com.options.json.responses.*;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -75,6 +72,11 @@ public class OptionsController implements ApplicationContextAware {
         tester.setRecommendationList(analyst.analyzeData(ticker));
         // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.
         return tester.backtest(ticker);
+    }
+
+    @GetMapping
+    public GetRecommendationStrategiesResponse getRecommendationStrategies() {
+        return new GetRecommendationStrategiesResponse(databaseAdministrator.getRecommendationStrategies());
     }
 
     @GetMapping("/shutdownContext")

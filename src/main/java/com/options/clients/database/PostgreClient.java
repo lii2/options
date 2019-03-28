@@ -2,6 +2,7 @@ package com.options.clients.database;
 
 import com.options.entities.*;
 import com.options.repositories.DailyDataRepository;
+import com.options.repositories.RecommendationStrategyRepository;
 import com.options.repositories.TickerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ public class PostgreClient {
 
     @Autowired
     DailyDataRepository dailyDataRepository;
+
+    @Autowired
+    RecommendationStrategyRepository recommendationStrategyRepository;
 
     @Autowired
     public PostgreClient(TickerRepository tickerRepository,
@@ -78,6 +82,10 @@ public class PostgreClient {
 
     public List<DailyDataEntity> getLast100DaysData(String tickerSymbol) {
         return dailyDataRepository.findLastXDaysByTickerKey(getTickerKey(tickerSymbol), 100);
+    }
+
+    public List<RecommendationStrategyEntity> getAllRecommendationStrategies() {
+        return recommendationStrategyRepository.getAll();
     }
 
     private int getTickerKey(String tickerSymbol) {
