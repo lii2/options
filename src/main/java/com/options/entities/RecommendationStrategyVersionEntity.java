@@ -23,11 +23,7 @@ public class RecommendationStrategyVersionEntity {
     @JoinColumn(name = "recommendationStrategyKey")
     private RecommendationStrategyEntity recommendationStrategy;
 
-    private String version;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "backtestResultKey")
-    private BacktestResultEntity backtestResultEntity;
+    private Integer version;
 
     @Override
     public String toString() {
