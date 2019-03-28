@@ -3,6 +3,7 @@ package com.options.agents;
 import com.options.analysis.RecommendationStrategy;
 import com.options.clients.alphavantage.AlphaVantageDataPackage;
 import com.options.clients.database.PostgreClient;
+import com.options.data.DailyData;
 import com.options.entities.RecommendationStrategyEntity;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +79,9 @@ public class DatabaseAdministrator {
             recommendationStrategies.add(new RecommendationStrategy(entity));
         }
         return recommendationStrategies;
+    }
+
+    public List<DailyData> getDailyData(String ticker){
+        return DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
 }

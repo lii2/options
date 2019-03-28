@@ -44,7 +44,8 @@ public class OptionsController implements ApplicationContextAware {
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
     public QuickAnalyzeResponse quickAnalyze(@PathVariable String ticker) throws Exception {
         Recommendation result = null;
-        List<Recommendation> recommendations = analyst.analyzeData(100, ticker);
+        analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
+        List<Recommendation> recommendations = analyst.analyzeData(100);
         if (!recommendations.isEmpty()) {
             result = recommendations.get(recommendations.size() - 1);
         }
@@ -59,7 +60,8 @@ public class OptionsController implements ApplicationContextAware {
 
     @GetMapping(value = "/fullAnalyze/{ticker}", name = "Give full recommendation list for selected ticker")
     public FullAnalyzeResponse fullAnalyze(@PathVariable String ticker) {
-        return new FullAnalyzeResponse(analyst.analyzeData(100, ticker));
+        analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
+        return new FullAnalyzeResponse(analyst.analyzeData(100));
     }
 
     @GetMapping("/backtest/{ticker}")
@@ -69,7 +71,8 @@ public class OptionsController implements ApplicationContextAware {
 
         // TODO:
         analyst.setDaysOfData(100);
-        tester.setRecommendationList(analyst.analyzeData(ticker));
+        analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
+        tester.setRecommendationList(analyst.analyzeData());
         // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.
         return tester.backtest(ticker);
     }

@@ -4,17 +4,16 @@ import com.options.analysis.Recommendation;
 import com.options.data.DailyData;
 import com.options.analysis.EntranceStrategies;
 import com.options.clients.database.PostgreClient;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Component
 public class Analyst {
-
-    @Autowired
-    private PostgreClient postgreClient;
 
     private int daysOfData;
 
@@ -25,8 +24,7 @@ public class Analyst {
         this.daysOfData = 30;
     }
 
-    public List<Recommendation> analyzeData(String ticker) {
-        setDataFromDatabase(ticker);
+    public List<Recommendation> analyzeData() {
         return doAnalysis();
     }
 
@@ -42,16 +40,13 @@ public class Analyst {
         return pendingRecommendations;
     }
 
-    private void setDataFromDatabase(String ticker) {
-        dailyDataList = DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
-    }
 
     public void setDaysOfData(int daysOfData) {
         this.daysOfData = daysOfData;
     }
 
-    public List<Recommendation> analyzeData(int daysToAnalyze, String ticker) {
+    public List<Recommendation> analyzeData(int daysToAnalyze) {
         setDaysOfData(daysToAnalyze);
-        return analyzeData(ticker);
+        return analyzeData();
     }
 }
