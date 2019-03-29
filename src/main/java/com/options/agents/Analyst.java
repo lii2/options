@@ -21,14 +21,10 @@ public class Analyst {
 
     @Autowired
     public Analyst() {
-        this.daysOfData = 30;
+        this.daysOfData = 100;
     }
 
     public List<Recommendation> analyzeData() {
-        return doAnalysis();
-    }
-
-    private List<Recommendation> doAnalysis() {
         List<Recommendation> pendingRecommendations = new ArrayList<>();
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         int lastDayIndex = dailyDataList.size() - 1;
@@ -40,13 +36,8 @@ public class Analyst {
         return pendingRecommendations;
     }
 
-
-    public void setDaysOfData(int daysOfData) {
-        this.daysOfData = daysOfData;
-    }
-
     public List<Recommendation> analyzeData(int daysToAnalyze) {
-        setDaysOfData(daysToAnalyze);
+        this.daysOfData = daysToAnalyze;
         return analyzeData();
     }
 }
