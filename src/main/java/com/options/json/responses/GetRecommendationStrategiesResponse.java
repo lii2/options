@@ -1,7 +1,6 @@
 package com.options.json.responses;
 
-import com.options.analysis.RecommendationStrategy;
-import com.options.entities.RecommendationStrategyEntity;
+import com.options.recommendation.RecommendationStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

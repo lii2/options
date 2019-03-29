@@ -1,7 +1,7 @@
 package com.options.json.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.options.backtest.RecommendationResult;
+import com.options.recommendation.RecommendationResult;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

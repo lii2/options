@@ -1,6 +1,6 @@
-package com.options.backtest;
+package com.options.recommendation;
 
-import com.options.analysis.Trend;
+import com.options.backtest.Outcome;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

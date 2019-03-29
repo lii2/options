@@ -1,6 +1,5 @@
 package com.options.entities;
 
-import com.options.analysis.Trend;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,9 +1,8 @@
 package com.options.agents;
 
-import com.options.analysis.Recommendation;
+import com.options.recommendation.Recommendation;
 import com.options.data.DailyData;
-import com.options.analysis.EntranceStrategies;
-import com.options.clients.database.PostgreClient;
+import com.options.recommendation.EntranceStrategies;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

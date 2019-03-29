@@ -1,4 +1,4 @@
-package com.options.analysis;
+package com.options.recommendation;
 
 import com.options.entities.RecommendationStrategyEntity;
 import com.options.entities.RecommendationStrategyVersionEntity;

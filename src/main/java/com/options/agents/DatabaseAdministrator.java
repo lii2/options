@@ -1,6 +1,6 @@
 package com.options.agents;
 
-import com.options.analysis.RecommendationStrategy;
+import com.options.recommendation.RecommendationStrategy;
 import com.options.clients.alphavantage.AlphaVantageDataPackage;
 import com.options.clients.database.PostgreClient;
 import com.options.data.DailyData;

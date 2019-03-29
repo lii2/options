@@ -1,8 +1,8 @@
 package com.options.agents;
 
 import com.options.json.responses.BacktestResponse;
-import com.options.backtest.RecommendationResult;
-import com.options.analysis.Recommendation;
+import com.options.recommendation.RecommendationResult;
+import com.options.recommendation.Recommendation;
 import com.options.data.DailyData;
 import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;
