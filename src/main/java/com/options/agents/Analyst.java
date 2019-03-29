@@ -2,7 +2,7 @@ package com.options.agents;
 
 import com.options.recommendation.Recommendation;
 import com.options.data.DailyData;
-import com.options.recommendation.EntranceStrategies;
+import com.options.strategy.EntranceStrategies;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

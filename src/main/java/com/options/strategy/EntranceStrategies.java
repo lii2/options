@@ -1,6 +1,8 @@
-package com.options.recommendation;
+package com.options.strategy;
 
 import com.options.data.DailyData;
+import com.options.recommendation.Recommendation;
+import com.options.recommendation.Trend;
 
 import java.math.BigDecimal;
 import java.util.List;
