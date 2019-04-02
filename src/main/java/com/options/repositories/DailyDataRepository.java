@@ -15,6 +15,11 @@ public interface DailyDataRepository extends CrudRepository<DailyDataEntity, Int
 
     Optional<DailyDataEntity> findByDay(LocalDate day);
 
+    @Query(value = "SELECT * FROM daily_data WHERE ticker_key= :tickerKey and day = :day ORDER BY day DESC", nativeQuery = true)
+    Optional<DailyDataEntity> findByDayAndTickerKey(@Param(
+            "day") LocalDate day,
+                                                    @Param("tickerKey") Integer tickerKey);
+
     @Query(value = "SELECT * FROM daily_data WHERE ticker_key= :tickerKey ORDER BY day DESC LIMIT :limits", nativeQuery = true)
     List<DailyDataEntity> findLastXDaysByTickerKey(
             @Param("tickerKey") int tickerKey,
