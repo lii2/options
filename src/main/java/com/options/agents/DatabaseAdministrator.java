@@ -38,13 +38,12 @@ public class DatabaseAdministrator {
         if (StringUtils.isNotBlank(tickerSymbol)) {
             tickerSymbol = tickerSymbol.toUpperCase();
 
-
             int timeSeriesIndex = 1, emaDataIndex = 1, macdDataIndex = 1, bbandDataIndex = 1;
 
             while (timeSeriesIndex < dataPackage.getTimeSeriesData().length) {
                 String[] timeSeriesRow = dataPackage.getTimeSeriesData()[timeSeriesIndex].split(",");
                 LocalDate day = parseDate(timeSeriesRow[0]);
-                if (!postgreClient.getDailyDataByDay(day).isPresent()) {
+                if (!postgreClient.getDailyDataByDayAndTicker(day, tickerSymbol).isPresent()) {
                     String[] emaRow = dataPackage.getEmaData()[emaDataIndex].split(",");
                     String[] macdRow = dataPackage.getMacdData()[macdDataIndex].split(",");
                     String[] bbandRow = dataPackage.getBbandData()[bbandDataIndex].split(",");

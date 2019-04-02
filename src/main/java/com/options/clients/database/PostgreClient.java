@@ -76,8 +76,9 @@ public class PostgreClient {
         return dailyDataRepository.findById(id).get().toString();
     }
 
-    public Optional<DailyDataEntity> getDailyDataByDay(LocalDate day) {
-        return dailyDataRepository.findByDay(day);
+    public Optional<DailyDataEntity> getDailyDataByDayAndTicker(LocalDate day, String tickerSymbol) {
+        Integer tickerKey = getTickerKey(tickerSymbol);
+        return dailyDataRepository.findByDayAndTickerKey(day, tickerKey);
     }
 
     public List<DailyDataEntity> getLast100DaysData(String tickerSymbol) {
