@@ -3,10 +3,10 @@ package com.options.controller;
 import com.options.agents.Analyst;
 import com.options.agents.DatabaseAdministrator;
 import com.options.agents.Tester;
-import com.options.recommendation.Recommendation;
 import com.options.clients.alphavantage.AlphaVantageClient;
 import com.options.clients.alphavantage.AlphaVantageDataPackage;
 import com.options.json.responses.*;
+import com.options.recommendation.Recommendation;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -42,10 +42,10 @@ public class OptionsController implements ApplicationContextAware {
     }
 
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
-    public QuickAnalyzeResponse quickAnalyze(@PathVariable String ticker) throws Exception {
+    public QuickAnalyzeResponse quickAnalyze(@PathVariable String ticker){
         Recommendation result = null;
         analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
-        List<Recommendation> recommendations = analyst.analyzeData();
+        List<Recommendation> recommendations = analyst.analyzeData(10);
         if (!recommendations.isEmpty()) {
             result = recommendations.get(recommendations.size() - 1);
         }
@@ -68,8 +68,6 @@ public class OptionsController implements ApplicationContextAware {
     public BacktestResponse backtest(@PathVariable String ticker) {
 
         // TODO: GET list of recommendation Strategies
-
-        // TODO:
         analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
         tester.setRecommendationList(analyst.analyzeData());
         // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.
