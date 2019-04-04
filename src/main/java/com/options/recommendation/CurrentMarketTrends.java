@@ -16,4 +16,11 @@ public class CurrentMarketTrends {
         this.fiftyDayTrend = fiftyDayTrend;
         this.tenDayTrend = tenDayTrend;
     }
+
+    public boolean supports(Trend trend) {
+        return ((hundredDayTrend.equals(trend) && fiftyDayTrend.equals(trend) && tenDayTrend.equals(trend))
+                || (hundredDayTrend.equals(trend) && fiftyDayTrend.equals(trend))
+                || (hundredDayTrend.equals(trend) && tenDayTrend.equals(trend))
+                || (fiftyDayTrend.equals(trend) && tenDayTrend.equals(trend)));
+    }
 }

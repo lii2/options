@@ -33,7 +33,9 @@ public class Analyst {
         determineCurrentMarketTrends();
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         int lastDayIndex = daysOfData - 1;
-        EntranceStrategies entranceStrategies = new EntranceStrategies();
+
+        EntranceStrategies entranceStrategies = new EntranceStrategies(currentMarketTrends);
+
         // Main Loop
         for (int i = lastDayIndex - 1; i >= 0; i--) {
             entranceStrategies.findEntrance(dailyDataList.get(i), pendingRecommendations);
@@ -47,9 +49,9 @@ public class Analyst {
     }
 
     private void determineCurrentMarketTrends() {
-        currentMarketTrends = new CurrentMarketTrends(Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(100).getOpenCloseMean())),
-                Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(100).getOpenCloseMean())),
-                Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(100).getOpenCloseMean())));
+        currentMarketTrends = new CurrentMarketTrends(Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(99).getOpenCloseMean())),
+                Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(49).getOpenCloseMean())),
+                Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(9).getOpenCloseMean())));
 
     }
 }

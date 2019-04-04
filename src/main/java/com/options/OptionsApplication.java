@@ -29,7 +29,7 @@ public class OptionsApplication {
         System.out.println("Launching Browser");
 
         Runtime rt = Runtime.getRuntime();
-        String url = "http://localhost:8081/";
+        String url = "http://localhost:8081/swagger-ui.html";
         rt.exec("rundll32 url.dll,FileProtocolHandler " + url);
     }
 }
