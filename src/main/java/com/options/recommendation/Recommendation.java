@@ -1,7 +1,6 @@
-package com.options.analysis;
+package com.options.recommendation;
 
 import com.options.data.DailyData;
-import com.options.analysis.Trend;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

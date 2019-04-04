@@ -1,6 +1,5 @@
 package com.options.entities;
 
-import com.options.analysis.Trend;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,7 +21,7 @@ public class RecommendationStrategyEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int recommendationStrategyKey;
 
-    private Trend trend;
+    private String trend;
 
     private String name;
 

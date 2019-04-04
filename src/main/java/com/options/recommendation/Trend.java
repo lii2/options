@@ -1,4 +1,4 @@
-package com.options.analysis;
+package com.options.recommendation;
 
 public enum Trend {
     BEARISH,

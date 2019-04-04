@@ -1,20 +1,18 @@
 package com.options.agents;
 
-import com.options.analysis.Recommendation;
+import com.options.recommendation.Recommendation;
 import com.options.data.DailyData;
-import com.options.analysis.EntranceStrategies;
-import com.options.clients.database.PostgreClient;
+import com.options.strategy.EntranceStrategies;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Component
 public class Analyst {
-
-    @Autowired
-    private PostgreClient postgreClient;
 
     private int daysOfData;
 
@@ -22,15 +20,10 @@ public class Analyst {
 
     @Autowired
     public Analyst() {
-        this.daysOfData = 30;
+        this.daysOfData = 100;
     }
 
-    public List<Recommendation> analyzeData(String ticker) {
-        setDataFromDatabase(ticker);
-        return doAnalysis();
-    }
-
-    private List<Recommendation> doAnalysis() {
+    public List<Recommendation> analyzeData() {
         List<Recommendation> pendingRecommendations = new ArrayList<>();
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
         int lastDayIndex = dailyDataList.size() - 1;
@@ -42,16 +35,8 @@ public class Analyst {
         return pendingRecommendations;
     }
 
-    private void setDataFromDatabase(String ticker) {
-        dailyDataList = DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
-    }
-
-    public void setDaysOfData(int daysOfData) {
-        this.daysOfData = daysOfData;
-    }
-
-    public List<Recommendation> analyzeData(int daysToAnalyze, String ticker) {
-        setDaysOfData(daysToAnalyze);
-        return analyzeData(ticker);
+    public List<Recommendation> analyzeData(int daysToAnalyze) {
+        this.daysOfData = daysToAnalyze;
+        return analyzeData();
     }
 }
