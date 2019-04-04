@@ -1,7 +1,9 @@
 package com.options.agents;
 
-import com.options.recommendation.Recommendation;
 import com.options.data.DailyData;
+import com.options.recommendation.CurrentMarketTrends;
+import com.options.recommendation.Recommendation;
+import com.options.recommendation.Trend;
 import com.options.strategy.EntranceStrategies;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,10 @@ public class Analyst {
 
     private int daysOfData;
 
+    // Set using Lombok setter method
     private List<DailyData> dailyDataList;
+
+    private CurrentMarketTrends currentMarketTrends;
 
     @Autowired
     public Analyst() {
@@ -25,8 +30,9 @@ public class Analyst {
 
     public List<Recommendation> analyzeData() {
         List<Recommendation> pendingRecommendations = new ArrayList<>();
+        determineCurrentMarketTrends();
         // TODO: FIND A WAY TO INDICATE WHEN TO SELL IRON CONDORS
-        int lastDayIndex = dailyDataList.size() - 1;
+        int lastDayIndex = daysOfData - 1;
         EntranceStrategies entranceStrategies = new EntranceStrategies();
         // Main Loop
         for (int i = lastDayIndex - 1; i >= 0; i--) {
@@ -38,5 +44,12 @@ public class Analyst {
     public List<Recommendation> analyzeData(int daysToAnalyze) {
         this.daysOfData = daysToAnalyze;
         return analyzeData();
+    }
+
+    private void determineCurrentMarketTrends() {
+        currentMarketTrends = new CurrentMarketTrends(Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(100).getOpenCloseMean())),
+                Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(100).getOpenCloseMean())),
+                Trend.getTrendUsingDifference(dailyDataList.get(0).getOpenCloseMean().subtract(dailyDataList.get(100).getOpenCloseMean())));
+
     }
 }
