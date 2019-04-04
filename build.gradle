@@ -47,7 +47,7 @@ dependencies {
 }
 
 task openSwagger(type: Exec) {
-    commandLine 'cmd', '/c', 'start http://localhost:8081/swagger-ui.html'
+    commandLine 'cmd', '/c', 'start http://localhost:8081/'
 }
 
 
