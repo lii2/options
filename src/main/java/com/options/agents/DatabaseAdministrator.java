@@ -83,4 +83,8 @@ public class DatabaseAdministrator {
     public List<DailyData> getDailyData(String ticker){
         return DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
+
+    public List<DailyData> getLast200DailyData(String ticker){
+        return DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
+    }
 }

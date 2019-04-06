@@ -85,6 +85,10 @@ public class PostgreClient {
         return dailyDataRepository.findLastXDaysByTickerKey(getTickerKey(tickerSymbol), 100);
     }
 
+    public List<DailyDataEntity> getLast200DaysData(String tickerSymbol) {
+        return dailyDataRepository.findLastXDaysByTickerKey(getTickerKey(tickerSymbol), 200);
+    }
+
     public List<RecommendationStrategyEntity> getAllRecommendationStrategies() {
         return recommendationStrategyRepository.getAll();
     }
