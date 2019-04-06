@@ -78,14 +78,7 @@ public class PostgreClient {
 
     public Optional<DailyDataEntity> getDailyDataByDayAndTicker(LocalDate day, String tickerSymbol) {
         Integer tickerKey = getTickerKey(tickerSymbol);
-        System.out.println(day);
-        System.out.println(tickerKey);
-        try {
-            return dailyDataRepository.findByDayAndTickerKey(day, tickerKey);
-        }catch (Exception e) {
-            System.out.println("Data is fucked");
-        }
-        return null;
+        return dailyDataRepository.findByDayAndTickerKey(day, tickerKey);
     }
 
     public List<DailyDataEntity> getLast100DaysData(String tickerSymbol) {
