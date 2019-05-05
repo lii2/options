@@ -1,4 +1,4 @@
-package com.options.data;
+package com.options.technicals;
 
 public class UnsyncedDataException extends RuntimeException {
 

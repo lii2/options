@@ -1,9 +1,9 @@
 package com.options.agents;
 
+import com.options.technicals.DailyTechnicals;
 import com.options.json.responses.BacktestResponse;
 import com.options.recommendation.RecommendationResult;
 import com.options.recommendation.Recommendation;
-import com.options.data.DailyData;
 import com.options.clients.database.PostgreClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +18,7 @@ public class Tester {
 
     private final static int DAYS_HELD = 2;
     private List<Recommendation> recommendationList;
-    private List<DailyData> dailyDataList;
+    private List<DailyTechnicals> dailyTechnicalsList;
     private int daysToTest;
     @Autowired
     private PostgreClient postgreClient;
@@ -29,7 +29,7 @@ public class Tester {
 
     public BacktestResponse backtest(String ticker) {
         setDataFromDatabase(ticker);
-        int lastDayIndex = dailyDataList.size() - 1;
+        int lastDayIndex = dailyTechnicalsList.size() - 1;
         List<LocalDate> datesOfRecommendations = new ArrayList<>();
         for (Recommendation recommendation : recommendationList) {
             datesOfRecommendations.add(recommendation.getDataOfRecommendation().getDay());
@@ -37,10 +37,10 @@ public class Tester {
         List<RecommendationResult> results = new ArrayList<>();
 
         for (int i = lastDayIndex; i >= DAYS_HELD + 1; i--) {
-            if (datesOfRecommendations.contains(dailyDataList.get(i).getDay())) {
-                Recommendation recommendation = getRecommendationByDate(dailyDataList.get(i).getDay());
+            if (datesOfRecommendations.contains(dailyTechnicalsList.get(i).getDay())) {
+                Recommendation recommendation = getRecommendationByDate(dailyTechnicalsList.get(i).getDay());
                 RecommendationResult recommendationResult = new RecommendationResult(DAYS_HELD, recommendation.getTrend(),
-                        dailyDataList.get(i).getOpenCloseMean().subtract(dailyDataList.get(i - DAYS_HELD).getOpenCloseMean()),
+                        dailyTechnicalsList.get(i).getOpenCloseMean().subtract(dailyTechnicalsList.get(i - DAYS_HELD).getOpenCloseMean()),
                         recommendation.getDataOfRecommendation().getDay());
                 results.add(recommendationResult);
             }
@@ -83,7 +83,7 @@ public class Tester {
     }
 
     private void setDataFromDatabase(String ticker) {
-        dailyDataList = DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
+        dailyTechnicalsList = DailyTechnicals.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
 
     private Recommendation getRecommendationByDate(LocalDate LocalDate) {

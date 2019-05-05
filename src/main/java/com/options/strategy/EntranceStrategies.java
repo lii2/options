@@ -1,6 +1,6 @@
 package com.options.strategy;
 
-import com.options.data.DailyData;
+import com.options.technicals.DailyTechnicals;
 import com.options.recommendation.Recommendation;
 import com.options.recommendation.Trend;
 
@@ -13,12 +13,12 @@ public class EntranceStrategies {
     // 0.1 is best value so far w/ 90% accuracy, 0.2 only gives 95% and 0.05 gives 78%
     private static final BigDecimal MACD_HIST_LIMIT = new BigDecimal(0.1);
 
-    public void findEntrance(DailyData daysData, List<Recommendation> pendingRecommendations) {
+    public void findEntrance(DailyTechnicals daysData, List<Recommendation> pendingRecommendations) {
         emaCrossing(daysData, pendingRecommendations);
         leavingBollingerBandOutskirts(daysData, pendingRecommendations);
     }
 
-    private void emaCrossing(DailyData daysData, List<Recommendation> pendingRecommendations) {
+    private void emaCrossing(DailyTechnicals daysData, List<Recommendation> pendingRecommendations) {
         if (daysData.averagedBelowEma() != daysData.getPreviousDaysData().averagedBelowEma()
                 && daysData.getMacdHist().abs().compareTo(MACD_HIST_LIMIT) > 0) {
             if (daysData.averagedBelowEma()) {
@@ -33,34 +33,34 @@ public class EntranceStrategies {
         }
     }
 
-    private String generateRiseMessage(DailyData dailyData) {
+    private String generateRiseMessage(DailyTechnicals dailyTechnicals) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" price rose above the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
-                .append(" ema is: ").append(dailyData.getEma() )
-                .append(" price is now: ").append(dailyData.getOpenCloseMean() )
+        stringBuilder.append(" price rose above the ema, price was: ").append(dailyTechnicals.getPreviousDaysData().getOpenCloseMean())
+                .append(" ema is: ").append(dailyTechnicals.getEma() )
+                .append(" price is now: ").append(dailyTechnicals.getOpenCloseMean() )
                 .append(" Message: buy calls to sell.");
         return stringBuilder.toString();
     }
 
-    private String generateDropMessage(DailyData dailyData) {
+    private String generateDropMessage(DailyTechnicals dailyTechnicals) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" price dropped below the ema, price was: ").append(dailyData.getPreviousDaysData().getOpenCloseMean())
-                .append(" ema is: ").append(dailyData.getEma())
-                .append(" price is now: ").append(dailyData.getOpenCloseMean())
+        stringBuilder.append(" price dropped below the ema, price was: ").append(dailyTechnicals.getPreviousDaysData().getOpenCloseMean())
+                .append(" ema is: ").append(dailyTechnicals.getEma())
+                .append(" price is now: ").append(dailyTechnicals.getOpenCloseMean())
                 .append(" Message: buy puts to sell.");
         return stringBuilder.toString();
     }
 
-    private void leavingBollingerBandOutskirts(DailyData dailyData, List<Recommendation> pendingRecommendations) {
-        if (dailyData.getPreviousDaysData().getBoxHigh().compareTo(dailyData.getPreviousDaysData().getRealUpperBand()) > 0
-                && dailyData.getBoxHigh().compareTo(dailyData.getRealUpperBand()) < 0) {
+    private void leavingBollingerBandOutskirts(DailyTechnicals dailyTechnicals, List<Recommendation> pendingRecommendations) {
+        if (dailyTechnicals.getPreviousDaysData().getBoxHigh().compareTo(dailyTechnicals.getPreviousDaysData().getRealUpperBand()) > 0
+                && dailyTechnicals.getBoxHigh().compareTo(dailyTechnicals.getRealUpperBand()) < 0) {
             Recommendation recommendation = new Recommendation(Trend.BEARISH, "Buy puts, Ticker leaving overbought territory",
-                    dailyData);
+                    dailyTechnicals);
             pendingRecommendations.add(recommendation);
-        } else if (dailyData.getPreviousDaysData().getBoxLow().compareTo(dailyData.getPreviousDaysData().getRealLowerBand()) < 0
-                && dailyData.getBoxLow().compareTo(dailyData.getRealLowerBand()) > 0) {
+        } else if (dailyTechnicals.getPreviousDaysData().getBoxLow().compareTo(dailyTechnicals.getPreviousDaysData().getRealLowerBand()) < 0
+                && dailyTechnicals.getBoxLow().compareTo(dailyTechnicals.getRealLowerBand()) > 0) {
             Recommendation recommendation = new Recommendation(Trend.BULLISH, "Buy calls, Ticker leaving oversold territory",
-                    dailyData);
+                    dailyTechnicals);
             pendingRecommendations.add(recommendation);
         }
     }

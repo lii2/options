@@ -44,7 +44,7 @@ public class OptionsController implements ApplicationContextAware {
     @GetMapping(value = "/quickAnalyze/{ticker}", name = "Quickly pull last recommendation for selected ticker")
     public QuickAnalyzeResponse quickAnalyze(@PathVariable String ticker){
         Recommendation result = null;
-        analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
+        analyst.setDailyTechnicalsList(databaseAdministrator.getDailyData(ticker));
         List<Recommendation> recommendations = analyst.analyzeData(10);
         if (!recommendations.isEmpty()) {
             result = recommendations.get(recommendations.size() - 1);
@@ -52,7 +52,7 @@ public class OptionsController implements ApplicationContextAware {
         return new QuickAnalyzeResponse(result);
     }
 
-    @GetMapping(value = "/getData/{ticker}", name = "Fetch the data for selected ticker")
+    @GetMapping(value = "/getData/{ticker}", name = "Fetch the technicals for selected ticker")
     public GetDataResponse getData(@PathVariable String ticker) throws Exception {
         AlphaVantageDataPackage dataPackage = alphaVantageClient.getAlphaVantageDataPackage(ticker);
         return new GetDataResponse(databaseAdministrator.smartPersist(dataPackage, ticker));
@@ -60,7 +60,7 @@ public class OptionsController implements ApplicationContextAware {
 
     @GetMapping(value = "/fullAnalyze/{ticker}", name = "Give full recommendation list for selected ticker")
     public FullAnalyzeResponse fullAnalyze(@PathVariable String ticker) {
-        analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
+        analyst.setDailyTechnicalsList(databaseAdministrator.getDailyData(ticker));
         return new FullAnalyzeResponse(analyst.analyzeData());
     }
 
@@ -68,7 +68,7 @@ public class OptionsController implements ApplicationContextAware {
     public BacktestResponse backtest(@PathVariable String ticker) {
 
         // TODO: GET list of recommendation Strategies
-        analyst.setDailyDataList(databaseAdministrator.getDailyData(ticker));
+        analyst.setDailyTechnicalsList(databaseAdministrator.getDailyData(ticker));
         tester.setRecommendationList(analyst.analyzeData());
         // TODO: Tester shouldn't spit out a backtest response, couples a json response to an agent. Need to refactor.
         return tester.backtest(ticker);

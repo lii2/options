@@ -1,4 +1,4 @@
-package com.options.data;
+package com.options.technicals;
 
 import java.math.BigDecimal;
 

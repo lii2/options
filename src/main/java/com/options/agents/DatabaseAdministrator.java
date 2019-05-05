@@ -3,7 +3,7 @@ package com.options.agents;
 import com.options.recommendation.RecommendationStrategy;
 import com.options.clients.alphavantage.AlphaVantageDataPackage;
 import com.options.clients.database.PostgreClient;
-import com.options.data.DailyData;
+import com.options.technicals.DailyTechnicals;
 import com.options.entities.RecommendationStrategyEntity;
 import io.micrometer.core.instrument.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class DatabaseAdministrator {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd");
 
-    private static final String noNewDataFetched = "No new data added";
+    private static final String noNewDataFetched = "No new technicals added";
 
     private LocalDate parseDate(String dateString) {
         if (dateString.length() > 10) {
@@ -34,7 +34,7 @@ public class DatabaseAdministrator {
 
     public String smartPersist(AlphaVantageDataPackage dataPackage, String tickerSymbol) {
         StringBuilder result = new StringBuilder();
-        // TODO: Check if data from today is already in database, if so, skip persistance
+        // TODO: Check if technicals from today is already in database, if so, skip persistance
         if (StringUtils.isNotBlank(tickerSymbol)) {
             tickerSymbol = tickerSymbol.toUpperCase();
 
@@ -59,7 +59,7 @@ public class DatabaseAdministrator {
                                 new BigDecimal(macdRow[1]), new BigDecimal(macdRow[2]), new BigDecimal(macdRow[3]),
                                 new BigDecimal(bbandRow[1]), new BigDecimal(bbandRow[2]), new BigDecimal(bbandRow[3]));
                     }
-                    result.append(timeSeriesRow[0]).append(" data persisted to database \n ");
+                    result.append(timeSeriesRow[0]).append(" technicals persisted to database \n ");
                 }
                 timeSeriesIndex++;
                 emaDataIndex++;
@@ -80,7 +80,7 @@ public class DatabaseAdministrator {
         return recommendationStrategies;
     }
 
-    public List<DailyData> getDailyData(String ticker){
-        return DailyData.generateDailyData(postgreClient.getLast100DaysData(ticker));
+    public List<DailyTechnicals> getDailyData(String ticker){
+        return DailyTechnicals.generateDailyData(postgreClient.getLast100DaysData(ticker));
     }
 }

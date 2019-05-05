@@ -1,6 +1,6 @@
 package com.options.recommendation;
 
-import com.options.data.DailyData;
+import com.options.technicals.DailyTechnicals;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ public class Recommendation {
 
     private Trend trend;
     private String message;
-    private DailyData dataOfRecommendation;
+    private DailyTechnicals dataOfRecommendation;
 
     @Override
     public String toString() {
